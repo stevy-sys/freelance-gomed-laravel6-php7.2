@@ -44,6 +44,8 @@ use App\Http\Controllers\v1\StoreRequestController;
 use App\Http\Controllers\v1\ComplaintsController;;
 use App\Http\Controllers\v1\DriverRequestController;
 use App\Http\Controllers\v1\FlushController;
+use App\Http\Controllers\v1\TvaController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -63,11 +65,11 @@ Route::get('/', function () {
     ];
 });
 
-Route::prefix('/v1')->group(function () {
+Route::prefix('/v1')->group(function () { 
 
     Route::group(['namespace' => 'Auth'], function () {
 
-        Route::post('auth/login', [AuthController::class, 'login']);
+        Route::post('auth/login', [AuthController::class, 'login']); 
         Route::post('auth/loginDrivers', [AuthController::class, 'loginDrivers']);
         Route::post('auth/adminLogin', [AuthController::class, 'adminLogin']);
         Route::post('auth/create_account', [RegisterController::class, 'register']);
@@ -190,6 +192,13 @@ Route::prefix('/v1')->group(function () {
 
     Route::group(['middleware' => ['admin_auth', 'jwt.auth']], function () {
 
+
+        //TVA Routes
+        Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
+        Route::post('tva/importCsvTva', [TvaController::class, 'importCsvTva']);
+        Route::put('tva/updateTva/{tva}', [TvaController::class, 'updateTva']);
+        Route::delete('tva/deleteTva/{tva}', [TvaController::class, 'deleteTva']);
+
         // Settings Routes
         Route::get('setttings/getSettingsForOwner', [SettingsController::class, 'getSettingsForOwner']);
         Route::post('setttings/save', [SettingsController::class, 'save']);
@@ -261,7 +270,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('store/createStoreProfile', [RegisterController::class, 'createStoreProfile']);
 
         // User Routes
-        Route::get('users/getAll', [UsersController::class, 'getAll']);
+        Route::get('users/getAll', [UsersController::class, 'getAll']); 
         Route::get('users/admins', [UsersController::class, 'admins']);
         Route::post('users/deleteUser', [UsersController::class, 'delete']);
         Route::post('users/adminNewAdmin', [RegisterController::class, 'adminNewAdmin']);
@@ -457,7 +466,7 @@ Route::prefix('/v1')->group(function () {
     // Payments Routes For User Public
     Route::get('payNow',[PaytmPayController::class, 'payNow']);
     Route::get('payNowWeb',[PaytmPayController::class, 'payNowWeb']);
-    Route::post('paytm-callback',[PaytmPayController::class, 'paytmCallback']);
+    Route::post('paytm-callback',[PaytmPayController::class, 'paytmCallback']); 
     Route::post('paytm-webCallback',[PaytmPayController::class, 'webCallback']);
     Route::get('refundUserRequest',[PaytmPayController::class, 'refundUserRequest']);
 
@@ -533,8 +542,8 @@ Route::prefix('/v1')->group(function () {
     Route::post('otp/generateTempTokenEmail',[OtpController::class, 'generateTempTokenEmail'] );
     Route::post('otp/generateTempTokenDriver',[OtpController::class, 'generateTempTokenDriver'] );
 
-    Route::post('contacts/create',[ContactsController::class, 'save'] );
-    Route::post('sendMailToAdmin',[ContactsController::class, 'sendMailToAdmin']);
+    Route::post('contacts/create',[ContactsController::class, 'save'] ); 
+    Route::post('sendMailToAdmin',[ContactsController::class, 'sendMailToAdmin']); 
     Route::get('offers/getMyOffers',[OffersController::class, 'getMyOffers'] );
 
     // Store register routes
