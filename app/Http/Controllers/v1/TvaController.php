@@ -41,6 +41,7 @@ class TvaController extends Controller
                 ],400);
             }
             $tva->update(['countrie' => $request->countrie , 'TVA' => $request->tva]);
+            $this->createNewCsv();
             return response()->json([
                 'message' => 'TVA updated',
                 'data' => $tva
@@ -67,15 +68,24 @@ class TvaController extends Controller
                     ],400);
                 }
 
-                $fichier = $file->move($this->path, $this->mainFilename.".".$ext);
-                $reader = SimpleExcelReader::create($fichier);
+                // get file
+                $file = $file->move($this->path, $this->mainFilename.".".'csv');
+                
+                // read file
+                $reader = SimpleExcelReader::create($file);
                 $reader->getRows()->each(function(array $rowProperties) {
                     $a = array_map('trim', array_keys($rowProperties));
                     $b = array_map('trim', $rowProperties);
-                    $rowProperties = array_combine($a, $b);
-                    Tva::firstOrCreate($rowProperties);
+                    $existe = Tva::where('countrie',$a)->first();
+                    if (!isset($existe)) {
+                        $rowProperties = array_combine($a, $b);
+                        Tva::create($rowProperties);
+                    }
                 });
-                unlink($this->path.$this->mainFilename.".".$ext);
+
+                //update download
+                $this->createNewCsv();
+
                 return response()->json([
                     'message' => 'File imported',
                     'data' => Tva::all()
@@ -87,9 +97,32 @@ class TvaController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'an error occured'
+                'message' => 'an error occured',
+                'error' => $th->getMessage()
             ],500);
         }
+    }
+
+    public function createNewCsv()
+    {
+        $file = fopen(public_path().'/tva/tva.csv', 'w');
+        $columns = array('Countrie', 'TVA');
+        $newTva = Tva::get(['countrie','TVA'])->toArray();
+        fputcsv($file, $columns);
+        foreach ($newTva as $tva) {
+            fputcsv($file, $tva);
+        }
+        fclose($file);
+    }
+
+    public function downloadTva() 
+    {
+        $file= public_path(). "/tva/tva.csv";
+        $headers = array(
+            'Content-Type: application/csv',
+        );
+
+        return response()->download($file, 'tva.csv', $headers);
     }
 
     public function deleteTva(Tva $tva)
@@ -101,6 +134,7 @@ class TvaController extends Controller
                 ],404);
             }
             $tva->delete();
+            $this->createNewCsv();
             return response()->json([
                 'message' => 'TVA deleted'
             ],200);

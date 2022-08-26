@@ -198,6 +198,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('tva/importCsvTva', [TvaController::class, 'importCsvTva']);
         Route::put('tva/updateTva/{tva}', [TvaController::class, 'updateTva']);
         Route::delete('tva/deleteTva/{tva}', [TvaController::class, 'deleteTva']);
+        Route::get('tva/downloadTva/', [TvaController::class, 'downloadTva']);
 
         // Settings Routes
         Route::get('setttings/getSettingsForOwner', [SettingsController::class, 'getSettingsForOwner']);
