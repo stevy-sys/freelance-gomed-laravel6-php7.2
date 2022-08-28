@@ -61,3 +61,10 @@ $ php artisan migrate:fresh --seed
 | PUT      | `http://localhost:8000/api/profile`           |  ProfileController        | to update current user data
 | PUT      | `http://localhost:8000/api/profile/password`  |  ProfileController        | to update current user password
 
+
+| GET      | `http://localhost:8000/api/tva/getAllTvaWithCountrie`  |  TvaController        | get all tva with countrie
+| POST      | `http://localhost:8000/api/tva/importCsvTva`  |  TvaController        | Import TVA format CSV
+| PUT      | `http://localhost:8000/api/tva/updateTva/{tva}`  |  TvaController        | update TVA by Id TVA
+| DELETE      | `http://localhost:8000/api/tva/deleteTva/{tva}`  |  TvaController        | delete TVA by Id TVA
+| GET      | `http://localhost:8000/api/tva/downloadTva/`  |  TvaController        | Download TVA In CSV
+
