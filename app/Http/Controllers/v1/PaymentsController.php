@@ -324,7 +324,7 @@ class PaymentsController extends Controller
             return response()->json($response, 404);
         }
         $razorKey = $credsData->key;
-        $razorSecret = $credsData->secret;
+        // $razorSecret = $credsData->secret;
         $response = [
             'data'=>$razorKey,
             'success' => true,
@@ -352,6 +352,7 @@ class PaymentsController extends Controller
             }
             $payCreds = DB::table('payments')
             ->select('*')->where('id',2)->first();
+           
             if (is_null($payCreds) || is_null($payCreds->creds)) {
                 $response = [
                     'success' => false,
@@ -369,7 +370,7 @@ class PaymentsController extends Controller
                 ];
                 return response()->json($response, 404);
             }
-            $stripe = new \Stripe\StripeClient(
+            $stripe = new \Stripe\StripeClient( 
                 $credsData->secret
             );
             $data = $stripe->tokens->create([
