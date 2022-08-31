@@ -531,6 +531,58 @@ class PaymentsController extends Controller
         }
     }
 
+    public function createCustomer(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required',
+                'source' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Validation Error.', $validator->errors(),
+                    'status'=> 500
+                ];
+                return response()->json($response, 404);
+            }
+            $payCreds = DB::table('payments')
+            ->select('*')->where('id',2)->first();
+            if (is_null($payCreds) || is_null($payCreds->creds)) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Payment issue please contact administrator',
+                    'status' => 404
+                ];
+                return response()->json($response, 404);
+            }
+            $credsData = json_decode($payCreds->creds);
+            if(is_null($credsData) || is_null($credsData->secret)){
+                $response = [
+                    'success' => false,
+                    'message' => 'Payment issue please contact administrator',
+                    'status' => 404
+                ];
+                return response()->json($response, 404);
+            }
+            $stripe = new \Stripe\StripeClient(
+                $credsData->secret
+            );
+            $data = $stripe->customers->create([
+                'description' => 'Foodies-Dining Customer',
+                'email'=>$request->email,
+                'source'=>$request->source
+              ]);
+            $response = [
+                'success' => $data,
+                'message' => 'success',
+                'status' => 200
+            ];
+            return response()->json($response, 200);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(),200);
+        }
+    }
+
     public function createStripePayments(Request $request)
     {
         try {
@@ -539,6 +591,8 @@ class PaymentsController extends Controller
                 'currency' => 'required',
                 'customer' => 'required',
                 'card' => 'required',
+                'receive' => 'required', //'home' or 'self'
+                'description' => 'required'
             ]);
             if ($validator->fails()) {
                 $response = [
@@ -570,13 +624,14 @@ class PaymentsController extends Controller
             $stripe = new \Stripe\StripeClient(
                 $credsData->secret
             );
+            $amount = $request->receive == 'home' ? $request->amount + 20 : $request->amount + 40 ;  
             $data = $stripe->charges->create([
-                'amount' => $request->amount,
+                'amount' => $amount,
                 'currency' => $request->currency,
                 'source' => $request->card,
                 'customer' => $request->customer,
-                'description' => 'Foodie Order',
-            ]);
+                'description' => $request->description,
+            ]); 
             $response = [
                 'success' => $data,
                 'message' => 'success',
