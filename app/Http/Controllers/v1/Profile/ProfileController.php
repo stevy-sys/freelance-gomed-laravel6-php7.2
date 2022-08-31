@@ -1443,9 +1443,9 @@ class ProfileController extends Controller
             return response()->json($response, 404);
         }
         $data = User::find($request->id);
-        $data['balance'] = $data->balance;
+        $datas['balance'] = $data;
         $response = [
-            'data'=>$data,
+            'data'=>$datas,
             'success' => true,
             'status' => 200,
         ];

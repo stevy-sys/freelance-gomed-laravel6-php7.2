@@ -19,6 +19,7 @@
         "laravel/tinker": "^1.0",
         "lcobucci/jwt": "3.3",
         "rachidlaasri/laravel-installer": "^4.1",
+        "spatie/simple-excel": "^1.13",
         "stripe/stripe-php": "^7.110",
         "tymon/jwt-auth": "1.0.0-rc.5"
     },

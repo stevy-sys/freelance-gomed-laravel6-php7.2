@@ -336,7 +336,7 @@ class PaymentsController extends Controller
             return response()->json($response, 404);
         }
         $razorKey = $credsData->key;
-        $razorSecret = $credsData->secret;
+        // $razorSecret = $credsData->secret;
         $response = [
             'data' => $razorKey,
             'success' => true,
@@ -345,65 +345,64 @@ class PaymentsController extends Controller
         return response()->json($response, 200);
     }
 
-    // public function createStripeToken(Request $request)
-    // {
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'email' => 'required',
-    //             'number' => 'required',
-    //             'exp_month' => 'required',
-    //             'exp_year' => 'required',
-    //             'cvc' => 'required',
-    //         ]);
-    //         if ($validator->fails()) {
-    //             $response = [
-    //                 'success' => false,
-    //                 'message' => 'Validation Error.', $validator->errors(),
-    //                 'status' => 500
-    //             ];
-    //             return response()->json($response, 404);
-    //         }
-    //         $payCreds = DB::table('payments')
-    //             ->select('*')->where('id', 2)->first();
-    //         if (is_null($payCreds) || is_null($payCreds->creds)) {
-    //             $response = [
-    //                 'success' => false,
-    //                 'message' => 'Payment issue please contact administrator',
-    //                 'status' => 404
-    //             ];
-    //             return response()->json($response, 404);
-    //         }
-    //         $credsData = json_decode($payCreds->creds);
-    //         if (is_null($credsData) || is_null($credsData->secret)) {
-    //             $response = [
-    //                 'success' => false,
-    //                 'message' => 'Payment issue please contact administrator',
-    //                 'status' => 404
-    //             ];
-    //             return response()->json($response, 404);
-    //         }
-    //         $stripe = new \Stripe\StripeClient(
-    //             $credsData->secret
-    //         );
-    //         $data = $stripe->tokens->create([
-    //             'card' => [
-    //                 'number' => $request->number,
-    //                 'exp_month' => $request->exp_month,
-    //                 'exp_year' => $request->exp_year,
-    //                 'cvc' => $request->cvc,
-    //             ],
-    //         ]);
-    //         $response = [
-    //             'success' => $data,
-    //             'message' => 'success',
-    //             'status' => 200
-    //         ];
-    //         return response()->json($response, 200);
-    //     } catch (Exception $e) {
-    //         return response()->json($e->getMessage(), 200);
-    //     }
-    // }
-
+    public function createStripeToken(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required',
+                'number' => 'required',
+                'exp_month' => 'required',
+                'exp_year' => 'required',
+                'cvc' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Validation Error.', $validator->errors(),
+                    'status'=> 500
+                ];
+                return response()->json($response, 404);
+            }
+            $payCreds = DB::table('payments')
+            ->select('*')->where('id',2)->first();
+           
+            if (is_null($payCreds) || is_null($payCreds->creds)) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Payment issue please contact administrator',
+                    'status' => 404
+                ];
+                return response()->json($response, 404);
+            }
+            $credsData = json_decode($payCreds->creds);
+            if(is_null($credsData) || is_null($credsData->secret)){
+                $response = [
+                    'success' => false,
+                    'message' => 'Payment issue please contact administrator',
+                    'status' => 404
+                ];
+                return response()->json($response, 404);
+            }
+            $stripe = new \Stripe\StripeClient( 
+                $credsData->secret
+            );
+            $data = $stripe->tokens->create([
+                'card' => [
+                    'number' => $request->number,
+                    'exp_month' => $request->exp_month,
+                    'exp_year' => $request->exp_year,
+                    'cvc' => $request->cvc,
+                ],
+            ]);
+            $response = [
+                'success' => $data,
+                'message' => 'success',
+                'status' => 200
+            ];
+            return response()->json($response, 200);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(),200);
+        }
+    }
     public function payWithStripe()
     {
         $stripe = new \Stripe\StripeClient(
