@@ -113,7 +113,7 @@ Route::prefix('/v1')->group(function () {
         });
 
         // Payments Routes For Users
-        Route::post('payments/createStripeToken', [PaymentsController::class, 'payWithStripe']);
+        Route::post('payments/createStripeToken', [PaymentsController::class, 'createStripeToken']);
         Route::post('payments/createCustomer', [PaymentsController::class, 'createCustomer']);
         Route::post('payments/getStripeCards', [PaymentsController::class, 'getStripeCards']);
         Route::post('payments/addStripeCards', [PaymentsController::class, 'addStripeCards']);
