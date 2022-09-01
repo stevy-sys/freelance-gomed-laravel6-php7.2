@@ -9,44 +9,45 @@
 */
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\v1\Auth\AuthController;
-use App\Http\Controllers\v1\Auth\RegisterController;
-use App\Http\Controllers\v1\Profile\ProfileController;
-use App\Http\Controllers\v1\Auth\LogoutController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\v1\OtpController;
+use App\Http\Controllers\v1\TvaController;
+use App\Http\Controllers\v1\FlushController;
+use App\Http\Controllers\v1\PagesController;
+use App\Http\Controllers\v1\PopupController;
 use App\Http\Controllers\v1\UsersController;
-use App\Http\Controllers\v1\AddressController;
-use App\Http\Controllers\v1\BannersController;
-use App\Http\Controllers\v1\CategoryController;
-use App\Http\Controllers\v1\ChatMessagesController;
-use App\Http\Controllers\v1\ChatRoomsController;
 use App\Http\Controllers\v1\CitiesController;
-use App\Http\Controllers\v1\ContactsController;
-use App\Http\Controllers\v1\DriversController;
-use App\Http\Controllers\v1\FavouriteController;
-use App\Http\Controllers\v1\GeneralController;
 use App\Http\Controllers\v1\ManageController;
 use App\Http\Controllers\v1\OffersController;
 use App\Http\Controllers\v1\OrdersController;
-use App\Http\Controllers\v1\OtpController;
-use App\Http\Controllers\v1\ProductsController;
-use App\Http\Controllers\v1\RatingsController;
 use App\Http\Controllers\v1\StoresController;
-use App\Http\Controllers\v1\SubCategoryController;
-use App\Http\Controllers\v1\SubscriberController;
-use App\Http\Controllers\v1\PaytmPayController;
+use App\Http\Controllers\v1\AddressController;
+use App\Http\Controllers\v1\BannersController;
+use App\Http\Controllers\v1\DriversController;
+use App\Http\Controllers\v1\GeneralController;
+use App\Http\Controllers\v1\RatingsController;
+use App\Http\Controllers\v1\CategoryController;
+use App\Http\Controllers\v1\ContactsController;
 use App\Http\Controllers\v1\PaymentsController;
-use App\Http\Controllers\v1\LanguagesController;
-use App\Http\Controllers\v1\PagesController;
-use App\Http\Controllers\v1\PopupController;
-use App\Http\Controllers\v1\SettingsController;
-use App\Http\Controllers\v1\ReferralCodesController;
+use App\Http\Controllers\v1\PaytmPayController;
+use App\Http\Controllers\v1\ProductsController;
 use App\Http\Controllers\v1\ReferralController;
-use App\Http\Controllers\v1\StoreRequestController;
+use App\Http\Controllers\v1\SettingsController;
+use App\Http\Controllers\v1\Auth\AuthController;
+use App\Http\Controllers\v1\ChatRoomsController;
+use App\Http\Controllers\v1\FavouriteController;
+use App\Http\Controllers\v1\LanguagesController;
+use App\Http\Controllers\v1\SubscriberController;
+use App\Http\Controllers\v1\Auth\LogoutController;
 use App\Http\Controllers\v1\ComplaintsController;;
+use App\Http\Controllers\v1\SubCategoryController;
+use App\Http\Controllers\v1\ChatMessagesController;
+use App\Http\Controllers\v1\StoreRequestController;
 
+use App\Http\Controllers\v1\Auth\RegisterController;
 use App\Http\Controllers\v1\DriverRequestController;
-use App\Http\Controllers\v1\FlushController;
-use App\Http\Controllers\v1\TvaController;
+use App\Http\Controllers\v1\ReferralCodesController;
+use App\Http\Controllers\v1\Profile\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
