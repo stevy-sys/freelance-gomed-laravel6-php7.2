@@ -591,8 +591,8 @@ class PaymentsController extends Controller
                 'currency' => 'required',
                 'customer' => 'required',
                 'card' => 'required',
-                'receive' => 'required', //'home' or 'self'
-                'description' => 'required'
+                // 'receive' => 'required', //'home' or 'self'
+                // 'description' => 'required'
             ]);
             if ($validator->fails()) {
                 $response = [
@@ -624,13 +624,13 @@ class PaymentsController extends Controller
             $stripe = new \Stripe\StripeClient(
                 $credsData->secret
             );
-            $amount = $request->receive == 'home' ? $request->amount + 20 : $request->amount + 40 ;  
+            // $amount = $request->receive == 'home' ? $request->amount + 20 : $request->amount + 40 ;  
             $data = $stripe->charges->create([
-                'amount' => $amount,
+                'amount' => $request->amount,
                 'currency' => $request->currency,
                 'source' => $request->card,
                 'customer' => $request->customer,
-                'description' => $request->description,
+                'description' => 'food',
             ]); 
             $response = [
                 'success' => $data,
