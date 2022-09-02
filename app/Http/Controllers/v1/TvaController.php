@@ -43,7 +43,19 @@ class TvaController extends Controller
                     'message' => 'countrie and tva required'
                 ],400);
             }
-            $tva->update(['countrie' => $request->countrie , 'TVA' => $request->tva]);
+
+            if ($tva->countrie !=  $request->countrie) {
+                $isExiste = Tva::where('countrie',$request->countrie)->first();
+                if (isset($isExiste)) {
+                    return response()->json([
+                        'message' => 'Countrie already existed',
+                        'data' => []
+                    ],201);
+                }else{
+                    $tva->update(['countrie' => $request->countrie , 'TVA' => $request->tva]);
+                }
+            }
+
             $this->createNewCsv();
             return response()->json([
                 'message' => 'TVA updated',
