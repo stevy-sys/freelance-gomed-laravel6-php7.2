@@ -9,23 +9,26 @@
 */
 namespace App\Http\Controllers\v1;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use DB;
+use Validator;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Orders;
 use App\Models\Stores;
-use App\Models\Products;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use App\Models\General;
-use App\Models\Complaints;
 use App\Models\Drivers;
-use Carbon\Carbon;
-use Validator;
-use DB;
+use App\Models\General;
+use App\Models\Products;
+use App\Mail\CommandeMail;
+use App\Models\Complaints;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Exceptions\JWTException;
+
 class OrdersController extends Controller
 {
     public function save(Request $request){
@@ -333,6 +336,15 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
+    // public function getOrderInMyStore(){
+    //     $response = Orders::whereHas('store',function ($query){
+    //         $query->whereHas('user',function ($q){
+    //             $q->where('id',Auth::id());
+    //         });
+    //     })->with('user:id,first_name')->get(['id','uid','date_time','grand_total','order_to']);
+    //     return response()->json($response, 200);
+    // }
+
     public function getByDriverIdForApp(Request $request){
         $validator = Validator::make($request->all(), [
             'id' => 'required',
@@ -495,11 +507,14 @@ class OrdersController extends Controller
         ->join('users', 'orders.uid', '=', 'users.id')
         ->where('orders.id',$request->id)
         ->first();
+
         $general = General::first();
         $addres ='';
         if($data->order_to =='home'){
             $compressed = json_decode($data->address);
-            $addres = $compressed->house .' '.$compressed->landmark .' '.$compressed->address .' '.$compressed->pincode;
+            if (isset($compressed)) {
+                $addres = $compressed->house .' '.$compressed->landmark .' '.$compressed->address .' '.$compressed->pincode;
+            }
         }
         $data->orders = json_decode($data->orders);
         $response = [
@@ -511,13 +526,13 @@ class OrdersController extends Controller
         $mail = $data->user_email;
         $username = $data->user_first_name;
         $subject = 'Order Status';
-        $response = Mail::send('mails/orders',
-            $response
-            , function($message) use($mail,$username,$subject,$general){
-            $message->to($mail, $username)
-            ->subject($subject);
-            $message->from(env('MAIL_USERNAME'),$general->name);
-        });
+        Mail::to($mail)->send(new CommandeMail($response,$subject));
+
+        // $response = Mail::send('mails/orders', $response , function($message) use($mail,$username,$subject,$general){
+        //     $message->to($mail, $username)->subject($subject);
+        //     $message->from(env('MAIL_USERNAME'),$general->name);
+        // });
+       
         $response = [
             'success' => $response,
             'message' => 'success',

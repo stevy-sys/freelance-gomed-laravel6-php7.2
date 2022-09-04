@@ -39,7 +39,7 @@ use App\Http\Controllers\v1\FavouriteController;
 use App\Http\Controllers\v1\LanguagesController;
 use App\Http\Controllers\v1\SubscriberController;
 use App\Http\Controllers\v1\Auth\LogoutController;
-use App\Http\Controllers\v1\ComplaintsController;;
+use App\Http\Controllers\v1\ComplaintsController;
 use App\Http\Controllers\v1\SubCategoryController;
 use App\Http\Controllers\v1\ChatMessagesController;
 use App\Http\Controllers\v1\StoreRequestController;

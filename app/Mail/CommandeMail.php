@@ -11,14 +11,16 @@ class CommandeMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $data ;
+    public $subject ;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct($data,$subject)
     {
-        $this->data = $data;
+        $this->data = $data['data'];
+        $this->subject = $subject; 
     }
 
     /**
@@ -28,8 +30,8 @@ class CommandeMail extends Mailable
      */
     public function build()
     {
-        return $this->from('tes@gmail.com')
-                    ->view('mails.commande')
-                    ->with(['data' => $this->data]);
+        return $this->from(env('MAIL_USERNAME'))
+                    ->subject($this->subject)
+                    ->view('mails.orders');
     }
 }
