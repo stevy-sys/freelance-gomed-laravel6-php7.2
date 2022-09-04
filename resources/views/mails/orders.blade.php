@@ -344,7 +344,7 @@
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #44464a; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																		<p style="margin: 0; font-size: 14px;">Delivery
-																			Address: <span style="text-transform:capitalize">{{$delivery}}</span> </p>
+																			Address: <span style="text-transform:capitalize">{{$data->delivery_charge}}</span> </p>
 																	</div>
 																</div>
 															</td>
@@ -1482,8 +1482,8 @@
 																		<p
 																			style="margin: 0; font-size: 14px; text-align: center;">
 																			For Any issue? contact our support team at
-																			<a
-																				href="mailto:{{$email}}">{{$email}}</a>
+																			{{-- <a
+																				href="mailto:{{$email}}">{{$email}}</a> --}}
 																		</p>
 																	</div>
 																</div>
