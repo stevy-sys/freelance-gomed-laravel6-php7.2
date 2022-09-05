@@ -30,4 +30,12 @@ class Stores extends Model
         'verified' => 'integer',
         'isClosed' => 'integer',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class,'uid');
+    }
+
+    public function orders(){
+        return $this->hasMany(Orders::class,'store_id');
+    }
 }

@@ -81,6 +81,18 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
+    public function getAllOrderInMyStore(){
+        $data = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to']);
+        $response = [
+            'data'=>$data,
+            'success' => true,
+            'status' => 200,
+        ];
+        return response()->json($response, 200);
+    }
+
     public function getById(Request $request){
         $validator = Validator::make($request->all(), [
             'id' => 'required',

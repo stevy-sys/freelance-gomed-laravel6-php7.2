@@ -418,6 +418,7 @@ Route::prefix('/v1')->group(function () {
 
     Route::group(['middleware' => ['store_auth', 'jwt.auth']], function () {
         Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']);
+        Route::get('orders/getAllOrderInMyStore', [OrdersController::class, 'getAllOrderInMyStore']);
         Route::post('orders/getByIdFromStore', [OrdersController::class, 'getByIdFromStore']);
         Route::post('orders/updateStatusStore', [OrdersController::class, 'updateStatusStore']);
 

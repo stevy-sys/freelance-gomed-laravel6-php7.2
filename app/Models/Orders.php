@@ -29,4 +29,12 @@ class Orders extends Model
         'wallet_used' => 'integer',
         'payStatus' => 'integer'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class,'uid');
+    }
+
+    public function store(){
+        return $this->belongsTo(Stores::class,'store_id');
+    }
 }
