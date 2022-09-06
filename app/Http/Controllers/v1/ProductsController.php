@@ -10,18 +10,19 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Products;
-use App\Models\Banners;
-use App\Models\Category;
-use App\Models\Settings;
-use App\Models\SubCategory;
-use App\Models\Stores;
-use App\Models\Cities;
+use DB;
 use Validator;
 use Carbon\Carbon;
-use DB;
+use App\Models\Cities;
+use App\Models\Stores;
+use App\Models\Banners;
+use App\Models\Category;
+use App\Models\Products;
+use App\Models\Settings;
+use App\Models\SubCategory;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller
 {
@@ -67,7 +68,10 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Products::create($request->all());
+        $data = $request->all();
+        $data['store_id'] = Auth::user()->store->id ;
+
+        $data = Products::create($data);
         if (is_null($data)) {
             $response = [
                 'data' => $data,
@@ -514,8 +518,8 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $data = Products::where(['store_id' => $request->id])->orderBy('name', 'asc')->limit($request->limit)->get();
         $storeInfo = Stores::select('id', 'uid', 'name', 'status', 'zipcode', 'cid')->where('uid', $request->id)->first();
+        $data = Products::where(['store_id' => $storeInfo->id])->orderBy('name', 'asc')->limit($request->limit)->get();
         $response = [
             'data' => $data,
             'storeInfo' => $storeInfo,

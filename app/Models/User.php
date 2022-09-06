@@ -71,4 +71,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail,Wallet
     {
         $this->notify(new \App\Notifications\MailResetPasswordNotification($token));
     }
+
+    public function store(){
+        return $this->hasOne(Stores::class,'uid');
+    }
 }

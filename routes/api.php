@@ -39,7 +39,7 @@ use App\Http\Controllers\v1\FavouriteController;
 use App\Http\Controllers\v1\LanguagesController;
 use App\Http\Controllers\v1\SubscriberController;
 use App\Http\Controllers\v1\Auth\LogoutController;
-use App\Http\Controllers\v1\ComplaintsController;;
+use App\Http\Controllers\v1\ComplaintsController;
 use App\Http\Controllers\v1\SubCategoryController;
 use App\Http\Controllers\v1\ChatMessagesController;
 use App\Http\Controllers\v1\StoreRequestController;
@@ -418,6 +418,7 @@ Route::prefix('/v1')->group(function () {
 
     Route::group(['middleware' => ['store_auth', 'jwt.auth']], function () {
         Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']);
+        Route::get('orders/getAllOrderInMyStore', [OrdersController::class, 'getAllOrderInMyStore']);
         Route::post('orders/getByIdFromStore', [OrdersController::class, 'getByIdFromStore']);
         Route::post('orders/updateStatusStore', [OrdersController::class, 'updateStatusStore']);
 

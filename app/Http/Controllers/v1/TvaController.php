@@ -54,6 +54,8 @@ class TvaController extends Controller
                 }else{
                     $tva->update(['countrie' => $request->countrie , 'TVA' => $request->tva]);
                 }
+            }else{
+                $tva->update(['countrie' => $request->countrie , 'TVA' => $request->tva]);
             }
 
             $this->createNewCsv();
