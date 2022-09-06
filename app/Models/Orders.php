@@ -16,6 +16,7 @@ class Orders extends Model
     protected $table = 'orders';
 
     public $timestamps = true; //by default timestamp false
+    protected $appends = ['product'];
 
     protected $fillable = ['uid','store_id','date_time','paid_method','order_to','orders','notes','address',
     'driver_id','assignee','total','tax','grand_total','discount','delivery_charge','wallet_used','wallet_price',
@@ -36,5 +37,10 @@ class Orders extends Model
 
     public function store(){
         return $this->belongsTo(Stores::class,'store_id');
+    }
+
+    public function getProductAttribute()
+    {
+        return json_decode($this->orders);
     }
 }
