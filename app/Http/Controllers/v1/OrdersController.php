@@ -50,7 +50,8 @@ class OrdersController extends Controller
             'extra' => 'required',
             'pay_key' => 'required',
             'status' => 'required',
-            'payStatus' => 'required'
+            'payStatus' => 'required',
+            // 'type_receive' => 'required'
         ]);
         if ($validator->fails()) {
             $response = [
@@ -94,7 +95,7 @@ class OrdersController extends Controller
     public function getAllOrderInMyStore(){
         $data = Orders::whereHas('store',function ($q){
             $q->where('uid',Auth::id());
-        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at']);
+        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
         $response = [
             'data'=>$data,
             'success' => true,
