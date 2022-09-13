@@ -84,7 +84,7 @@ class OrdersController extends Controller
     public function getAllOrderInMyStore(){
         $data = Orders::whereHas('store',function ($q){
             $q->where('uid',Auth::id());
-        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to']);
+        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at']);
         $response = [
             'data'=>$data,
             'success' => true,
