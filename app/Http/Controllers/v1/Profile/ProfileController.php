@@ -9,26 +9,27 @@
 */
 namespace App\Http\Controllers\v1\Profile;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\Profile\UpdateProfileRequest;
-use App\Http\Requests\Profile\UpdatePassword;
-use App\Http\Resources\User as UserResource;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use App\Models\Drivers;
-use App\Models\Stores;
+use DB;
+use Artisan;
+use Validator;
+use Carbon\Carbon;
 use App\Models\Otp;
+use App\Models\User;
+use App\Models\Stores;
+use App\Models\Drivers;
 use App\Models\General;
 use App\Models\Settings;
 use App\Models\Favourite;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use App\Mail\MailCreateAccount;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use Validator;
-use DB;
-use Artisan;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\User as UserResource;
+use App\Http\Requests\Profile\UpdatePassword;
+use App\Http\Requests\Profile\UpdateProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -1401,20 +1402,22 @@ class ProfileController extends Controller
                 'email'=>$request->email,
                 'status'=>0,
             ]);
-            $mailTo = Mail::send('mails/register',
-                [
-                    'app_name'      =>$generalInfo->name,
-                    'otp'          => $otp
-                ]
-                , function($message) use($mail,$username,$subject,$generalInfo){
-                $message->to($mail, $username)
-                ->subject($subject);
-                $message->from(env('MAIL_USERNAME'),$generalInfo->name);
-            });
+
+            Mail::to($mail)->send(new MailCreateAccount($mail,$username,$subject,$generalInfo->name,$otp));
+            // $mailTo = Mail::send('mails/register',
+            //     [
+            //         'app_name'      =>$generalInfo->name,
+            //         'otp'          => $otp
+            //     ]
+            //     , function($message) use($mail,$username,$subject,$generalInfo){
+            //     $message->to($mail, $username)
+            //     ->subject($subject);
+            //     $message->from(env('MAIL_USERNAME'),$generalInfo->name);
+            // });
 
             $response = [
                 'data'=>true,
-                'mail'=>$mailTo,
+                'mail'=>null,
                 'otp_id'=>$savedOTP->id,
                 'success' => true,
                 'status' => 200,
