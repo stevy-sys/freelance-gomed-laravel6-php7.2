@@ -21,10 +21,12 @@ use App\Models\Products;
 use App\Mail\CommandeMail;
 use App\Models\Complaints;
 use Illuminate\Http\Request;
+use App\Jobs\RappelOrderStore;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Bus\Dispatcher;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -59,10 +61,12 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Orders::create($request->all());
-        if (is_null($data)) {
+        $order = Orders::create($request->all());
+        
+
+        if (is_null($order)) {
             $response = [
-                'data'=>$data,
+                'data'=>$order,
                 'message' => 'error',
                 'status' => 500,
             ];
@@ -73,8 +77,14 @@ class OrdersController extends Controller
             $redeemer->withdraw($request->wallet_price);
         }
 
+        $store = Stores::find($request->store_id);
+        $userStore = User::find($store->uid);
+        $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(1));
+        $id = app(Dispatcher::class)->dispatch($jobs);
+        $order->update(['queue_id' => $id]);
+
         $response = [
-            'data'=>$data,
+            'data'=>$order,
             'success' => true,
             'status' => 200,
         ];
@@ -84,7 +94,7 @@ class OrdersController extends Controller
     public function getAllOrderInMyStore(){
         $data = Orders::whereHas('store',function ($q){
             $q->where('uid',Auth::id());
-        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at']);
+        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at']);
         $response = [
             'data'=>$data,
             'success' => true,
@@ -138,9 +148,9 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Orders::find($request->id);
+        $order = Orders::find($request->id);
 
-        if (is_null($data)) {
+        if (is_null($order)) {
             $response = [
                 'success' => false,
                 'message' => 'Data not found.',
@@ -149,9 +159,15 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
+        $jobs = DB::table('jobs')->whereId($order->queue_id);
+        if (isset($jobs)) {
+            $jobs->delete();
+        }
+        $order->update(['display_at'=>Carbon::now()]);
+
         $response = [
-            'data'=>$data,
-            'user'=>User::find($data->uid),
+            'data'=>$order,
+            'user'=>User::find($order->uid),
             'success' => true,
             'status' => 200,
         ];
