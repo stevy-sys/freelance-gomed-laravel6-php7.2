@@ -592,7 +592,7 @@ class PaymentsController extends Controller
                 'currency' => 'required',
                 'customer' => 'required',
                 'card' => 'required',
-                // 'receive' => 'required', //'home' or 'self'
+                // 'type_receive' => 'required', //'standard' or 'express'
                 // 'description' => 'required'
             ]);
             if ($validator->fails()) {
@@ -625,7 +625,10 @@ class PaymentsController extends Controller
             $stripe = new \Stripe\StripeClient(
                 $credsData->secret
             );
-            // $amount = $request->receive == 'home' ? $request->amount + 20 : $request->amount + 40 ;  
+            // $amount = $request->type_receive == 'standard' ? $request->amount + 20 : $request->amount + 40 ;  
+            //  $withoutCharge = 
+            
+
             $data = $stripe->charges->create([
                 'amount' => $request->amount,
                 'currency' => $request->currency,
