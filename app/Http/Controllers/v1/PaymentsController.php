@@ -366,6 +366,7 @@ class PaymentsController extends Controller
             ->select('*')->where('id',2)->first();
            
             if (is_null($payCreds) || is_null($payCreds->creds)) {
+                var_dump('test');
                 $response = [
                     'success' => false,
                     'message' => 'Payment issue please contact administrator',
