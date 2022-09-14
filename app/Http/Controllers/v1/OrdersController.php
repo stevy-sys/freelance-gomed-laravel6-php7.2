@@ -92,10 +92,43 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
-    public function getAllOrderInMyStore(){
-        $data = Orders::whereHas('store',function ($q){
+    public function getAllOrderInMyStore(Request $request){
+        $all = Orders::whereHas('store',function ($q){
             $q->where('uid',Auth::id());
         })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $open = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->whereNull('display_at')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $valide = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->whereNotNull('display_at')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $data['all'] = $all;
+        $data['open'] = $open;
+        $data['valide'] = $valide;
+        $response = [
+            'data'=>$data,
+            'success' => true,
+            'status' => 200,
+        ];
+        return response()->json($response, 200);
+    }
+
+    public function searchOrderInMyStore(Request $request){
+        $query = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id()); 
+        })->with('user:id,first_name');
+        $query = $query->whereHas('user',function ($q) use($request){
+            $q->where('first_name','LIKE','%'.$request->search.'%');
+        })->orWhere('order_to','LIKE','%'.$request->search.'%')
+        ->orWhere('type_receive','LIKE','%'.$request->search.'%');
+        if ($request->type == 'open') {
+            $query = $query->whereNull('display_at');
+        }
+        if ($request->type == 'valide') {
+            $query = $query->whereNull('display_at');
+        }
+        $data = $query->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+
         $response = [
             'data'=>$data,
             'success' => true,
