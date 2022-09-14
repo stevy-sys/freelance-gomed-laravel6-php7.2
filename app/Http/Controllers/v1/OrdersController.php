@@ -114,23 +114,33 @@ class OrdersController extends Controller
     }
 
     public function searchOrderInMyStore(Request $request){
-        $query = Orders::whereHas('store',function ($q){
-            $q->where('uid',Auth::id()); 
-        })->with('user:id,first_name');
-        $query = $query->whereHas('user',function ($q) use($request){
+        $store = Stores::where('uid',Auth::id())->first();
+        $data = Orders::WhereHas('user',function ($q) use($request){
             $q->where('first_name','LIKE','%'.$request->search.'%');
         })->orWhere('order_to','LIKE','%'.$request->search.'%')
-        ->orWhere('type_receive','LIKE','%'.$request->search.'%');
-        if ($request->type == 'open') {
-            $query = $query->whereNull('display_at');
-        }
-        if ($request->type == 'valide') {
-            $query = $query->whereNull('display_at');
-        }
-        $data = $query->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        ->orWhere('type_receive','LIKE','%'.$request->search.'%')
+        ->with('user:id,first_name')->get();
 
+        $data = $data->filter(function ($item) use ($store) {
+            return $item->store_id == $store->id ; 
+        });
+
+        if (isset($request->type) && $request->type == 'open') {
+            $data = $data->filter(function ($item) {
+                return $item->display_at == null ;
+            });
+        }
+        if (isset($request->type) && $request->type == 'valide') {
+            $data = $data->filter(function ($item) {
+                return $item->display_at != null ;
+            });
+        }
+        $dataTemp = [] ;
+        foreach ($data as $data) {
+            $dataTemp[] = $data ;
+        }
         $response = [
-            'data'=>$data,
+            'data'=> $dataTemp,
             'success' => true,
             'status' => 200,
         ];
