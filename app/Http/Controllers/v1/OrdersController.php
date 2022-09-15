@@ -92,12 +92,96 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
-    public function getAllOrderInMyStore(){
-        $data = Orders::whereHas('store',function ($q){
+    public function getAllOrderInMyStore(Request $request){
+        $all = Orders::whereHas('store',function ($q){
             $q->where('uid',Auth::id());
         })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $open = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->whereNull('display_at')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $valide = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->whereNotNull('display_at')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $data['all'] = $all;
+        $data['open'] = $open;
+        $data['valide'] = $valide;
         $response = [
             'data'=>$data,
+            'success' => true,
+            'status' => 200,
+        ];
+        return response()->json($response, 200);
+    }
+
+    public function actionOrder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => 'Validation Error.', $validator->errors(),
+                'status'=> 500
+            ];
+            return response()->json($response, 404);
+        }
+
+        $order = Orders::find($request->id);
+        if ($request->status == 'accepted') {
+            $order->update(['status' => 'accepted','display_at'=>Carbon::now()]);
+        }
+        else{
+            $order->update(['status' => 'rejected','display_at'=>Carbon::now()]);
+        }
+
+        $jobs = DB::table('jobs')->whereId($order->queue_id);
+        if (isset($jobs)) {
+            $jobs->delete();
+        }
+        
+        $response = [
+            'data'=>$order,
+            'success' => true,
+            'status' => 200,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function searchOrderInMyStore(Request $request){
+        $store = Stores::where('uid',Auth::id())->first();
+        $data = Orders::WhereHas('user',function ($q) use($request){
+            $q->where('first_name','LIKE','%'.$request->search.'%');
+        })->orWhere('order_to','LIKE','%'.$request->search.'%')
+        ->orWhere('type_receive','LIKE','%'.$request->search.'%')
+        ->orWhereDay('created_at',$request->search)
+        ->orWhereMonth('created_at',$request->search)
+        ->orWhereYear('created_at',$request->search)
+        ->orWhere('id',$request->search)
+        ->with('user:id,first_name')->get();
+
+        $data = $data->filter(function ($item) use ($store) {
+            return $item->store_id == $store->id ; 
+        });
+
+        if (isset($request->type) && $request->type == 'open') {
+            $data = $data->filter(function ($item) {
+                return $item->display_at == null ;
+            });
+        }
+        if (isset($request->type) && $request->type == 'valide') {
+            $data = $data->filter(function ($item) {
+                return $item->display_at != null ;
+            });
+        }
+        $dataTemp = [] ;
+        foreach ($data as $data) {
+            $dataTemp[] = $data ;
+        }
+        $response = [
+            'data'=> $dataTemp,
             'success' => true,
             'status' => 200,
         ];
@@ -159,12 +243,6 @@ class OrdersController extends Controller
             ];
             return response()->json($response, 404);
         }
-
-        $jobs = DB::table('jobs')->whereId($order->queue_id);
-        if (isset($jobs)) {
-            $jobs->delete();
-        }
-        $order->update(['display_at'=>Carbon::now()]);
 
         $response = [
             'data'=>$order,
