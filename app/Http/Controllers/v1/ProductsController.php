@@ -140,6 +140,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $data = $request->all() ;
+        $data['store_id'] = Auth::user()->store->id ;
         if (isset($request->tva)) {
             $data['tva_id'] = $request->tva ;
         }
