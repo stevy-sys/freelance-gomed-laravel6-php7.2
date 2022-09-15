@@ -113,6 +113,43 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
+    public function actionOrder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => 'Validation Error.', $validator->errors(),
+                'status'=> 500
+            ];
+            return response()->json($response, 404);
+        }
+
+        $order = Orders::find($request->id);
+        if ($request->status == 'accepted') {
+            $order->update(['status' => 'accepted','display_at'=>Carbon::now()]);
+        }
+        else{
+            $order->update(['status' => 'rejected','display_at'=>Carbon::now()]);
+        }
+
+        $jobs = DB::table('jobs')->whereId($order->queue_id);
+        if (isset($jobs)) {
+            $jobs->delete();
+        }
+        
+        $response = [
+            'data'=>$order,
+            'success' => true,
+            'status' => 200,
+        ];
+
+        return response()->json($response, 200);
+    }
+
     public function searchOrderInMyStore(Request $request){
         $store = Stores::where('uid',Auth::id())->first();
         $data = Orders::WhereHas('user',function ($q) use($request){
@@ -206,12 +243,6 @@ class OrdersController extends Controller
             ];
             return response()->json($response, 404);
         }
-
-        $jobs = DB::table('jobs')->whereId($order->queue_id);
-        if (isset($jobs)) {
-            $jobs->delete();
-        }
-        $order->update(['display_at'=>Carbon::now()]);
 
         $response = [
             'data'=>$order,
