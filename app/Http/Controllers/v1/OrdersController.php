@@ -77,13 +77,14 @@ class OrdersController extends Controller
             $redeemer = User::where('id',$request->uid)->first();
             $redeemer->withdraw($request->wallet_price);
         }
-
+        $order->orders = json_decode($order->orders);
         $store = Stores::find($request->store_id);
         $userStore = User::find($store->uid);
-        $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(1));
+        $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(3));
         $id = app(Dispatcher::class)->dispatch($jobs);
         $order->update(['queue_id' => $id]);
 
+        $order->orders = json_encode($order->orders);
         $response = [
             'data'=>$order,
             'success' => true,

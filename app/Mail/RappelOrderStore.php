@@ -11,6 +11,8 @@ class RappelOrderStore extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $data;
+    public $user;
     /**
      * Create a new message instance.
      *
@@ -18,8 +20,9 @@ class RappelOrderStore extends Mailable
      */
     public function __construct($user,$order)
     {
+        $order->orders = json_decode($order->orders);
         $this->user = $user;
-        $this->order = $order;
+        $this->data = $order;
     }
 
     /**
@@ -29,6 +32,7 @@ class RappelOrderStore extends Mailable
      */
     public function build()
     {
-        return $this->view('mails.rappel-order');
+        return $this->from(env('MAIL_USERNAME'))
+                    ->view('mails.rappel-order');
     }
 }
