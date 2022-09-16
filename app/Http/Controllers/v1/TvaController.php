@@ -14,6 +14,11 @@ class TvaController extends Controller
     private $mainFilename = 'tva';
     private $newTVA = [];
 
+
+    public function searchTva(Request $request){
+        return Tva::where('countrie',$request->country)->first();
+    }
+
     public function getAllTvaWithCountrie()
     {
         try {

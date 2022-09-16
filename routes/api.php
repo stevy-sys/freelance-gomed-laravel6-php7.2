@@ -182,6 +182,9 @@ Route::prefix('/v1')->group(function () {
 
         Route::post('ratings/getByDriverId', [RatingsController::class, 'getByDriverId']);
         Route::post('ratings/saveDriversRatings', [RatingsController::class, 'saveDriversRatings']);
+
+        Route::post('search/mytva', [TvaController::class, 'searchTva']);
+
     });
 
     Route::group(['namespace' => 'Profile'], function () {
