@@ -233,7 +233,7 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $order = Orders::find($request->id);
+        $order = Orders::with('user')->find($request->id);
 
         if (is_null($order)) {
             $response = [
