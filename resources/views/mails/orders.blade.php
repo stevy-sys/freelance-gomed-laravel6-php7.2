@@ -184,7 +184,7 @@
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #787771; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																		<p
 																			style="margin: 0; font-size: 14px; text-align: right;">
-																			INVOICE NO {{$data->id}}</p>
+																			Commande NO {{$data->id}}</p>
 																	</div>
 																</div>
 															</td>
@@ -224,8 +224,7 @@
 																		style="font-size: 12px; font-family: 'Playfair Display', Georgia, serif; mso-line-height-alt: 14.399999999999999px; color: #44464a; line-height: 1.2;">
 																		<p
 																			style="margin: 0; font-size: 14px; text-align: center;">
-																			<span style="font-size:30px;">Thank you for
-																				your purchase</span>
+																			<span style="font-size:30px;">Merci pour votre commande</span>
 																		</p>
 																	</div>
 																</div>
@@ -243,8 +242,7 @@
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #787771; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																		<p
 																			style="margin: 0; font-size: 14px; text-align: center;">
-																			Thank you for choosing our product. We appreciate your trust and we’ll do our best to meet your expectations.</p>
-
+																			Merci d'avoir choisi notre produit. Nous apprécions votre confiance et nous ferons de notre mieux pour répondre à vos attentes
 																	</div>
 																</div>
 															</td>
@@ -288,8 +286,8 @@
 																<div style="font-family: sans-serif">
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #44464a; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-																		<p style="margin: 0; font-size: 14px;">Order
-																			number: <span
+																		<p style="margin: 0; font-size: 14px;">Commande
+																			numero: <span
 																				style="color:#c4a07a;"><strong>{{$data->id}}</strong></span>
 																		</p>
 																	</div>
@@ -307,7 +305,7 @@
 																<div style="font-family: sans-serif">
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #44464a; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-																		<p style="margin: 0; font-size: 14px;">Invoice
+																		<p style="margin: 0; font-size: 14px;">Commande
 																			Date: {{$data->date_time}}</p>
 																	</div>
 																</div>
@@ -324,7 +322,7 @@
 																<div style="font-family: sans-serif">
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #44464a; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-																		<p style="margin: 0; font-size: 14px;">Order
+																		<p style="margin: 0; font-size: 14px;">Livrer a
 																			To: <span style="text-transform:uppercase">{{$data->order_to}}</span> </p>
 																	</div>
 																</div>
@@ -343,8 +341,8 @@
 																<div style="font-family: sans-serif">
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #44464a; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-																		<p style="margin: 0; font-size: 14px;">Delivery
-																			Address: <span style="text-transform:capitalize">{{$data->delivery_charge}}</span> </p>
+																		<p style="margin: 0; font-size: 14px;">Type
+																			livraison : <span style="text-transform:capitalize">{{$data->type_receive}}</span> </p>
 																	</div>
 																</div>
 															</td>
@@ -480,287 +478,287 @@
 						</tbody>
 					</table>
                     @foreach($data->orders as $order)
-                    @if($order->size == 1)
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-8"
-                            role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content"
-                                            role="presentation"
-                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
-                                            width="680">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="33.333333333333336%">
-                                                        <table border="0" cellpadding="0" cellspacing="0" class="text_block"
-                                                            role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td
-                                                                    style="padding-bottom:15px;padding-left:10px;padding-top:15px;">
-                                                                    <div style="font-family: sans-serif">
-                                                                        <div
-                                                                            style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-                                                                            <p style="margin: 0; font-size: 14px;">
-                                                                                @if($order->variations  && !empty($order->variations))
-                                                                                    {{$order->name}} - {{$order->variations[0]->items[$order->variant]->title}}
-                                                                                @else
-                                                                                    {{$order->name}}
-                                                                                @endif
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="33.333333333333336%">
-                                                        <table border="0" cellpadding="0" cellspacing="0" class="text_block"
-                                                            role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td
-                                                                    style="padding-bottom:15px;padding-left:5px;padding-right:5px;padding-top:15px;">
-                                                                    <div style="font-family: sans-serif">
-                                                                        <div
-                                                                            style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-                                                                            <p
-                                                                                style="margin: 0; font-size: 14px; text-align: center;">
-                                                                                X {{$order->quantiy}}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="33.333333333333336%">
-                                                        <table border="0" cellpadding="0" cellspacing="0" class="text_block"
-                                                            role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td
-                                                                    style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
-                                                                    <div style="font-family: sans-serif">
-                                                                        <div
-                                                                            style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-                                                                            <p
-                                                                                style="margin: 0; font-size: 14px; text-align: right;">
-                                                                                @if($order->variations && !empty($order->variations))
-                                                                                    @if($order->variations[0]->items[$order->variant]->discount > 0)
-                                                                                        $ {{$order->variations[0]->items[$order->variant]->discount}}
-                                                                                    @endif
+						@if($order->size == 1)
+							<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-8"
+								role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+								<tbody>
+									<tr>
+										<td>
+											<table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content"
+												role="presentation"
+												style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
+												width="680">
+												<tbody>
+													<tr>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="33.333333333333336%">
+															<table border="0" cellpadding="0" cellspacing="0" class="text_block"
+																role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+																width="100%">
+																<tr>
+																	<td
+																		style="padding-bottom:15px;padding-left:10px;padding-top:15px;">
+																		<div style="font-family: sans-serif">
+																			<div
+																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
+																				<p style="margin: 0; font-size: 14px;">
+																					@if($order->variations  && !empty($order->variations))
+																						{{$order->name}} - {{$order->variations[0]->items[$order->variant]->title}}
+																					@else
+																						{{$order->name}}
+																					@endif
+																				</p>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="33.333333333333336%">
+															<table border="0" cellpadding="0" cellspacing="0" class="text_block"
+																role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+																width="100%">
+																<tr>
+																	<td
+																		style="padding-bottom:15px;padding-left:5px;padding-right:5px;padding-top:15px;">
+																		<div style="font-family: sans-serif">
+																			<div
+																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
+																				<p
+																					style="margin: 0; font-size: 14px; text-align: center;">
+																					X {{$order->quantiy}}</p>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="33.333333333333336%">
+															<table border="0" cellpadding="0" cellspacing="0" class="text_block"
+																role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+																width="100%">
+																<tr>
+																	<td
+																		style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
+																		<div style="font-family: sans-serif">
+																			<div
+																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
+																				<p
+																					style="margin: 0; font-size: 14px; text-align: right;">
+																					@if($order->variations && !empty($order->variations))
+																						@if($order->variations[0]->items[$order->variant]->discount > 0)
+																							$ {{$order->variations[0]->items[$order->variant]->discount}}
+																						@endif
 
-                                                                                    @if($order->variations[0]->items[$order->variant]->discount <= 0)
-                                                                                        $ {{$order->variations[0]->items[$order->variant]->price}}
-                                                                                    @endif
+																						@if($order->variations[0]->items[$order->variant]->discount <= 0)
+																							$ {{$order->variations[0]->items[$order->variant]->price}}
+																						@endif
 
-                                                                                @endif
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-9"
-                            role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <table align="center" border="0" cellpadding="0" cellspacing="0"
-                                            class="row-content stack" role="presentation"
-                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
-                                            width="680">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="100%">
-                                                        <table border="0" cellpadding="0" cellspacing="0"
-                                                            class="divider_block" role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td>
-                                                                    <div align="center">
-                                                                        <table border="0" cellpadding="0" cellspacing="0"
-                                                                            role="presentation"
-                                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-                                                                            width="100%">
-                                                                            <tr>
-                                                                                <td class="divider_inner"
-                                                                                    style="font-size: 1px; line-height: 1px; border-top: 1px solid #E1ECEF;">
-                                                                                    <span> </span>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @endif
+																					@endif
+																				</p>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-9"
+								role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+								<tbody>
+									<tr>
+										<td>
+											<table align="center" border="0" cellpadding="0" cellspacing="0"
+												class="row-content stack" role="presentation"
+												style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
+												width="680">
+												<tbody>
+													<tr>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="100%">
+															<table border="0" cellpadding="0" cellspacing="0"
+																class="divider_block" role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
+																width="100%">
+																<tr>
+																	<td>
+																		<div align="center">
+																			<table border="0" cellpadding="0" cellspacing="0"
+																				role="presentation"
+																				style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
+																				width="100%">
+																				<tr>
+																					<td class="divider_inner"
+																						style="font-size: 1px; line-height: 1px; border-top: 1px solid #E1ECEF;">
+																						<span> </span>
+																					</td>
+																				</tr>
+																			</table>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						@endif
 
-                    @if($order->size == 0)
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-8"
-                            role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content"
-                                            role="presentation"
-                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
-                                            width="680">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="33.333333333333336%">
-                                                        <table border="0" cellpadding="0" cellspacing="0" class="text_block"
-                                                            role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td
-                                                                    style="padding-bottom:15px;padding-left:10px;padding-top:15px;">
-                                                                    <div style="font-family: sans-serif">
-                                                                        <div
-                                                                            style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-                                                                            <p style="margin: 0; font-size: 14px;">
-                                                                                {{$order->name}}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="33.333333333333336%">
-                                                        <table border="0" cellpadding="0" cellspacing="0" class="text_block"
-                                                            role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td
-                                                                    style="padding-bottom:15px;padding-left:5px;padding-right:5px;padding-top:15px;">
-                                                                    <div style="font-family: sans-serif">
-                                                                        <div
-                                                                            style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-                                                                            <p
-                                                                                style="margin: 0; font-size: 14px; text-align: center;">
-                                                                                X {{$order->quantiy}}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="33.333333333333336%">
-                                                        <table border="0" cellpadding="0" cellspacing="0" class="text_block"
-                                                            role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td
-                                                                    style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
-                                                                    <div style="font-family: sans-serif">
-                                                                        <div
-                                                                            style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-                                                                            <p
-                                                                                style="margin: 0; font-size: 14px; text-align: right;">
-                                                                                @if($order->discount > 0)
-                                                                                   $ {{$order->sell_price}}
-                                                                                @endif
-                                                                                @if($order->discount <= 0)
-                                                                                   $ {{$order->original_price}}
-                                                                                @endif
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-9"
-                            role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <table align="center" border="0" cellpadding="0" cellspacing="0"
-                                            class="row-content stack" role="presentation"
-                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
-                                            width="680">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="column"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
-                                                        width="100%">
-                                                        <table border="0" cellpadding="0" cellspacing="0"
-                                                            class="divider_block" role="presentation"
-                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-                                                            width="100%">
-                                                            <tr>
-                                                                <td>
-                                                                    <div align="center">
-                                                                        <table border="0" cellpadding="0" cellspacing="0"
-                                                                            role="presentation"
-                                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-                                                                            width="100%">
-                                                                            <tr>
-                                                                                <td class="divider_inner"
-                                                                                    style="font-size: 1px; line-height: 1px; border-top: 1px solid #E1ECEF;">
-                                                                                    <span> </span>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @endif
+						@if($order->size == 0)
+							<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-8"
+								role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+								<tbody>
+									<tr>
+										<td>
+											<table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content"
+												role="presentation"
+												style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
+												width="680">
+												<tbody>
+													<tr>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="33.333333333333336%">
+															<table border="0" cellpadding="0" cellspacing="0" class="text_block"
+																role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+																width="100%">
+																<tr>
+																	<td
+																		style="padding-bottom:15px;padding-left:10px;padding-top:15px;">
+																		<div style="font-family: sans-serif">
+																			<div
+																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
+																				<p style="margin: 0; font-size: 14px;">
+																					{{$order->name}}
+																				</p>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="33.333333333333336%">
+															<table border="0" cellpadding="0" cellspacing="0" class="text_block"
+																role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+																width="100%">
+																<tr>
+																	<td
+																		style="padding-bottom:15px;padding-left:5px;padding-right:5px;padding-top:15px;">
+																		<div style="font-family: sans-serif">
+																			<div
+																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
+																				<p
+																					style="margin: 0; font-size: 14px; text-align: center;">
+																					X {{$order->quantiy}}</p>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="33.333333333333336%">
+															<table border="0" cellpadding="0" cellspacing="0" class="text_block"
+																role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+																width="100%">
+																<tr>
+																	<td
+																		style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
+																		<div style="font-family: sans-serif">
+																			<div
+																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
+																				<p
+																					style="margin: 0; font-size: 14px; text-align: right;">
+																					@if($order->discount > 0)
+																					$ {{$order->sell_price}}
+																					@endif
+																					@if($order->discount <= 0)
+																					$ {{$order->original_price}}
+																					@endif
+																				</p>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-9"
+								role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+								<tbody>
+									<tr>
+										<td>
+											<table align="center" border="0" cellpadding="0" cellspacing="0"
+												class="row-content stack" role="presentation"
+												style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 680px;"
+												width="680">
+												<tbody>
+													<tr>
+														<td class="column"
+															style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
+															width="100%">
+															<table border="0" cellpadding="0" cellspacing="0"
+																class="divider_block" role="presentation"
+																style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
+																width="100%">
+																<tr>
+																	<td>
+																		<div align="center">
+																			<table border="0" cellpadding="0" cellspacing="0"
+																				role="presentation"
+																				style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
+																				width="100%">
+																				<tr>
+																					<td class="divider_inner"
+																						style="font-size: 1px; line-height: 1px; border-top: 1px solid #E1ECEF;">
+																						<span> </span>
+																					</td>
+																				</tr>
+																			</table>
+																		</div>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						@endif
 
                     @endforeach
 					<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-14"
@@ -788,7 +786,7 @@
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																		<p style="margin: 0; font-size: 14px;"><span
-																				style="font-size:16px;"><strong>Subtotal</strong></span>
+																				style="font-size:16px;"><strong>Sous total</strong></span>
 																		</p>
 																	</div>
 																</div>
@@ -914,8 +912,7 @@
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																		<p style="margin: 0; font-size: 14px;"><span
-																				style="font-size:16px;"><strong>Service
-																					Tax</strong></span>
+																				style="font-size:16px;"><strong>TVA</strong></span>
 																		</p>
 																	</div>
 																</div>
@@ -1040,7 +1037,7 @@
 																	<div
 																		style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																		<p style="margin: 0; font-size: 14px;"><span
-																				style="font-size:16px;"><strong>Delivery
+																				style="font-size:16px;"><strong>Livraison
 																					Charge</strong></span>
 																		</p>
 																	</div>
@@ -1080,7 +1077,7 @@
 																		<p
 																			style="margin: 0; font-size: 14px; text-align: right;">
 																			<span style="font-size:16px;">$
-																				{{$data->delivery_charge}}</span>
+																				{{$data->type_receive == 'standard' ? '20' : '40' }}</span>
 																		</p>
 																	</div>
 																</div>
@@ -1152,7 +1149,7 @@
 										width="680">
 										<tbody>
 											<tr>
-												<td class="column"
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0" class="text_block"
@@ -1173,7 +1170,7 @@
 															</td>
 														</tr>
 													</table>
-												</td>
+												</td> --}}
 												<td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
@@ -1189,7 +1186,7 @@
 														</tr>
 													</table>
 												</td>
-												<td class="column"
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0" class="text_block"
@@ -1212,7 +1209,7 @@
 															</td>
 														</tr>
 													</table>
-												</td>
+												</td> --}}
 											</tr>
 										</tbody>
 									</table>
@@ -1276,7 +1273,7 @@
 										width="680">
 										<tbody>
 											<tr>
-												<td class="column"
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0" class="text_block"
@@ -1297,7 +1294,7 @@
 															</td>
 														</tr>
 													</table>
-												</td>
+												</td> --}}
 												<td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
@@ -1313,7 +1310,7 @@
 														</tr>
 													</table>
 												</td>
-												<td class="column"
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0" class="text_block"
@@ -1336,7 +1333,7 @@
 															</td>
 														</tr>
 													</table>
-												</td>
+												</td> --}}
 											</tr>
 										</tbody>
 									</table>
@@ -1416,7 +1413,8 @@
 																			style="margin: 0; font-size: 14px; text-align: right;">
 																			<span style="font-size:22px;"><strong><span
 																						style="">Grand Total $
-																						{{$data->grand_total}}</span></strong></span>
+																						{{ $data->type_receive == 'standard' ? $data->grand_total+20 : $data->grand_total+40 }}
+																					</span></strong></span>
 																		</p>
 																	</div>
 																</div>
