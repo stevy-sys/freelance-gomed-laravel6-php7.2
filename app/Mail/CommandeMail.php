@@ -19,7 +19,7 @@ class CommandeMail extends Mailable
      */
     public function __construct($data,$subject)
     {
-        $this->data = $data['data'];
+        // $this->data = $data['data'];
         $this->subject = $subject; 
     }
 
