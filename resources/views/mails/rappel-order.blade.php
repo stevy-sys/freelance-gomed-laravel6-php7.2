@@ -531,7 +531,7 @@
 																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																				<p
 																					style="margin: 0; font-size: 14px; text-align: center;">
-																					X {{$order->quantiy}}</p>
+																					X {{$order->quantity}}</p>
 																			</div>
 																		</div>
 																	</td>
@@ -672,7 +672,7 @@
 																				style="font-size: 12px; mso-line-height-alt: 14.399999999999999px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
 																				<p
 																					style="margin: 0; font-size: 14px; text-align: center;">
-																					X {{$order->quantiy}}</p>
+																					X {{$order->quantity}}</p>
 																			</div>
 																		</div>
 																	</td>
@@ -898,7 +898,7 @@
 										width="680">
 										<tbody>
 											<tr>
-												<td class="column"
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0" class="text_block"
@@ -919,8 +919,8 @@
 															</td>
 														</tr>
 													</table>
-												</td>
-												<td class="column"
+												</td> --}}
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0"
@@ -934,8 +934,8 @@
 															</td>
 														</tr>
 													</table>
-												</td>
-												<td class="column"
+												</td> --}}
+												{{-- <td class="column"
 													style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-left: 5px; padding-right: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;"
 													width="33.333333333333336%">
 													<table border="0" cellpadding="0" cellspacing="0" class="text_block"
@@ -958,7 +958,7 @@
 															</td>
 														</tr>
 													</table>
-												</td>
+												</td> --}}
 											</tr>
 										</tbody>
 									</table>

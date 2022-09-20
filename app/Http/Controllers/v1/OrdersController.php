@@ -41,16 +41,16 @@ class OrdersController extends Controller
             'paid_method' => 'required',
             'order_to' => 'required',
             'orders' => 'required',
-            'notes' => 'required',
-            'total' => 'required',
-            'tax' => 'required',
-            'grand_total' => 'required',
-            'discount' => 'required',
-            'delivery_charge' => 'required',
-            'extra' => 'required',
-            'pay_key' => 'required',
-            'status' => 'required',
-            'payStatus' => 'required',
+            // 'notes' => 'required',
+            // 'total' => 'required',
+            // 'tax' => 'required',
+            // 'grand_total' => 'required',
+            // 'discount' => 'required',
+            // 'delivery_charge' => 'required',
+            // 'extra' => 'required',
+            // 'pay_key' => 'required',
+            // 'status' => 'required',
+            // 'payStatus' => 'required',
             // 'type_receive' => 'required'
         ]);
         if ($validator->fails()) {
@@ -62,31 +62,85 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $order = Orders::create($request->all());
+        $allStore = explode(",",$request->store_id);
+        $allProduct = collect(json_decode($request->orders));
+        $orderRetour = [] ;
+        if (count($allStore) > 1) {
+            foreach ($allStore as $store_id) {
+                $products = $allProduct->where('store_id',$store_id)->all();
+                $data = $request->all();
+                $data['store_id'] = $store_id;
+                $data['total'] = 0 ;
+                $data['orders'] = json_encode($products);
+                foreach ($products as $product) {
+                    $childTotal = $product->original_price * $product->quantity;
+                    $data['total'] += $childTotal ;
+                }
+                $data['duty_free'] = isset($request->tax) ? ($data['total']) * (($request->tax/100)+ 1) : 0 ;
+                $data['grand_total'] = $data['total'] + $request->delivery_charge ;
+                $order = Orders::create($data);
+                $order->orders = json_decode(json_encode($order->orders));
+                $orderRetour[] = $order ;
+                $store = Stores::find($store_id);
+                $userStore = User::find($store->uid);
+                $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(1));
+                $id = app(Dispatcher::class)->dispatch($jobs);
+                $order->update(['queue_id' => $id]);
+    
+                // $order->orders = json_encode($order->orders);
+            }
+        }else{
+            $data = $request->all() ;
+            $data['duty_free'] = $request->tax != 0 ? ($data['total']) * (($request->tax/100)+ 1) : 0 ;
+            $order = Orders::create($data);
+            $order->orders = json_decode(json_encode($order->orders));
+            $orderRetour[] = $order ;
+            $store = Stores::find($request->store_id);
+            $userStore = User::find($store->uid);
+            $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(1));
+            $id = app(Dispatcher::class)->dispatch($jobs);
+            $order->update(['queue_id' => $id]);
+        }
+        // $orderCreate = [] ;
+        // foreach ($allStore as $store_id) {
+        //     foreach ($allProduct as $product) {
+        //         if ($product->store_id == $store_id) {
+        //             $data = $request->all();
+        //             $data['store_id'] = $store_id ;
+        //         }
+        //     }
+        //     $store = Store::find($product->store_id);
+
+        // }
+
+        // $order = Orders::create($request->all());
         
 
-        if (is_null($order)) {
-            $response = [
-                'data'=>$order,
-                'message' => 'error',
-                'status' => 500,
-            ];
-            return response()->json($response, 200);
-        }
+        // if (is_null($order)) {
+        //     $response = [
+        //         'data'=>$order,
+        //         'message' => 'error',
+        //         'status' => 500,
+        //     ];
+        //     return response()->json($response, 200);
+        // }
         if($request && $request->wallet_used == 1){
             $redeemer = User::where('id',$request->uid)->first();
             $redeemer->withdraw($request->wallet_price);
         }
-        $order->orders = json_decode($order->orders);
-        $store = Stores::find($request->store_id);
-        $userStore = User::find($store->uid);
-        $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(3));
-        $id = app(Dispatcher::class)->dispatch($jobs);
-        $order->update(['queue_id' => $id]);
 
-        $order->orders = json_encode($order->orders);
+
+
+        // $order->orders = json_decode($order->orders);
+        // $store = Stores::find($request->store_id);
+        // $userStore = User::find($store->uid);
+        // $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(3));
+        // $id = app(Dispatcher::class)->dispatch($jobs);
+        // $order->update(['queue_id' => $id]);
+
+        // $order->orders = json_encode($order->orders);
         $response = [
-            'data'=>$order,
+            'data'=> $orderRetour,
             'success' => true,
             'status' => 200,
         ];
