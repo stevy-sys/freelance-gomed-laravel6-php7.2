@@ -12,15 +12,17 @@ class CommandeMail extends Mailable
     use Queueable, SerializesModels;
     public $data ;
     public $subject ;
+    public $user ;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data,$subject)
+    public function __construct($data,$subject,$user)
     {
-        // $this->data = $data['data'];
+        $this->data = $data['data'];
         $this->subject = $subject; 
+        $this->user = $user;
     }
 
     /**
