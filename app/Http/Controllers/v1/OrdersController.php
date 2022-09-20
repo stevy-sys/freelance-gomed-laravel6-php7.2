@@ -9,23 +9,28 @@
 */
 namespace App\Http\Controllers\v1;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use DB;
+use Validator;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Orders;
 use App\Models\Stores;
-use App\Models\Products;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use App\Models\General;
-use App\Models\Complaints;
 use App\Models\Drivers;
-use Carbon\Carbon;
-use Validator;
-use DB;
+use App\Models\General;
+use App\Models\Products;
+use App\Mail\CommandeMail;
+use App\Models\Complaints;
+use Illuminate\Http\Request;
+use App\Jobs\RappelOrderStore;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Bus\Dispatcher;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Exceptions\JWTException;
+
 class OrdersController extends Controller
 {
     public function save(Request $request){
@@ -36,16 +41,17 @@ class OrdersController extends Controller
             'paid_method' => 'required',
             'order_to' => 'required',
             'orders' => 'required',
-            'notes' => 'required',
-            'total' => 'required',
-            'tax' => 'required',
-            'grand_total' => 'required',
-            'discount' => 'required',
-            'delivery_charge' => 'required',
-            'extra' => 'required',
-            'pay_key' => 'required',
-            'status' => 'required',
-            'payStatus' => 'required'
+            // 'notes' => 'required',
+            // 'total' => 'required',
+            // 'tax' => 'required',
+            // 'grand_total' => 'required',
+            // 'discount' => 'required',
+            // 'delivery_charge' => 'required',
+            // 'extra' => 'required',
+            // 'pay_key' => 'required',
+            // 'status' => 'required',
+            // 'payStatus' => 'required',
+            // 'type_receive' => 'required'
         ]);
         if ($validator->fails()) {
             $response = [
@@ -56,22 +62,181 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Orders::create($request->all());
-        if (is_null($data)) {
-            $response = [
-                'data'=>$data,
-                'message' => 'error',
-                'status' => 500,
-            ];
-            return response()->json($response, 200);
+        $allStore = explode(",",$request->store_id);
+        $allProduct = collect(json_decode($request->orders));
+        $orderRetour = [] ;
+        if (count($allStore) > 1) {
+            foreach ($allStore as $store_id) {
+                $products = $allProduct->where('store_id',$store_id)->all();
+                $data = $request->all();
+                $data['store_id'] = $store_id;
+                $data['total'] = 0 ;
+                $data['orders'] = json_encode($products);
+                foreach ($products as $product) {
+                    $childTotal = $product->original_price * $product->quantity;
+                    $data['total'] += $childTotal ;
+                }
+                $data['duty_free'] = isset($request->tax) ? ($data['total']) * (($request->tax/100)+ 1) : 0 ;
+                $data['grand_total'] = $data['total'] + $request->delivery_charge ;
+                $order = Orders::create($data);
+                $order->orders = json_decode(json_encode($order->orders));
+                $orderRetour[] = $order ;
+                $store = Stores::find($store_id);
+                $userStore = User::find($store->uid);
+                $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(1));
+                $id = app(Dispatcher::class)->dispatch($jobs);
+                $order->update(['queue_id' => $id]);
+    
+                // $order->orders = json_encode($order->orders);
+            }
+        }else{
+            $data = $request->all() ;
+            $data['duty_free'] = $request->tax != 0 ? ($data['total']) * (($request->tax/100)+ 1) : 0 ;
+            $order = Orders::create($data);
+            $order->orders = json_decode(json_encode($order->orders));
+            $orderRetour[] = $order ;
+            $store = Stores::find($request->store_id);
+            $userStore = User::find($store->uid);
+            $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(1));
+            $id = app(Dispatcher::class)->dispatch($jobs);
+            $order->update(['queue_id' => $id]);
         }
+        // $orderCreate = [] ;
+        // foreach ($allStore as $store_id) {
+        //     foreach ($allProduct as $product) {
+        //         if ($product->store_id == $store_id) {
+        //             $data = $request->all();
+        //             $data['store_id'] = $store_id ;
+        //         }
+        //     }
+        //     $store = Store::find($product->store_id);
+
+        // }
+
+        // $order = Orders::create($request->all());
+        
+
+        // if (is_null($order)) {
+        //     $response = [
+        //         'data'=>$order,
+        //         'message' => 'error',
+        //         'status' => 500,
+        //     ];
+        //     return response()->json($response, 200);
+        // }
         if($request && $request->wallet_used == 1){
             $redeemer = User::where('id',$request->uid)->first();
             $redeemer->withdraw($request->wallet_price);
         }
 
+
+
+        // $order->orders = json_decode($order->orders);
+        // $store = Stores::find($request->store_id);
+        // $userStore = User::find($store->uid);
+        // $jobs = (new RappelOrderStore($userStore,$order))->delay(now()->addMinutes(3));
+        // $id = app(Dispatcher::class)->dispatch($jobs);
+        // $order->update(['queue_id' => $id]);
+
+        // $order->orders = json_encode($order->orders);
+        $response = [
+            'data'=> $orderRetour,
+            'success' => true,
+            'status' => 200,
+        ];
+        return response()->json($response, 200);
+    }
+
+    public function getAllOrderInMyStore(Request $request){
+        $all = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $open = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->whereNull('display_at')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $valide = Orders::whereHas('store',function ($q){
+            $q->where('uid',Auth::id());
+        })->with('user:id,first_name')->whereNotNull('display_at')->get(['id','uid','orders','date_time','grand_total','order_to','created_at','display_at','type_receive']);
+        $data['all'] = $all;
+        $data['open'] = $open;
+        $data['valide'] = $valide;
         $response = [
             'data'=>$data,
+            'success' => true,
+            'status' => 200,
+        ];
+        return response()->json($response, 200);
+    }
+
+    public function actionOrder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => 'Validation Error.', $validator->errors(),
+                'status'=> 500
+            ];
+            return response()->json($response, 404);
+        }
+
+        $order = Orders::find($request->id);
+        if ($request->status == 'accepted') {
+            $order->update(['status' => 'accepted','display_at'=>Carbon::now()]);
+        }
+        else{
+            $order->update(['status' => 'rejected','display_at'=>Carbon::now()]);
+        }
+
+        $jobs = DB::table('jobs')->whereId($order->queue_id);
+        if (isset($jobs)) {
+            $jobs->delete();
+        }
+        
+        $response = [
+            'data'=>$order,
+            'success' => true,
+            'status' => 200,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function searchOrderInMyStore(Request $request){
+        $store = Stores::where('uid',Auth::id())->first();
+        $data = Orders::WhereHas('user',function ($q) use($request){
+            $q->where('first_name','LIKE','%'.$request->search.'%');
+        })->orWhere('order_to','LIKE','%'.$request->search.'%')
+        ->orWhere('type_receive','LIKE','%'.$request->search.'%')
+        ->orWhereDay('date_time',$request->search)
+        ->orWhereMonth('date_time',$request->search)
+        ->orWhereYear('date_time',$request->search)
+        ->orWhere('id',$request->search)
+        ->with('user:id,first_name')->get();
+
+        $data = $data->filter(function ($item) use ($store) {
+            return $item->store_id == $store->id ; 
+        });
+
+        if (isset($request->type) && $request->type == 'open') {
+            $data = $data->filter(function ($item) {
+                return $item->display_at == null ;
+            });
+        }
+        if (isset($request->type) && $request->type == 'valide') {
+            $data = $data->filter(function ($item) {
+                return $item->display_at != null ;
+            });
+        }
+        $dataTemp = [] ;
+        foreach ($data as $data) {
+            $dataTemp[] = $data ;
+        }
+        $response = [
+            'data'=> $dataTemp,
             'success' => true,
             'status' => 200,
         ];
@@ -123,9 +288,9 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Orders::find($request->id);
+        $order = Orders::with('user')->find($request->id);
 
-        if (is_null($data)) {
+        if (is_null($order)) {
             $response = [
                 'success' => false,
                 'message' => 'Data not found.',
@@ -135,8 +300,8 @@ class OrdersController extends Controller
         }
 
         $response = [
-            'data'=>$data,
-            'user'=>User::find($data->uid),
+            'data'=>$order,
+            'user'=>User::find($order->uid),
             'success' => true,
             'status' => 200,
         ];
@@ -333,6 +498,15 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
+    // public function getOrderInMyStore(){
+    //     $response = Orders::whereHas('store',function ($query){
+    //         $query->whereHas('user',function ($q){
+    //             $q->where('id',Auth::id());
+    //         });
+    //     })->with('user:id,first_name')->get(['id','uid','date_time','grand_total','order_to']);
+    //     return response()->json($response, 200);
+    // }
+
     public function getByDriverIdForApp(Request $request){
         $validator = Validator::make($request->all(), [
             'id' => 'required',
@@ -495,11 +669,14 @@ class OrdersController extends Controller
         ->join('users', 'orders.uid', '=', 'users.id')
         ->where('orders.id',$request->id)
         ->first();
+
         $general = General::first();
         $addres ='';
-        if($data->order_to =='home'){
+        if(isset($data->order_to) && $data->order_to  == 'home'){
             $compressed = json_decode($data->address);
-            $addres = $compressed->house .' '.$compressed->landmark .' '.$compressed->address .' '.$compressed->pincode;
+            if (isset($compressed)) {
+                $addres = $compressed->house .' '.$compressed->landmark .' '.$compressed->address .' '.$compressed->pincode;
+            }
         }
         $data->orders = json_decode($data->orders);
         $response = [
@@ -511,13 +688,13 @@ class OrdersController extends Controller
         $mail = $data->user_email;
         $username = $data->user_first_name;
         $subject = 'Order Status';
-        $response = Mail::send('mails/orders',
-            $response
-            , function($message) use($mail,$username,$subject,$general){
-            $message->to($mail, $username)
-            ->subject($subject);
-            $message->from(env('MAIL_USERNAME'),$general->name);
-        });
+        Mail::to($mail)->send(new CommandeMail($response,$subject,Auth::user())); 
+
+        // $response = Mail::send('mails/orders', $response , function($message) use($mail,$username,$subject,$general){
+        //     $message->to($mail, $username)->subject($subject);
+        //     $message->from(env('MAIL_USERNAME'),$general->name);
+        // });
+       
         $response = [
             'success' => $response,
             'message' => 'success',

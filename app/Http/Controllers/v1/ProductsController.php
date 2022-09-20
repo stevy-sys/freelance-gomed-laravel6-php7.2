@@ -7,23 +7,27 @@
   terms found in the Website https://sayna.io/license
   Copyright and Good Faith Purchasers © 2021-present Sayna.
 */
+
 namespace App\Http\Controllers\v1;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Products;
-use App\Models\Banners;
-use App\Models\Category;
-use App\Models\Settings;
-use App\Models\SubCategory;
-use App\Models\Stores;
-use App\Models\Cities;
+use DB;
 use Validator;
 use Carbon\Carbon;
-use DB;
+use App\Models\Cities;
+use App\Models\Stores;
+use App\Models\Banners;
+use App\Models\Category;
+use App\Models\Products;
+use App\Models\Settings;
+use App\Models\SubCategory;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
 class ProductsController extends Controller
 {
-    public function save(Request $request){
+    public function save(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'store_id' => 'required',
             'cover' => 'required',
@@ -59,29 +63,34 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
 
-        $data = Products::create($request->all());
+        $data = $request->all();
+        $data['store_id'] = Auth::user()->store->id ;
+        $data['tva_id'] = $request->tva ;
+
+        $data = Products::create($data);
         if (is_null($data)) {
             $response = [
-            'data'=>$data,
-            'message' => 'error',
-            'status' => 500,
-        ];
-        return response()->json($response, 200);
+                'data' => $data,
+                'message' => 'error',
+                'status' => 500,
+            ];
+            return response()->json($response, 200);
         }
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getById(Request $request){
+    public function getById(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -89,7 +98,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -105,19 +114,20 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $related = Products::where(['status'=>1,'store_id'=>$data->store_id,'sub_cate_id'=>$data->sub_cate_id])->get();
-        $storeInfo = Stores::select('id','uid','name','status','zipcode','cid')->where('uid',$data->store_id)->first();
+        $related = Products::where(['status' => 1, 'store_id' => $data->store_id, 'sub_cate_id' => $data->sub_cate_id])->get();
+        $storeInfo = Stores::select('id', 'uid', 'name', 'status', 'zipcode', 'cid')->where('uid', $data->store_id)->first();
         $response = [
-            'data'=>$data,
-            'related'=>$related,
-            'soldby'=>$storeInfo,
+            'data' => $data,
+            'related' => $related,
+            'soldby' => $storeInfo,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -125,11 +135,16 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $data = Products::find($request->id)->update($request->all());
+        $data = $request->all() ;
+        $data['store_id'] = Auth::user()->store->id ;
+        if (isset($request->tva)) {
+            $data['tva_id'] = $request->tva ;
+        }
+        $data = Products::find($request->id)->update($data);
 
         if (is_null($data)) {
             $response = [
@@ -140,14 +155,15 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function updateStatus(Request $request){
+    public function updateStatus(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -155,7 +171,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -170,14 +186,15 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function updateOffers(Request $request){
+    public function updateOffers(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -185,7 +202,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -200,14 +217,15 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function updateHome(Request $request){
+    public function updateHome(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -215,7 +233,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -230,14 +248,15 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function delete(Request $request){
+    public function delete(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -245,7 +264,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -253,7 +272,7 @@ class ProductsController extends Controller
         if ($data) {
             $data->delete();
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
@@ -267,7 +286,8 @@ class ProductsController extends Controller
         return response()->json($response, 404);
     }
 
-    public function getAll(){
+    public function getAll()
+    {
         $data = Products::all();
         if (is_null($data)) {
             $response = [
@@ -279,30 +299,31 @@ class ProductsController extends Controller
         }
 
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function searchStoreWithGeoLocation(Request $request){
+    public function searchStoreWithGeoLocation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'lat'=>'required',
+            'lat' => 'required',
             'lng' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        if(2 == 1){
+        if (2 == 1) {
             $values = 3959; // miles
             $distanceType = 'miles';
-        }else{
+        } else {
             $values = 6371; // km
             $distanceType = 'km';
         }
@@ -311,38 +332,38 @@ class ProductsController extends Controller
         $stores = Stores::select(DB::raw('store.id as id,store.uid as uid,store.name as name,store.mobile as mobile,store.lat as lat,store.lng as lng,
         store.verified as verified,store.address as address,store.descriptions as descriptions,store.images as images,store.cover as cover,store.open_time as open_time,
         store.close_time as close_time,store.isClosed as isClosed,store.certificate_url as certificate_url,store.certificate_type as certificate_type,store.rating as rating,
-        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( '.$values.' * acos( cos( radians('.$request->lat.') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('.$request->lng.') ) + sin( radians('.$request->lat.') ) * sin( radians( lat ) ) ) ) AS distance'))
-        ->having('distance', '<', $settings->search_radius)
-        ->orderBy('distance')
-        ->where('store.status',1)
-        ->get();
+        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( ' . $values . ' * acos( cos( radians(' . $request->lat . ') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(' . $request->lng . ') ) + sin( radians(' . $request->lat . ') ) * sin( radians( lat ) ) ) ) AS distance'))
+            ->having('distance', '<', $settings->search_radius)
+            ->orderBy('distance')
+            ->where('store.status', 1)
+            ->get();
 
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
-
     }
 
-    public function searchWithGeoLocation(Request $request){
+    public function searchWithGeoLocation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'lat'=>'required',
+            'lat' => 'required',
             'lng' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        if(2 == 1){
+        if (2 == 1) {
             $values = 3959; // miles
             $distanceType = 'miles';
-        }else{
+        } else {
             $values = 6371; // km
             $distanceType = 'km';
         }
@@ -352,53 +373,54 @@ class ProductsController extends Controller
         $stores = Stores::select(DB::raw('store.id as id,store.uid as uid,store.name as name,store.mobile as mobile,store.lat as lat,store.lng as lng,
         store.verified as verified,store.address as address,store.descriptions as descriptions,store.images as images,store.cover as cover,store.open_time as open_time,
         store.close_time as close_time,store.isClosed as isClosed,store.certificate_url as certificate_url,store.certificate_type as certificate_type,store.rating as rating,
-        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( '.$values.' * acos( cos( radians('.$request->lat.') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('.$request->lng.') ) + sin( radians('.$request->lat.') ) * sin( radians( lat ) ) ) ) AS distance'))
-        ->having('distance', '<', $settings->search_radius)
-        ->orderBy('distance')
-        ->where('store.status',1)
-        ->get();
+        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( ' . $values . ' * acos( cos( radians(' . $request->lat . ') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(' . $request->lng . ') ) + sin( radians(' . $request->lat . ') ) * sin( radians( lat ) ) ) ) AS distance'))
+            ->having('distance', '<', $settings->search_radius)
+            ->orderBy('distance')
+            ->where('store.status', 1)
+            ->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
             $cityId = $stores[0]->cid;
-            $banners = Banners::where(['status'=>1,'city_id'=>$cityId])->whereDate('from','<=', $today)->whereDate('to','>=', $today)->get();
-            $category = Category::where('status',1)->get();
-            $homeProducts = Products::where(['status'=>1,'in_home'=>1])->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit(15)->get();
-            $inOffers = Products::where('status',1)->where('discount','>',0)->WhereIn('store_id',$storeIds)->orderBy('discount','desc')->limit(15)->get();
-            $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit(15)->get();
-            $city = Cities::where('id',$cityId)->first();
-            foreach($category as $loop){
-                $loop->subCates = SubCategory::where(['status'=>1,'cate_id'=>$loop->id])->get();
+            $banners = Banners::where(['status' => 1, 'city_id' => $cityId])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();
+            $category = Category::where('status', 1)->get();
+            $homeProducts = Products::where(['status' => 1, 'in_home' => 1])->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit(15)->get();
+            $inOffers = Products::where('status', 1)->where('discount', '>', 0)->WhereIn('store_id', $storeIds)->orderBy('discount', 'desc')->limit(15)->get();
+            $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit(15)->get();
+            $city = Cities::where('id', $cityId)->first();
+            foreach ($category as $loop) {
+                $loop->subCates = SubCategory::where(['status' => 1, 'cate_id' => $loop->id])->get();
             }
 
             $data = [
                 'stores' => $stores,
                 'banners' => $banners,
-                'category'=>$category,
-                'topProducts'=>$topProducts,
+                'category' => $category,
+                'topProducts' => $topProducts,
                 'inOffers' => $inOffers,
-                'storeIds'=>$storeIds,
-                'homeProducts'=>$homeProducts,
-                'cityInfo'=>$city,
+                'storeIds' => $storeIds,
+                'homeProducts' => $homeProducts,
+                'cityInfo' => $city,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getWithSubCategory(Request $request){
+    public function getWithSubCategory(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'id'=>'required',
-            'storeIds'=>'required',
+            'id' => 'required',
+            'storeIds' => 'required',
             'sub' => 'required',
             'limit' => 'required',
         ]);
@@ -406,110 +428,115 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $ids = explode(',',$request->storeIds);
-        $products = Products::where(['status'=>1,'cate_id'=>$request->id,'sub_cate_id'=>$request->sub])->WhereIn('store_id',$ids)->orderBy('name','asc')->limit($request->limit)->get();
+        $ids = explode(',', $request->storeIds);
+        $products = Products::where(['status' => 1, 'cate_id' => $request->id, 'sub_cate_id' => $request->sub])->WhereIn('store_id', $ids)->orderBy('name', 'asc')->limit($request->limit)->get();
         $response = [
-            'data'=>$products,
+            'data' => $products,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getWithSubCategoryId(Request $request){
+    public function getWithSubCategoryId(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'id'=>'required',
-            'storeIds'=>'required',
+            'id' => 'required',
+            'storeIds' => 'required',
             'limit' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $ids = explode(',',$request->storeIds);
-        $products = Products::where(['status'=>1,'sub_cate_id'=>$request->id])->WhereIn('store_id',$ids)->orderBy('name','asc')->limit($request->limit)->get();
+        $ids = explode(',', $request->storeIds);
+        $products = Products::where(['status' => 1, 'sub_cate_id' => $request->id])->WhereIn('store_id', $ids)->orderBy('name', 'asc')->limit($request->limit)->get();
         $response = [
-            'data'=>$products,
+            'data' => $products,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function searchQuery(Request $request){
+    public function searchQuery(Request $request)
+    {
         $str = "";
         if ($request->has('param') && $request->has('stores')) {
             $str = $request->param;
             $stores = $request->stores;
         }
-        $ids = explode(',',$stores);
+        $ids = explode(',', $stores);
 
-        $products = Products::select('id','name','store_id','cover')->where('status',1)->where('name', 'like', '%'.$str.'%')->WhereIn('store_id',$ids)->orderBy('name','asc')->limit(5)->get();
+        $products = Products::select('id', 'name', 'store_id', 'cover')->where('status', 1)->where('name', 'like', '%' . $str . '%')->WhereIn('store_id', $ids)->orderBy('name', 'asc')->limit(5)->get();
         $response = [
-            'data'=>$products,
+            'data' => $products,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getByStoreId(Request $request){
+    public function getByStoreId(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'id'=>'required',
-            'limit'=>'required',
+            'id' => 'required',
+            'limit' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $data = Products::where(['status'=>1,'store_id'=>$request->id])->orderBy('name','asc')->limit($request->limit)->get();
-        $storeInfo = Stores::select('id','uid','name','status','zipcode','cid')->where('uid',$request->id)->first();
+        $data = Products::where(['status' => 1, 'store_id' => $request->id])->orderBy('name', 'asc')->limit($request->limit)->get();
+        $storeInfo = Stores::select('id', 'uid', 'name', 'status', 'zipcode', 'cid')->where('uid', $request->id)->first();
         $response = [
-            'data'=>$data,
-            'storeInfo'=>$storeInfo,
+            'data' => $data,
+            'storeInfo' => $storeInfo,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getByStoreIdStoreAll(Request $request){
+    public function getByStoreIdStoreAll(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'id'=>'required',
-            'limit'=>'required',
+            'id' => 'required',
+            'limit' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $data = Products::where(['store_id'=>$request->id])->orderBy('name','asc')->limit($request->limit)->get();
-        $storeInfo = Stores::select('id','uid','name','status','zipcode','cid')->where('uid',$request->id)->first();
+        $storeInfo = Stores::select('id', 'uid', 'name', 'status', 'zipcode', 'cid')->where('uid', $request->id)->first();
+        $data = Products::where(['store_id' => $storeInfo->id])->orderBy('name', 'asc')->limit($request->limit)->get();
         $response = [
-            'data'=>$data,
-            'storeInfo'=>$storeInfo,
+            'data' => $data,
+            'storeInfo' => $storeInfo,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getByIdgetByIdStore(Request $request){
+    public function getByIdgetByIdStore(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -517,7 +544,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -533,43 +560,45 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $category = Category::where('id',$data->cate_id)->first();
-        $subCategory = SubCategory::where('id',$data->sub_cate_id)->first();
+        $category = Category::where('id', $data->cate_id)->first();
+        $subCategory = SubCategory::where('id', $data->sub_cate_id)->first();
         $response = [
-            'data'=>$data,
-            'category'=>$category,
-            'subCategory'=>$subCategory,
+            'data' => $data,
+            'category' => $category,
+            'subCategory' => $subCategory,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getTopRated(Request $request){
+    public function getTopRated(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'storeIds'=>'required',
+            'storeIds' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $ids = explode(',',$request->storeIds);
-        $homeProducts = Products::where(['status'=>1,'in_home'=>1])->WhereIn('store_id',$ids)->orderBy('rating','desc')->limit(15)->get();
-        $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$ids)->orderBy('rating','desc')->limit(15)->get();
+        $ids = explode(',', $request->storeIds);
+        $homeProducts = Products::where(['status' => 1, 'in_home' => 1])->WhereIn('store_id', $ids)->orderBy('rating', 'desc')->limit(15)->get();
+        $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $ids)->orderBy('rating', 'desc')->limit(15)->get();
         $response = [
-            'topProducts'=>$topProducts,
-            'homeProducts'=>$homeProducts,
+            'topProducts' => $topProducts,
+            'homeProducts' => $homeProducts,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function searchStoreWithZipCode(Request $request){
+    public function searchStoreWithZipCode(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'zipcode' => 'required',
         ]);
@@ -577,68 +606,69 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $stores = Stores::where(['status'=>1,'zipcode'=>$request->zipcode])->get();
+        $stores = Stores::where(['status' => 1, 'zipcode' => $request->zipcode])->get();
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function searchWithZipCode(Request $request){
+    public function searchWithZipCode(Request $request)
+    {
 
         $zipcode = $request->zipcode;
-        if($zipcode == null || !$zipcode || !isset($zipcode)){
+        if ($zipcode == null || !$zipcode || !isset($zipcode)) {
             $settings = Settings::first();
             $zipcode = $settings->default_delivery_zip;
         }
         $today = Carbon::now();
-        $stores = Stores::where(['status'=>1,'zipcode'=>$zipcode])->get();
+        $stores = Stores::where(['status' => 1, 'zipcode' => $zipcode])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
             $cityId = $stores[0]->cid;
-            $banners = Banners::where(['status'=>1,'city_id'=>$cityId])->whereDate('from','<=', $today)->whereDate('to','>=', $today)->get();
-            $category = Category::where('status',1)->get();
-            $homeProducts = Products::where(['status'=>1,'in_home'=>1])->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit(15)->get();
-            $inOffers = Products::where('status',1)->where('discount','>',0)->WhereIn('store_id',$storeIds)->orderBy('discount','desc')->limit(15)->get();
-            $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit(15)->get();
-            $city = Cities::where('id',$cityId)->first();
-            foreach($category as $loop){
-                $loop->subCates = SubCategory::where(['status'=>1,'cate_id'=>$loop->id])->get();
+            $banners = Banners::where(['status' => 1, 'city_id' => $cityId])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();
+            $category = Category::where('status', 1)->get();
+            $homeProducts = Products::where(['status' => 1, 'in_home' => 1])->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit(15)->get();
+            $inOffers = Products::where('status', 1)->where('discount', '>', 0)->WhereIn('store_id', $storeIds)->orderBy('discount', 'desc')->limit(15)->get();
+            $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit(15)->get();
+            $city = Cities::where('id', $cityId)->first();
+            foreach ($category as $loop) {
+                $loop->subCates = SubCategory::where(['status' => 1, 'cate_id' => $loop->id])->get();
             }
 
             $data = [
                 'stores' => $stores,
                 'banners' => $banners,
-                'category'=>$category,
-                'topProducts'=>$topProducts,
-                'homeProducts'=>$homeProducts,
+                'category' => $category,
+                'topProducts' => $topProducts,
+                'homeProducts' => $homeProducts,
                 'inOffers' => $inOffers,
-                'storeIds'=>$storeIds,
-                'cityInfo'=>$city,
+                'storeIds' => $storeIds,
+                'cityInfo' => $city,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
-
     }
 
-    public function searchStoreWithCity(Request $request){
+    public function searchStoreWithCity(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -646,66 +676,68 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        $stores = Stores::where(['status'=>1,'cid'=>$request->id])->get();
+        $stores = Stores::where(['status' => 1, 'cid' => $request->id])->get();
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function searchWithCity(Request $request){
+    public function searchWithCity(Request $request)
+    {
 
         $today = Carbon::now();
         $cid = $request->id;
-        if($cid == null || !$cid || !isset($cid)){
+        if ($cid == null || !$cid || !isset($cid)) {
             $settings = Settings::first();
             $cid = $settings->default_city_id;
         }
-        $stores = Stores::where(['status'=>1,'cid'=>$cid])->get();
+        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $banners = Banners::where(['status'=>1,'city_id'=>$cid])->whereDate('from','<=', $today)->whereDate('to','>=', $today)->get();
-            $category = Category::where('status',1)->get();
-            $homeProducts = Products::where(['status'=>1,'in_home'=>1])->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit(15)->get();
-            $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit(15)->get();
-            $inOffers = Products::where('status',1)->where('discount','>',0)->WhereIn('store_id',$storeIds)->orderBy('discount','desc')->limit(15)->get();
-            $city = Cities::where('id',$cid)->first();
-            foreach($category as $loop){
-                $loop->subCates = SubCategory::where(['status'=>1,'cate_id'=>$loop->id])->get();
+            $banners = Banners::where(['status' => 1, 'city_id' => $cid])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();
+            $category = Category::where('status', 1)->get();
+            $homeProducts = Products::with('tva')->where(['status' => 1, 'in_home' => 1])->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit(15)->get();
+            $topProducts = Products::with('tva')->where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit(15)->get();
+            $inOffers = Products::with('tva')->where('status', 1)->where('discount', '>', 0)->WhereIn('store_id', $storeIds)->orderBy('discount', 'desc')->limit(15)->get();
+            $city = Cities::where('id', $cid)->first();
+            foreach ($category as $loop) {
+                $loop->subCates = SubCategory::where(['status' => 1, 'cate_id' => $loop->id])->get();
             }
 
             $data = [
                 'stores' => $stores,
                 'banners' => $banners,
-                'category'=>$category,
-                'topProducts'=>$topProducts,
-                'homeProducts'=>$homeProducts,
+                'category' => $category,
+                'topProducts' => $topProducts,
+                'homeProducts' => $homeProducts,
                 'inOffers' => $inOffers,
-                'storeIds'=>$storeIds,
-                'cityInfo'=>$city,
+                'storeIds' => $storeIds,
+                'cityInfo' => $city,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getProductsWithCity(Request $request){
+    public function getProductsWithCity(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'catID' => 'required',
             'subId' => 'required',
@@ -715,42 +747,43 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
         $today = Carbon::now();
         $cid = $request->id;
-        if($cid == null || !$cid || !isset($cid)){
+        if ($cid == null || !$cid || !isset($cid)) {
             $settings = Settings::first();
             $cid = $settings->default_city_id;
         }
-        $stores = Stores::where(['status'=>1,'cid'=>$cid])->get();
+        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $banners = Banners::where(['status'=>1,'city_id'=>$cid])->whereDate('from','<=', $today)->whereDate('to','>=', $today)->get();
-            $products = Products::where(['status'=>1,'cate_id'=>$request->catID,'sub_cate_id'=>$request->subId])->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit($request->limit)->get();
+            $banners = Banners::where(['status' => 1, 'city_id' => $cid])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();
+            $products = Products::where(['status' => 1, 'cate_id' => $request->catID, 'sub_cate_id' => $request->subId])->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
 
             $data = [
                 'banners' => $banners,
-                'products'=>$products,
+                'products' => $products,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getProductsWithZipCodes(Request $request){
+    public function getProductsWithZipCodes(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'catID' => 'required',
             'subId' => 'required',
@@ -760,45 +793,46 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
         $zipcode = $request->zipcode;
-        if($zipcode == null || !$zipcode || !isset($zipcode)){
+        if ($zipcode == null || !$zipcode || !isset($zipcode)) {
             $settings = Settings::first();
             $zipcode = $settings->default_delivery_zip;
         }
         $today = Carbon::now();
-        $stores = Stores::where(['status'=>1,'zipcode'=>$zipcode])->get();
+        $stores = Stores::where(['status' => 1, 'zipcode' => $zipcode])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
             $cityId = $stores[0]->cid;
-            $banners = Banners::where(['status'=>1,'city_id'=>$cityId])->whereDate('from','<=', $today)->whereDate('to','>=', $today)->get();
-            $products = Products::where(['status'=>1,'cate_id'=>$request->catID,'sub_cate_id'=>$request->subId])->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit($request->limit)->get();
+            $banners = Banners::where(['status' => 1, 'city_id' => $cityId])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();
+            $products = Products::where(['status' => 1, 'cate_id' => $request->catID, 'sub_cate_id' => $request->subId])->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
 
             $data = [
                 'banners' => $banners,
-                'products'=>$products,
+                'products' => $products,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getProductsWithLocation(Request $request){
+    public function getProductsWithLocation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'lat'=>'required',
+            'lat' => 'required',
             'lng' => 'required',
             'catID' => 'required',
             'subId' => 'required',
@@ -808,14 +842,14 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        if(2 == 1){
+        if (2 == 1) {
             $values = 3959; // miles
             $distanceType = 'miles';
-        }else{
+        } else {
             $values = 6371; // km
             $distanceType = 'km';
         }
@@ -825,37 +859,38 @@ class ProductsController extends Controller
         $stores = Stores::select(DB::raw('store.id as id,store.uid as uid,store.name as name,store.mobile as mobile,store.lat as lat,store.lng as lng,
         store.verified as verified,store.address as address,store.descriptions as descriptions,store.images as images,store.cover as cover,store.open_time as open_time,
         store.close_time as close_time,store.isClosed as isClosed,store.certificate_url as certificate_url,store.certificate_type as certificate_type,store.rating as rating,
-        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( '.$values.' * acos( cos( radians('.$request->lat.') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('.$request->lng.') ) + sin( radians('.$request->lat.') ) * sin( radians( lat ) ) ) ) AS distance'))
-        ->having('distance', '<', $settings->search_radius)
-        ->orderBy('distance')
-        ->where('store.status',1)
-        ->get();
+        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( ' . $values . ' * acos( cos( radians(' . $request->lat . ') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(' . $request->lng . ') ) + sin( radians(' . $request->lat . ') ) * sin( radians( lat ) ) ) ) AS distance'))
+            ->having('distance', '<', $settings->search_radius)
+            ->orderBy('distance')
+            ->where('store.status', 1)
+            ->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
             $cityId = $stores[0]->cid;
-            $banners = Banners::where(['status'=>1,'city_id'=>$cityId])->whereDate('from','<=', $today)->whereDate('to','>=', $today)->get();
-            $products = Products::where(['status'=>1,'cate_id'=>$request->catID,'sub_cate_id'=>$request->subId])->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit($request->limit)->get();
+            $banners = Banners::where(['status' => 1, 'city_id' => $cityId])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();
+            $products = Products::where(['status' => 1, 'cate_id' => $request->catID, 'sub_cate_id' => $request->subId])->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
 
             $data = [
                 'banners' => $banners,
-                'products'=>$products,
+                'products' => $products,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getTopRateProductsWithCity(Request $request){
+    public function getTopRateProductsWithCity(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'limit' => 'required',
         ]);
@@ -863,42 +898,43 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
         $today = Carbon::now();
         $cid = $request->id;
-        if($cid == null || !$cid || !isset($cid)){
+        if ($cid == null || !$cid || !isset($cid)) {
             $settings = Settings::first();
             $cid = $settings->default_city_id;
         }
-        $stores = Stores::where(['status'=>1,'cid'=>$cid])->get();
+        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
 
-            $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit($request->limit)->get();
+            $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
             $data = [
-                'products'=>$topProducts,
+                'products' => $topProducts,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getTopRateProductsWithLocation(Request $request){
+    public function getTopRateProductsWithLocation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'lat'=>'required',
+            'lat' => 'required',
             'lng' => 'required',
             'limit' => 'required',
         ]);
@@ -906,14 +942,14 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        if(2 == 1){
+        if (2 == 1) {
             $values = 3959; // miles
             $distanceType = 'miles';
-        }else{
+        } else {
             $values = 6371; // km
             $distanceType = 'km';
         }
@@ -923,33 +959,34 @@ class ProductsController extends Controller
         $stores = Stores::select(DB::raw('store.id as id,store.uid as uid,store.name as name,store.mobile as mobile,store.lat as lat,store.lng as lng,
         store.verified as verified,store.address as address,store.descriptions as descriptions,store.images as images,store.cover as cover,store.open_time as open_time,
         store.close_time as close_time,store.isClosed as isClosed,store.certificate_url as certificate_url,store.certificate_type as certificate_type,store.rating as rating,
-        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( '.$values.' * acos( cos( radians('.$request->lat.') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('.$request->lng.') ) + sin( radians('.$request->lat.') ) * sin( radians( lat ) ) ) ) AS distance'))
-        ->having('distance', '<', $settings->search_radius)
-        ->orderBy('distance')
-        ->where('store.status',1)
-        ->get();
+        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( ' . $values . ' * acos( cos( radians(' . $request->lat . ') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(' . $request->lng . ') ) + sin( radians(' . $request->lat . ') ) * sin( radians( lat ) ) ) ) AS distance'))
+            ->having('distance', '<', $settings->search_radius)
+            ->orderBy('distance')
+            ->where('store.status', 1)
+            ->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit($request->limit)->get();
+            $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
             $data = [
-                'products'=>$topProducts,
+                'products' => $topProducts,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getTopRateProductsWithZipcodes(Request $request){
+    public function getTopRateProductsWithZipcodes(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'limit' => 'required',
         ]);
@@ -957,39 +994,40 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
         $zipcode = $request->zipcode;
-        if($zipcode == null || !$zipcode || !isset($zipcode)){
+        if ($zipcode == null || !$zipcode || !isset($zipcode)) {
             $settings = Settings::first();
             $zipcode = $settings->default_delivery_zip;
         }
         $today = Carbon::now();
-        $stores = Stores::where(['status'=>1,'zipcode'=>$zipcode])->get();
+        $stores = Stores::where(['status' => 1, 'zipcode' => $zipcode])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $topProducts = Products::where('status',1)->orWhere('in_home',1)->WhereIn('store_id',$storeIds)->orderBy('rating','desc')->limit($request->limit)->get();
+            $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
             $data = [
-                'products'=>$topProducts,
+                'products' => $topProducts,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getOffersProductsWithCity(Request $request){
+    public function getOffersProductsWithCity(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'limit' => 'required',
         ]);
@@ -997,41 +1035,42 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
         $today = Carbon::now();
         $cid = $request->id;
-        if($cid == null || !$cid || !isset($cid)){
+        if ($cid == null || !$cid || !isset($cid)) {
             $settings = Settings::first();
             $cid = $settings->default_city_id;
         }
-        $stores = Stores::where(['status'=>1,'cid'=>$cid])->get();
+        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $inOffers = Products::where('status',1)->where('discount','>',0)->WhereIn('store_id',$storeIds)->orderBy('discount','desc')->limit($request->limit)->get();
+            $inOffers = Products::where('status', 1)->where('discount', '>', 0)->WhereIn('store_id', $storeIds)->orderBy('discount', 'desc')->limit($request->limit)->get();
             $data = [
-                'products'=>$inOffers,
+                'products' => $inOffers,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getOffersProductsWithLocation(Request $request){
+    public function getOffersProductsWithLocation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'lat'=>'required',
+            'lat' => 'required',
             'lng' => 'required',
             'limit' => 'required',
         ]);
@@ -1039,14 +1078,14 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
-        if(2 == 1){
+        if (2 == 1) {
             $values = 3959; // miles
             $distanceType = 'miles';
-        }else{
+        } else {
             $values = 6371; // km
             $distanceType = 'km';
         }
@@ -1056,33 +1095,34 @@ class ProductsController extends Controller
         $stores = Stores::select(DB::raw('store.id as id,store.uid as uid,store.name as name,store.mobile as mobile,store.lat as lat,store.lng as lng,
         store.verified as verified,store.address as address,store.descriptions as descriptions,store.images as images,store.cover as cover,store.open_time as open_time,
         store.close_time as close_time,store.isClosed as isClosed,store.certificate_url as certificate_url,store.certificate_type as certificate_type,store.rating as rating,
-        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( '.$values.' * acos( cos( radians('.$request->lat.') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('.$request->lng.') ) + sin( radians('.$request->lat.') ) * sin( radians( lat ) ) ) ) AS distance'))
-        ->having('distance', '<', $settings->search_radius)
-        ->orderBy('distance')
-        ->where('store.status',1)
-        ->get();
+        store.total_rating as total_rating,store.cid as cid,store.zipcode as zipcode,store.extra_field as extra_field,store.status as status, ( ' . $values . ' * acos( cos( radians(' . $request->lat . ') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(' . $request->lng . ') ) + sin( radians(' . $request->lat . ') ) * sin( radians( lat ) ) ) ) AS distance'))
+            ->having('distance', '<', $settings->search_radius)
+            ->orderBy('distance')
+            ->where('store.status', 1)
+            ->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $inOffers = Products::where('status',1)->where('discount','>',0)->WhereIn('store_id',$storeIds)->orderBy('discount','desc')->limit($request->limit)->get();
+            $inOffers = Products::where('status', 1)->where('discount', '>', 0)->WhereIn('store_id', $storeIds)->orderBy('discount', 'desc')->limit($request->limit)->get();
             $data = [
-                'products'=>$inOffers,
+                'products' => $inOffers,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>$stores,
+            'data' => $stores,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getOffersProductsWithZipcodes(Request $request){
+    public function getOffersProductsWithZipcodes(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'limit' => 'required',
         ]);
@@ -1090,39 +1130,40 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
         $zipcode = $request->zipcode;
-        if($zipcode == null || !$zipcode || !isset($zipcode)){
+        if ($zipcode == null || !$zipcode || !isset($zipcode)) {
             $settings = Settings::first();
             $zipcode = $settings->default_delivery_zip;
         }
         $today = Carbon::now();
-        $stores = Stores::where(['status'=>1,'zipcode'=>$zipcode])->get();
+        $stores = Stores::where(['status' => 1, 'zipcode' => $zipcode])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
-            $inOffers = Products::where('status',1)->where('discount','>',0)->WhereIn('store_id',$storeIds)->orderBy('discount','desc')->limit($request->limit)->get();
+            $inOffers = Products::where('status', 1)->where('discount', '>', 0)->WhereIn('store_id', $storeIds)->orderBy('discount', 'desc')->limit($request->limit)->get();
             $data = [
-                'products'=>$inOffers,
+                'products' => $inOffers,
             ];
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
             return response()->json($response, 200);
         }
         $response = [
-            'data'=>null,
+            'data' => null,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function importData(Request $request){
+    public function importData(Request $request)
+    {
         $request->validate([
             "csv_file" => "required",
         ]);
@@ -1134,7 +1175,7 @@ class ProductsController extends Controller
             if (isset($row[0])) {
                 if ($row[0] != "") {
 
-                    if(count($header) == count($row)){
+                    if (count($header) == count($row)) {
                         $row = array_combine($header, $row);
                         $insertInfo =  array(
                             'id' => $row['id'],
@@ -1176,8 +1217,7 @@ class ProductsController extends Controller
                         $checkLead  =  Products::where("id", "=", $row["id"])->first();
                         if (!is_null($checkLead)) {
                             DB::table('products')->where("id", "=", $row["id"])->update($insertInfo);
-                        }
-                        else {
+                        } else {
                             DB::table('products')->insert($insertInfo);
                         }
                     }
@@ -1185,7 +1225,7 @@ class ProductsController extends Controller
             }
         }
         $response = [
-            'data'=>'Done',
+            'data' => 'Done',
             'success' => true,
             'status' => 200,
         ];
