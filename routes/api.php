@@ -420,6 +420,7 @@ Route::prefix('/v1')->group(function () {
     });
 
     Route::group(['middleware' => ['store_auth', 'jwt.auth']], function () {
+        Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
         Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']); 
         Route::post('orders/actionOrder', [OrdersController::class, 'actionOrder']); 
         Route::get('orders/getAllOrderInMyStore', [OrdersController::class, 'getAllOrderInMyStore']);

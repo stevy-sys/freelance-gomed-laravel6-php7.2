@@ -213,7 +213,7 @@ class StoresController extends Controller
             return response()->json($response, 404);
         }
         $ids = explode(',',$request->id);
-        $data = Stores::WhereIn('uid',$ids)->get();
+        $data = Stores::WhereIn('id',$ids)->get();
 
         $response = [
             'data'=>$data,

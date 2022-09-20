@@ -70,7 +70,7 @@ class ProductsController extends Controller
 
         $data = $request->all();
         $data['store_id'] = Auth::user()->store->id ;
-        // $data['tva_id'] = $request->tva ;
+        $data['tva_id'] = $request->tva ;
 
         $data = Products::create($data);
         if (is_null($data)) {
@@ -141,9 +141,9 @@ class ProductsController extends Controller
         }
         $data = $request->all() ;
         $data['store_id'] = Auth::user()->store->id ;
-        // if (isset($request->tva)) {
-        //     $data['tva_id'] = $request->tva ;
-        // }
+        if (isset($request->tva)) {
+            $data['tva_id'] = $request->tva ;
+        }
         $data = Products::find($request->id)->update($data);
 
         if (is_null($data)) {
