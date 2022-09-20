@@ -211,9 +211,9 @@ class OrdersController extends Controller
             $q->where('first_name','LIKE','%'.$request->search.'%');
         })->orWhere('order_to','LIKE','%'.$request->search.'%')
         ->orWhere('type_receive','LIKE','%'.$request->search.'%')
-        ->orWhereDay('created_at',$request->search)
-        ->orWhereMonth('created_at',$request->search)
-        ->orWhereYear('created_at',$request->search)
+        ->orWhereDay('date_time',$request->search)
+        ->orWhereMonth('date_time',$request->search)
+        ->orWhereYear('date_time',$request->search)
         ->orWhere('id',$request->search)
         ->with('user:id,first_name')->get();
 
