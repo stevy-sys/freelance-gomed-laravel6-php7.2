@@ -86,7 +86,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $data->grand_total + $data->delivery_charge}} USD</td>
+                        <td>{{ $data->grand_total}} USD</td>
                     </tr>
                 </tbody>
             </table>
