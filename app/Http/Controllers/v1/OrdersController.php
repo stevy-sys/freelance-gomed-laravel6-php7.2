@@ -672,7 +672,7 @@ class OrdersController extends Controller
 
         $general = General::first();
         $addres ='';
-        if($data->order_to =='home'){
+        if(isset($data->order_to) && $data->order_to  == 'home'){
             $compressed = json_decode($data->address);
             if (isset($compressed)) {
                 $addres = $compressed->house .' '.$compressed->landmark .' '.$compressed->address .' '.$compressed->pincode;
@@ -688,7 +688,7 @@ class OrdersController extends Controller
         $mail = $data->user_email;
         $username = $data->user_first_name;
         $subject = 'Order Status';
-        Mail::to($mail)->send(new CommandeMail($response,$subject));
+        Mail::to($mail)->send(new CommandeMail($response,$subject,Auth::user())); 
 
         // $response = Mail::send('mails/orders', $response , function($message) use($mail,$username,$subject,$general){
         //     $message->to($mail, $username)->subject($subject);

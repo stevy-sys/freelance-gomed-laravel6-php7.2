@@ -30,21 +30,21 @@
                 Nous vous remercions pour votre commande </h1>
             <div class="container pt-4">
                 <div>
-                    Bonjour (nom utilisateur)
+                    Bonjour {{$user->first_name}}
                 </div>
 
                 <div>
-                    Pour information - nous avons reçu votre commande n° : ... elle est maintenant en cours de traitement :
+                    Pour information - nous avons reçu votre commande n° : {{$data->id}} elle est maintenant en cours de traitement :
                 </div>
 
                 <p>
-                    <strong>Numero de commande : </strong> 143
+                    <strong>Numero de commande : </strong> {{$data->id}}
                 </p>
                 <p>
-                    <strong>Date de facturation : </strong> 20-09-12
+                    <strong>Date de facturation : </strong> {{$data->date_time}}
                 </p>
                 <p>
-                    <strong>Choix de livraison : </strong> à livrer
+                    <strong>Choix de livraison : </strong> {{$data->type_receive}}
                 </p>
             </div>
             <table class="payment-details mb-4">
@@ -58,36 +58,45 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+					@foreach ($data->orders as $product)
+						<tr>
+							<td></td>
+							<td>{{$product->name}}</td>
+							<td>{{$product->original_price}} USD</td>
+							<td>{{$product->quantity}}</td>
+							<td>{{$product->original_price*$product->quantity}} USD</td>
+						</tr>
+					@endforeach
+                    {{-- <tr>
                         <td></td>
                         <td>Nom</td>
                         <td>2000 MGA</td>
                         <td>1</td>
                         <td>2000 MGA</td>
-                    </tr>
+                    </tr> --}}
                     <tr class="font-weight-bold">
                         <td>Type de livraison</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>2000 MGA</td>
+                        <td>{{$data->delivery_charge}} USD</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>2000 MGA</td>
+                        <td>{{ $data->grand_total + $data->delivery_charge}} USD</td>
                     </tr>
                 </tbody>
             </table>
             <div class="container pb-4">
                 <strong>Address de livraison</strong>
                 <div class="d-flex flex-column pl-4">
+                    <span>{{$user->first_name}}</span>
+                    {{-- <span>Lorem ipsum dolor, sit amet consectetur </span>
                     <span>Lorem, ipsum.</span>
-                    <span>Lorem ipsum dolor, sit amet consectetur </span>
-                    <span>Lorem, ipsum.</span>
-                    <span>Lorem ipsum dolor sit.</span>
+                    <span>Lorem ipsum dolor sit.</span> --}}
                 </div>
 
             </div>

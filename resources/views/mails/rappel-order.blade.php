@@ -1413,7 +1413,7 @@
 																			style="margin: 0; font-size: 14px; text-align: right;">
 																			<span style="font-size:22px;"><strong><span
 																						style="">Grand Total $
-																						{{ $data->type_receive == 'standard' ? $data->grand_total+20 : $data->grand_total+40 }}
+																						{{$data->grand_total }}
 																					</span></strong></span>
 																		</p>
 																	</div>
