@@ -27,20 +27,20 @@
     <div class="container mt-4">
         <div class="card" style="width: 100%;">
             <h1 class="card-header text-center text-white p-3">
-                Rappel de commande non traiter pour {{$user->first_name}} </h1>
+                Rappel de commande non traiter pour {{ $user->first_name }} </h1>
             <div class="container pt-4">
                 <div>
-                    Bonjour vous avez une commande pas encore traiter
+                    Bonjour, pour rappel, vous avez une commande qui n'est pas encore traitée :
                 </div>
 
                 <p>
-                    <strong>Numero de commande : </strong> {{$data->id}}
+                    <strong>Numero de commande : </strong> {{ $data->id }}
                 </p>
                 <p>
-                    <strong>Date de facturation : </strong> {{$data->date_time}}
+                    <strong>Date de facturation : </strong> {{ $data->date_time }}
                 </p>
                 <p>
-                    <strong>Choix de livraison : </strong> {{$data->type_receive}}
+                    <strong>Choix de livraison : </strong> {{ $data->type_receive }}
                 </p>
             </div>
             <table class="payment-details mb-4">
@@ -54,15 +54,15 @@
                     </tr>
                 </thead>
                 <tbody>
-					@foreach ($data->orders as $product)
-						<tr>
-							<td></td>
-							<td>{{$product->name}}</td>
-							<td>{{$product->original_price}} USD</td>
-							<td>{{$product->quantity}}</td>
-							<td>{{$product->original_price*$product->quantity}} USD</td>
-						</tr>
-					@endforeach
+                    @foreach ($data->orders as $product)
+                        <tr>
+                            <td></td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->original_price }} USD</td>
+                            <td>{{ $product->quantity }}</td>
+                            <td>{{ $product->original_price * $product->quantity }} USD</td>
+                        </tr>
+                    @endforeach
                     {{-- <tr>
                         <td></td>
                         <td>Nom</td>
@@ -75,21 +75,21 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{$data->delivery_charge}} USD</td>
+                        <td>{{ $data->delivery_charge }} USD</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $data->grand_total}} USD</td>
+                        <td>{{ $data->grand_total }} USD</td>
                     </tr>
                 </tbody>
             </table>
             <div class="container pb-4">
                 <strong>Address de livraison</strong>
                 <div class="d-flex flex-column pl-4">
-                    <span>{{$user->first_name}}</span>
+                    <span>{{ $user->first_name }}</span>
                     {{-- <span>Lorem ipsum dolor, sit amet consectetur </span>
                     <span>Lorem, ipsum.</span>
                     <span>Lorem ipsum dolor sit.</span> --}}
