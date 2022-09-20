@@ -211,9 +211,9 @@ class OrdersController extends Controller
             $q->where('first_name','LIKE','%'.$request->search.'%');
         })->orWhere('order_to','LIKE','%'.$request->search.'%')
         ->orWhere('type_receive','LIKE','%'.$request->search.'%')
-        ->orWhereDay('created_at',$request->search)
-        ->orWhereMonth('created_at',$request->search)
-        ->orWhereYear('created_at',$request->search)
+        ->orWhereDay('date_time',$request->search)
+        ->orWhereMonth('date_time',$request->search)
+        ->orWhereYear('date_time',$request->search)
         ->orWhere('id',$request->search)
         ->with('user:id,first_name')->get();
 
@@ -672,7 +672,7 @@ class OrdersController extends Controller
 
         $general = General::first();
         $addres ='';
-        if($data->order_to =='home'){
+        if(isset($data->order_to) && $data->order_to  == 'home'){
             $compressed = json_decode($data->address);
             if (isset($compressed)) {
                 $addres = $compressed->house .' '.$compressed->landmark .' '.$compressed->address .' '.$compressed->pincode;
@@ -688,7 +688,7 @@ class OrdersController extends Controller
         $mail = $data->user_email;
         $username = $data->user_first_name;
         $subject = 'Order Status';
-        Mail::to($mail)->send(new CommandeMail($response,$subject));
+        Mail::to($mail)->send(new CommandeMail($response,$subject,Auth::user())); 
 
         // $response = Mail::send('mails/orders', $response , function($message) use($mail,$username,$subject,$general){
         //     $message->to($mail, $username)->subject($subject);
