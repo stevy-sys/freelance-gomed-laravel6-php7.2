@@ -15,6 +15,7 @@
             font-style: italic;
             width: 90%;
             margin: auto;
+            text-align: center;
         }
 
         .pl-4 {
@@ -44,7 +45,7 @@
                     <strong>Date de facturation : </strong> {{$data->date_time}}
                 </p>
                 <p>
-                    <strong>Choix de livraison : </strong> {{$data->type_receive}}
+                    <strong>Choix de livraison : </strong> {{$data->delivery_option}}
                 </p>
             </div>
             <table class="payment-details mb-4">
@@ -76,7 +77,7 @@
                     </tr> --}}
                     <tr class="font-weight-bold">
                         <td>Type de livraison</td>
-                        <td></td>
+                        <td>{{ $data->type_receive }}</td>
                         <td></td>
                         <td></td>
                         <td>{{$data->delivery_charge}} USD</td>
