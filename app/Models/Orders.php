@@ -21,7 +21,7 @@ class Orders extends Model
 
     protected $fillable = ['uid','store_id','date_time','paid_method','order_to','orders','notes','address',
     'driver_id','assignee','total','tax','grand_total','discount','delivery_charge','wallet_used','wallet_price',
-    'extra','pay_key','coupon_code','status','payStatus','extra_field','queue_id','display_at','type_receive','duty_free'];
+    'extra','pay_key','coupon_code','status','payStatus','extra_field','queue_id','display_at','type_receive','duty_free','delivery_option'];
 
     protected $hidden = [
         // 'created_at',
