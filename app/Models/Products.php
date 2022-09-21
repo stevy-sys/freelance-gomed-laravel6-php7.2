@@ -20,7 +20,7 @@ class Products extends Model
     protected $fillable = ['store_id','cover','name','images','original_price','sell_price','discount','kind','cate_id',
     'sub_cate_id','in_home','is_single','have_gram','gram','have_kg','kg','have_pcs','pcs','have_liter','liter','have_ml',
     'ml','descriptions','key_features','disclaimer','exp_date','type_of','in_offer','in_stoke','rating','total_rating',
-    'variations','size','status','extra_field'];
+    'variations','size','status','extra_field','tva_id'];
 
     protected $hidden = [
         'updated_at', 'created_at',
@@ -41,4 +41,11 @@ class Products extends Model
         'size' => 'integer',
         'status' => 'integer',
     ];
+
+
+    public function tva()
+    {
+        return $this->belongsTo(Tva::class,'tva_id');
+    }
+   
 }

@@ -7,43 +7,48 @@
   terms found in the Website https://sayna.io/license
   Copyright and Good Faith Purchasers © 2021-present Sayna.
 */
+
 use Illuminate\Http\Request;
-use App\Http\Controllers\v1\Auth\AuthController;
-use App\Http\Controllers\v1\Auth\RegisterController;
-use App\Http\Controllers\v1\Profile\ProfileController;
-use App\Http\Controllers\v1\Auth\LogoutController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\v1\OtpController;
+use App\Http\Controllers\v1\TvaController;
+use App\Http\Controllers\v1\FlushController;
+use App\Http\Controllers\v1\PagesController;
+use App\Http\Controllers\v1\PopupController;
 use App\Http\Controllers\v1\UsersController;
-use App\Http\Controllers\v1\AddressController;
-use App\Http\Controllers\v1\BannersController;
-use App\Http\Controllers\v1\CategoryController;
-use App\Http\Controllers\v1\ChatMessagesController;
-use App\Http\Controllers\v1\ChatRoomsController;
 use App\Http\Controllers\v1\CitiesController;
-use App\Http\Controllers\v1\ContactsController;
-use App\Http\Controllers\v1\DriversController;
-use App\Http\Controllers\v1\FavouriteController;
-use App\Http\Controllers\v1\GeneralController;
 use App\Http\Controllers\v1\ManageController;
 use App\Http\Controllers\v1\OffersController;
 use App\Http\Controllers\v1\OrdersController;
-use App\Http\Controllers\v1\OtpController;
-use App\Http\Controllers\v1\ProductsController;
-use App\Http\Controllers\v1\RatingsController;
 use App\Http\Controllers\v1\StoresController;
-use App\Http\Controllers\v1\SubCategoryController;
-use App\Http\Controllers\v1\SubscriberController;
-use App\Http\Controllers\v1\PaytmPayController;
+use App\Http\Controllers\v1\AddressController;
+use App\Http\Controllers\v1\BannersController;
+use App\Http\Controllers\v1\DriversController;
+use App\Http\Controllers\v1\GeneralController;
+use App\Http\Controllers\v1\RatingsController;
+use App\Http\Controllers\v1\CategoryController;
+use App\Http\Controllers\v1\ContactsController;
 use App\Http\Controllers\v1\PaymentsController;
-use App\Http\Controllers\v1\LanguagesController;
-use App\Http\Controllers\v1\PagesController;
-use App\Http\Controllers\v1\PopupController;
-use App\Http\Controllers\v1\SettingsController;
-use App\Http\Controllers\v1\ReferralCodesController;
+use App\Http\Controllers\v1\PaytmPayController;
+use App\Http\Controllers\v1\ProductsController;
 use App\Http\Controllers\v1\ReferralController;
+use App\Http\Controllers\v1\SettingsController;
+use App\Http\Controllers\v1\Auth\AuthController;
+use App\Http\Controllers\v1\ChatRoomsController;
+use App\Http\Controllers\v1\FavouriteController;
+use App\Http\Controllers\v1\LanguagesController;
+use App\Http\Controllers\v1\SubscriberController;
+use App\Http\Controllers\v1\Auth\LogoutController;
+use App\Http\Controllers\v1\ComplaintsController;
+use App\Http\Controllers\v1\SubCategoryController;
+use App\Http\Controllers\v1\ChatMessagesController;
 use App\Http\Controllers\v1\StoreRequestController;
-use App\Http\Controllers\v1\ComplaintsController;;
+
+use App\Http\Controllers\v1\Auth\RegisterController;
 use App\Http\Controllers\v1\DriverRequestController;
-use App\Http\Controllers\v1\FlushController;
+use App\Http\Controllers\v1\ReferralCodesController;
+use App\Http\Controllers\v1\Profile\ProfileController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -63,11 +68,11 @@ Route::get('/', function () {
     ];
 });
 
-Route::prefix('/v1')->group(function () {
+Route::prefix('/v1')->group(function () { 
 
     Route::group(['namespace' => 'Auth'], function () {
 
-        Route::post('auth/login', [AuthController::class, 'login']);
+        Route::post('auth/login', [AuthController::class, 'login']); 
         Route::post('auth/loginDrivers', [AuthController::class, 'loginDrivers']);
         Route::post('auth/adminLogin', [AuthController::class, 'adminLogin']);
         Route::post('auth/create_account', [RegisterController::class, 'register']);
@@ -90,7 +95,6 @@ Route::prefix('/v1')->group(function () {
         Route::post('auth/verify', [VerifyAccountController::class, 'verify']);
         Route::post('auth/loginWithMobileOtp', [AuthController::class, 'loginWithMobileOtp']);
         Route::post('auth/loginWithMobileOtpDriver', [AuthController::class, 'loginWithMobileOtpDriver']);
-
     });
 
     Route::group(['middleware' => ['jwt', 'jwt.auth']], function () {
@@ -102,7 +106,7 @@ Route::prefix('/v1')->group(function () {
             Route::post('profile/getProfileById', [ProfileController::class, 'getProfileById']);
             Route::post('profile/byId', [ProfileController::class, 'getById']);
             Route::post('profile/getStoreFromId', [ProfileController::class, 'getStoreFromId']);
-            Route::post('validate', [ProfileController::class,'validate_user']);
+            Route::post('validate', [ProfileController::class, 'validate_user']);
         });
 
         Route::group(['namespace' => 'Auth'], function () {
@@ -123,8 +127,8 @@ Route::prefix('/v1')->group(function () {
 
         Route::post('referralcode/getMyCode', [ReferralCodesController::class, 'getMyCode']);
         Route::post('referral/redeemReferral', [ReferralController::class, 'redeemReferral']);
-        Route::post('profile/getMyWallet', [ProfileController::class,'getMyWallet']);
-        Route::post('profile/getMyWalletBalance', [ProfileController::class,'getMyWalletBalance']);
+        Route::post('profile/getMyWallet', [ProfileController::class, 'getMyWallet']);
+        Route::post('profile/getMyWalletBalance', [ProfileController::class, 'getMyWalletBalance']);
 
         // Address Routes
         Route::post('address/getByUid', [AddressController::class, 'getByUid']);
@@ -178,6 +182,9 @@ Route::prefix('/v1')->group(function () {
 
         Route::post('ratings/getByDriverId', [RatingsController::class, 'getByDriverId']);
         Route::post('ratings/saveDriversRatings', [RatingsController::class, 'saveDriversRatings']);
+
+        Route::post('search/mytva', [TvaController::class, 'searchTva']);
+
     });
 
     Route::group(['namespace' => 'Profile'], function () {
@@ -189,6 +196,14 @@ Route::prefix('/v1')->group(function () {
     });
 
     Route::group(['middleware' => ['admin_auth', 'jwt.auth']], function () {
+
+
+        //TVA Routes
+        Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
+        Route::post('tva/importCsvTva', [TvaController::class, 'importCsvTva']);
+        Route::put('tva/updateTva/{tva}', [TvaController::class, 'updateTva']);
+        Route::delete('tva/deleteTva/{tva}', [TvaController::class, 'deleteTva']);
+        Route::get('tva/downloadTva/', [TvaController::class, 'downloadTva']);
 
         // Settings Routes
         Route::get('setttings/getSettingsForOwner', [SettingsController::class, 'getSettingsForOwner']);
@@ -229,7 +244,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('referral/update', [ReferralController::class, 'update']);
 
         // LanguagesController Routes
-        Route::post('languages/create',[LanguagesController::class, 'save'] );
+        Route::post('languages/create', [LanguagesController::class, 'save']);
         Route::post('languages/getById', [LanguagesController::class, 'getById']);
         Route::get('languages/getAll', [LanguagesController::class, 'getAll']);
         Route::post('languages/update', [LanguagesController::class, 'update']);
@@ -261,7 +276,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('store/createStoreProfile', [RegisterController::class, 'createStoreProfile']);
 
         // User Routes
-        Route::get('users/getAll', [UsersController::class, 'getAll']);
+        Route::get('users/getAll', [UsersController::class, 'getAll']); 
         Route::get('users/admins', [UsersController::class, 'admins']);
         Route::post('users/deleteUser', [UsersController::class, 'delete']);
         Route::post('users/adminNewAdmin', [RegisterController::class, 'adminNewAdmin']);
@@ -352,8 +367,8 @@ Route::prefix('/v1')->group(function () {
         Route::post('products/getByStoreIdStoreAllAdmin', [ProductsController::class, 'getByStoreIdStoreAll']);
 
         // Payments Routes For Admin
-        Route::post('payments/paytmRefund',[PaytmPayController::class, 'refundUserRequest']);
-        Route::post('payments/paytmRefund',[PaytmPayController::class, 'refundUserRequest']);
+        Route::post('payments/paytmRefund', [PaytmPayController::class, 'refundUserRequest']);
+        Route::post('payments/paytmRefund', [PaytmPayController::class, 'refundUserRequest']);
         Route::post('payments/getById', [PaymentsController::class, 'getById']);
         Route::post('payments/getPaymentInfo', [PaymentsController::class, 'getPaymentInfo']);
         Route::get('payments/getAll', [PaymentsController::class, 'getAll']);
@@ -361,17 +376,17 @@ Route::prefix('/v1')->group(function () {
         Route::post('payments/delete', [PaymentsController::class, 'delete']);
         Route::post('payments/refundFlutterwave', [PaymentsController::class, 'refundFlutterwave']);
         Route::post('payments/payPalRefund', [PaymentsController::class, 'payPalRefund']);
-        Route::post('payments/refundPayStack',[PaymentsController::class, 'refundPayStack']);
-        Route::post('payments/razorPayRefund',[PaymentsController::class, 'razorPayRefund']);
-        Route::post('payments/refundStripePayments',[PaymentsController::class, 'refundStripePayments']);
-        Route::post('payments/instaMOJORefund',[PaymentsController::class, 'instaMOJORefund']);
+        Route::post('payments/refundPayStack', [PaymentsController::class, 'refundPayStack']);
+        Route::post('payments/razorPayRefund', [PaymentsController::class, 'razorPayRefund']);
+        Route::post('payments/refundStripePayments', [PaymentsController::class, 'refundStripePayments']);
+        Route::post('payments/instaMOJORefund', [PaymentsController::class, 'instaMOJORefund']);
 
         // Pages Routes
-        Route::post('pages/save', [PagesController::class,'save']);
-        Route::post('pages/update', [PagesController::class,'update']);
+        Route::post('pages/save', [PagesController::class, 'save']);
+        Route::post('pages/update', [PagesController::class, 'update']);
         Route::post('pages/getById', [PagesController::class, 'getById']);
-        Route::post('pages/delete', [PagesController::class,'delete']);
-        Route::get('pages/getAll', [PagesController::class,'getAll']);
+        Route::post('pages/delete', [PagesController::class, 'delete']);
+        Route::get('pages/getAll', [PagesController::class, 'getAll']);
 
         Route::post('sendNoficationGlobal', [ProfileController::class, 'sendNoficationGlobal']);
         Route::post('notification/sendToAllUsers', [ProfileController::class, 'sendToAllUsers']);
@@ -379,34 +394,37 @@ Route::prefix('/v1')->group(function () {
         Route::post('notification/sendToStores', [ProfileController::class, 'sendToStores']);
         Route::post('notification/sendToDrivers', [ProfileController::class, 'sendToDrivers']);
 
-        Route::get('contacts/getAll',[ContactsController::class, 'getAll'] );
-        Route::post('contacts/update',[ContactsController::class, 'update'] );
-        Route::post('mails/replyContactForm',[ContactsController::class, 'replyContactForm']);
+        Route::get('contacts/getAll', [ContactsController::class, 'getAll']);
+        Route::post('contacts/update', [ContactsController::class, 'update']);
+        Route::post('mails/replyContactForm', [ContactsController::class, 'replyContactForm']);
 
         // store request Routes
-        Route::get('store_request/getNewRequest',[StoreRequestController::class, 'getNewRequest'] );
-        Route::post('store_request/rejectRequest',[StoreRequestController::class, 'rejectRequest'] );
-        Route::post('store_request/acceptRequest',[StoreRequestController::class, 'acceptRequest'] );
+        Route::get('store_request/getNewRequest', [StoreRequestController::class, 'getNewRequest']);
+        Route::post('store_request/rejectRequest', [StoreRequestController::class, 'rejectRequest']);
+        Route::post('store_request/acceptRequest', [StoreRequestController::class, 'acceptRequest']);
 
-        Route::get('driver_request/getNewRequest',[DriverRequestController::class, 'getNewRequest'] );
-        Route::post('driver_request/rejectRequest',[DriverRequestController::class, 'rejectRequest'] );
-        Route::post('driver_request/acceptRequest',[DriverRequestController::class, 'acceptRequest'] );
+        Route::get('driver_request/getNewRequest', [DriverRequestController::class, 'getNewRequest']);
+        Route::post('driver_request/rejectRequest', [DriverRequestController::class, 'rejectRequest']);
+        Route::post('driver_request/acceptRequest', [DriverRequestController::class, 'acceptRequest']);
 
         // Complaints Routes
-        Route::get('complaints/getAll',[ComplaintsController::class, 'getAll'] );
-        Route::post('complaints/update',[ComplaintsController::class, 'update'] );
-        Route::post('complaints/replyContactForm',[ComplaintsController::class, 'replyContactForm']);
+        Route::get('complaints/getAll', [ComplaintsController::class, 'getAll']);
+        Route::post('complaints/update', [ComplaintsController::class, 'update']);
+        Route::post('complaints/replyContactForm', [ComplaintsController::class, 'replyContactForm']);
 
         Route::post('ratings/getWithStoreIdAdmin', [RatingsController::class, 'getWithStoreId']);
 
-        Route::post('flush/getByKey',[FlushController::class, 'getByKey'] );
-        Route::post('flush/save',[FlushController::class, 'save'] );
-        Route::post('flush/update',[FlushController::class, 'update'] );
-
+        Route::post('flush/getByKey', [FlushController::class, 'getByKey']);
+        Route::post('flush/save', [FlushController::class, 'save']);
+        Route::post('flush/update', [FlushController::class, 'update']);
     });
 
     Route::group(['middleware' => ['store_auth', 'jwt.auth']], function () {
-        Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']);
+        Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
+        Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']); 
+        Route::post('orders/actionOrder', [OrdersController::class, 'actionOrder']); 
+        Route::get('orders/getAllOrderInMyStore', [OrdersController::class, 'getAllOrderInMyStore']);
+        Route::get('orders/searchOrderInMyStore', [OrdersController::class, 'searchOrderInMyStore']);
         Route::post('orders/getByIdFromStore', [OrdersController::class, 'getByIdFromStore']);
         Route::post('orders/updateStatusStore', [OrdersController::class, 'updateStatusStore']);
 
@@ -429,8 +447,6 @@ Route::prefix('/v1')->group(function () {
         Route::post('orders/getStoreStatsDataWithDates', [OrdersController::class, 'getStoreStatsDataWithDates']);
 
         Route::post('ratings/getWithStoreId', [RatingsController::class, 'getWithStoreId']);
-
-
     });
 
     Route::group(['middleware' => ['driver_auth']], function () {
@@ -457,7 +473,7 @@ Route::prefix('/v1')->group(function () {
     // Payments Routes For User Public
     Route::get('payNow',[PaytmPayController::class, 'payNow']);
     Route::get('payNowWeb',[PaytmPayController::class, 'payNowWeb']);
-    Route::post('paytm-callback',[PaytmPayController::class, 'paytmCallback']);
+    Route::post('paytm-callback',[PaytmPayController::class, 'paytmCallback']); 
     Route::post('paytm-webCallback',[PaytmPayController::class, 'webCallback']);
     Route::get('refundUserRequest',[PaytmPayController::class, 'refundUserRequest']);
 
@@ -533,22 +549,20 @@ Route::prefix('/v1')->group(function () {
     Route::post('otp/generateTempTokenEmail',[OtpController::class, 'generateTempTokenEmail'] );
     Route::post('otp/generateTempTokenDriver',[OtpController::class, 'generateTempTokenDriver'] );
 
-    Route::post('contacts/create',[ContactsController::class, 'save'] );
-    Route::post('sendMailToAdmin',[ContactsController::class, 'sendMailToAdmin']);
+    Route::post('contacts/create',[ContactsController::class, 'save'] ); 
+    Route::post('sendMailToAdmin',[ContactsController::class, 'sendMailToAdmin']); 
     Route::get('offers/getMyOffers',[OffersController::class, 'getMyOffers'] );
 
     // Store register routes
-    Route::post('join_store/checkEmail',[StoreRequestController::class, 'checkEmail'] );
-    Route::post('join_store/saveStore',[StoreRequestController::class, 'save'] );
-    Route::post('join_store/thankyouReply',[StoreRequestController::class, 'thankyouReply'] );
+    Route::post('join_store/checkEmail', [StoreRequestController::class, 'checkEmail']);
+    Route::post('join_store/saveStore', [StoreRequestController::class, 'save']);
+    Route::post('join_store/thankyouReply', [StoreRequestController::class, 'thankyouReply']);
 
     Route::get('orders/printInvoice', [OrdersController::class, 'printInvoice']);
     Route::get('orders/printStoreInvoice', [OrdersController::class, 'printStoreInvoice']);
 
-    Route::post('join_driver/checkEmail',[DriverRequestController::class, 'checkEmail'] );
-    Route::post('join_driver/saveDriver',[DriverRequestController::class, 'save'] );
+    Route::post('join_driver/checkEmail', [DriverRequestController::class, 'checkEmail']);
+    Route::post('join_driver/saveDriver', [DriverRequestController::class, 'save']);
 
     Route::post('ratings/getProductsRatings', [RatingsController::class, 'getProductsRatings']);
 });
-
-
