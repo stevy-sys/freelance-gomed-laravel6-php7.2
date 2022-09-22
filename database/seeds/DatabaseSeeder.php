@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(PagesSeeder::class);
         // $this->call(CredsPayementSeeder::class);
         // $this->call(UserSeeder::class);
-        $this->call(GeneralSeeder::class);
+        // $this->call(GeneralSeeder::class);
+        $this->call(DataSeedTemp::class);
     }
 }

@@ -1,0 +1,20 @@
+{
+    "first_name": "pharmacien stevy",
+    "last_name": "pharma",
+    "email": "nygypuguzi@mailinator.com",
+    "country_code": "+261",
+    "mobile": "3424323",
+    "cover": "NA",
+    "lat": "0",
+    "lng": "0",
+    "gender": 1,
+    "verified": 1,
+    "type": "store",
+    "dob": "1997-07-15",
+    "date": null,
+    "fcm_token": null,
+    "others": null,
+    "stripe_key": null,
+    "extra_field": null,
+    "status": 1
+}
