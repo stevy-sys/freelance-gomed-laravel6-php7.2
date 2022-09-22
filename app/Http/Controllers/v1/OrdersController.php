@@ -63,7 +63,7 @@ class OrdersController extends Controller
         }
 
         $allStore = explode(",",$request->store_id);
-        $allProduct = collect(json_decode($request->orders));
+        $allProduct = collect(json_decode((string)$request->orders,true));
         $orderRetour = [] ;
         if (count($allStore) > 1) {
             foreach ($allStore as $store_id) {
@@ -71,9 +71,9 @@ class OrdersController extends Controller
                 $data = $request->all();
                 $data['store_id'] = $store_id;
                 $data['total'] = 0 ;
-                $data['orders'] = json_encode($products);
+                $data['orders'] = json_encode(array_values($products));
                 foreach ($products as $product) {
-                    $childTotal = $product->original_price * $product->quantity;
+                    $childTotal = $product['original_price'] * $product['quantity'];
                     $data['total'] += $childTotal ;
                 }
                 $data['duty_free'] = isset($request->tax) ? ($data['total']) * (($request->tax/100)+ 1) : 0 ;
