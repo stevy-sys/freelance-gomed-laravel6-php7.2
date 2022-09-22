@@ -48,6 +48,9 @@ use App\Http\Controllers\v1\Auth\RegisterController;
 use App\Http\Controllers\v1\DriverRequestController;
 use App\Http\Controllers\v1\ReferralCodesController;
 use App\Http\Controllers\v1\Profile\ProfileController;
+use App\Models\Products;
+use App\Models\Stores;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -420,6 +423,7 @@ Route::prefix('/v1')->group(function () {
     });
 
     Route::group(['middleware' => ['store_auth', 'jwt.auth']], function () {
+        Route::get('orders/getAll', [OrdersController::class, 'getAll']);
         Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
         Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']); 
         Route::post('orders/actionOrder', [OrdersController::class, 'actionOrder']); 
