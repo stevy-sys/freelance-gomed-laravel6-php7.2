@@ -30,13 +30,13 @@
             <h1 class="card-header text-center text-white p-3">
                 Nous vous remercions pour votre commande </h1>
             <div class="container pt-4">
-                <div>
-                    Bonjour {{$user->first_name}}
-                </div>
+                <p>
+                    Bonjour {{$user->first_name}},
+                </p>
 
-                <div>
-                    Pour information - nous avons reçu votre commande n° : {{$data->id}} elle est maintenant en cours de traitement :
-                </div>
+                <p>
+                    Pour information, nous avons reçu votre commande n° : {{$data->id}}. Elle est maintenant en cours de traitement :
+                </p>
 
                 <p>
                     <strong>Numero de commande : </strong> {{$data->id}}

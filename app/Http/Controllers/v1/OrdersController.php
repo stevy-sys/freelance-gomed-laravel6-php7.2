@@ -664,6 +664,8 @@ class OrdersController extends Controller
             ];
             return response()->json($response, 404);
         }
+
+        // var_dump($request->id);
         $data = DB::table('orders')
         ->select('orders.*','users.first_name as user_first_name','users.last_name as user_last_name','users.cover as user_cover','users.fcm_token as user_fcm_token','users.mobile as user_mobile','users.email as user_email')
         ->join('users', 'orders.uid', '=', 'users.id')
