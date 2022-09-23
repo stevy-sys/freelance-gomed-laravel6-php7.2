@@ -28,13 +28,13 @@
     <div class="container mt-4">
         <div class="card" style="width: 100%;">
             <h1 class="card-header text-center text-white p-3">
-                Rappel de commande non traiter pour {{ $user->first_name }} </h1>
+                Rappel de commande non traitée pour {{ $data->user->first_name }} </h1>
             <div class="container pt-4">
                 <div>
-                    Bonjour, pour rappel, vous avez une commande qui n'est pas encore traitée :
+                    Bonjour, pour rappel, vous avez une commande pas encore traitée :
                 </div>
 
-                <p>
+                <p class="mt-4">
                     <strong>Numero de commande : </strong> {{ $data->id }}
                 </p>
                 <p>
