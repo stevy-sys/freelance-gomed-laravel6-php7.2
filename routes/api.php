@@ -142,6 +142,11 @@ Route::prefix('/v1')->group(function () {
         Route::post('stores/getStoresData', [StoresController::class, 'getStoresData']);
 
         // Orders Routes
+
+        Route::post('orders/makeOrder', [OrdersController::class, 'makeOrder']);
+        Route::post('orders/createOrderStore', [OrdersController::class, 'createOrderStore']);
+
+
         Route::post('orders/create', [OrdersController::class, 'save']);
         Route::post('orders/getById', [OrdersController::class, 'getById']);
         Route::post('orders/sendMailForOrders', [OrdersController::class, 'sendMailForOrders']);
@@ -508,6 +513,7 @@ Route::prefix('/v1')->group(function () {
     Route::post('settings/getByLanguageIdWeb', [SettingsController::class, 'getByLanguageIdWeb']);
 
     Route::post('home/searchWithCity', [ProductsController::class, 'searchWithCity']);
+    Route::post('home/testProduct', [ProductsController::class, 'getProductInStoreViaCountrie']);
     Route::post('home/searchWithZipCode', [ProductsController::class, 'searchWithZipCode']);
     Route::post('home/searchWithGeoLocation', [ProductsController::class, 'searchWithGeoLocation']);
 

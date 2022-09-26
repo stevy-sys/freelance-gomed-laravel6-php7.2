@@ -21,11 +21,21 @@ use App\Models\Products;
 use App\Models\Settings;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use App\Services\ProductService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller
 {
+    public $service ;
+    
+    public function __construct(Type $var = null) {
+        $this->service = new ProductService();
+    }
+
+    public function getProductInStoreViaCountrie(Request $request){
+       return $this->service->getProductInStoreViaCountrie($request);
+    }
     public function save(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -676,7 +686,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status' => 500
+                'status' => 500 
             ];
             return response()->json($response, 404);
         }

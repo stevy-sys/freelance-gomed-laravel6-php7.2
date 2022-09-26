@@ -3,26 +3,27 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use App\Models\DetailPaimentUser;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class RappelOrderStore extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data;
-    public $user;
+    public $detailPaiment;
+    public $userInRappel;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user,$order)
+    public function __construct($detailPaiment,$userInRappel)
     {
-        $order->orders = json_decode($order->orders);
-        $this->user = $user;
-        $this->data = $order;
+        $this->userInRappel = $userInRappel;
+        $detail = DetailPaimentUser::find($detailPaiment);
+        $this->detailPaiment = $detail->load('orderStore.product');
     }
 
     /**
@@ -33,6 +34,7 @@ class RappelOrderStore extends Mailable
     public function build()
     {
         return $this->from(env('MAIL_USERNAME'))
+                    ->subject('Rappel de commande')
                     ->view('mails.rappel-order');
     }
 }

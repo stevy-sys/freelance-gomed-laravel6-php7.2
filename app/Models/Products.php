@@ -47,5 +47,15 @@ class Products extends Model
     {
         return $this->belongsTo(Tva::class,'tva_id');
     }
+
+    public function store()
+    {
+        return $this->belongsTo(Stores::class,'store_id');
+    }
+
+    public function OrderUser()
+    {
+        return $this->hasOne(OrderUser::class,'product_id');
+    }
    
 }

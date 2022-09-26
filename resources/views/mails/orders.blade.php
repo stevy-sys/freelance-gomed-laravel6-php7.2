@@ -35,17 +35,17 @@
                 </div>
 
                 <div>
-                    Pour information - nous avons reçu votre commande n° : {{$data->id}} elle est maintenant en cours de traitement :
+                    Pour information - nous avons reçu votre commande n° : {{$detailPaiment->id}} elle est maintenant en cours de traitement :
                 </div>
 
                 <p>
-                    <strong>Numero de commande : </strong> {{$data->id}}
+                    <strong>Numero de commande : </strong> {{$detailPaiment->id}}
                 </p>
                 <p>
-                    <strong>Date de facturation : </strong> {{$data->date_time}}
+                    <strong>Date de facturation : </strong> {{$detailPaiment->created_at}}
                 </p>
                 <p>
-                    <strong>Choix de livraison : </strong> {{$data->delivery_option}}
+                    <strong>Choix de livraison : </strong> {{$detailPaiment->delivery_option}}
                 </p>
             </div>
             <table class="payment-details mb-4">
@@ -59,35 +59,29 @@
                     </tr>
                 </thead>
                 <tbody>
-					@foreach ($data->orders as $product)
+					@foreach ($detailPaiment->orderUser as $orderUser)
 						<tr>
 							<td></td>
-							<td>{{$product->name}}</td>
-							<td>{{$product->original_price}} USD</td>
-							<td>{{$product->quantity}}</td>
-							<td>{{$product->original_price*$product->quantity}} USD</td>
+							<td>{{$orderUser->product->name}}</td>
+							<td>{{$orderUser->product->original_price}} USD</td>
+							<td>{{$orderUser->quantity}}</td>
+							<td>{{$orderUser->total}} USD</td>
 						</tr>
 					@endforeach
-                    {{-- <tr>
-                        <td></td>
-                        <td>Nom</td>
-                        <td>2000 MGA</td>
-                        <td>1</td>
-                        <td>2000 MGA</td>
-                    </tr> --}}
+                    
                     <tr class="font-weight-bold">
                         <td>Type de livraison</td>
-                        <td>{{ $data->type_receive }}</td>
+                        <td>{{ $detailPaiment->type_receive }}</td>
                         <td></td>
                         <td></td>
-                        <td>{{$data->delivery_charge}} USD</td>
+                        <td>a regarder USD</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $data->grand_total}} USD</td>
+                        <td>{{ $detailPaiment->grand_total}} USD</td>
                     </tr>
                 </tbody>
             </table>
@@ -95,9 +89,7 @@
                 <strong>Address de livraison</strong>
                 <div class="d-flex flex-column pl-4">
                     <span>{{$user->first_name}}</span>
-                    {{-- <span>Lorem ipsum dolor, sit amet consectetur </span>
-                    <span>Lorem, ipsum.</span>
-                    <span>Lorem ipsum dolor sit.</span> --}}
+                    
                 </div>
 
             </div>
