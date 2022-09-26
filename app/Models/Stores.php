@@ -38,4 +38,8 @@ class Stores extends Model
     public function orders(){
         return $this->hasMany(Orders::class,'store_id');
     }
+
+    public function products() {
+        return $this->hasMany(Products::class,'store_id');
+    }
 }

@@ -22,6 +22,7 @@ use App\Mail\CommandeMail;
 use App\Models\Complaints;
 use Illuminate\Http\Request;
 use App\Jobs\RappelOrderStore;
+use App\Services\OrdersService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,32 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class OrdersController extends Controller
 {
+    public $service ;
+    
+    public function __construct(Type $var = null) {
+        $this->service = new OrdersService();
+    }
+
+    public function makeOrder(Request $request){
+        try {
+            $response = $this->service->makeOrder($request,Auth::user());
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    public function createOrderStore(Request $request){
+        try {
+            $response = $this->service->createOrderStore($request);
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    // ////////////////////////////////////////////////////////
+
     public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'uid' => 'required',

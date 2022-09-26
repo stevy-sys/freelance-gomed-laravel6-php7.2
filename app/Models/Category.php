@@ -26,4 +26,8 @@ class Category extends Model
     protected $casts = [
         'status' => 'integer',
     ];
+
+    public function subCategory() {
+        return $this->hasMany(SubCategory::class,'cate_id');
+    }
 }

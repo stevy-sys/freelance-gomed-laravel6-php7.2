@@ -15,16 +15,18 @@ class RappelOrderStore implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     public $user;
-    public $order;
+    public $detailPaiment;
+    public $userInRappel;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($user,$order)
+    public function __construct($user,$detailPaiment,$userInRappel)
     {
-        $this->user = $user;
-        $this->order = $order;
+        $this->user = $user ;
+        $this->userInRappel = $userInRappel ;
+        $this->detailPaiment = $detailPaiment;
     }
 
     /**
@@ -34,6 +36,6 @@ class RappelOrderStore implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to($this->user->email)->send(new MailRappel($this->user,$this->order));       
+        Mail::to($this->user->email)->send(new MailRappel($this->detailPaiment,$this->userInRappel));       
     }
 }
