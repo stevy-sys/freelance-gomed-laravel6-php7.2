@@ -22,6 +22,7 @@ class CreateDetailPaimentUsersTable extends Migration
             $table->string('delivery_option')->nullable();
             $table->string('type_receive')->nullable();
             $table->datetime('paid_at')->nullable();
+            $table->boolean('status')->default(0);
             $table->integer('queue_id')->nullable();
             $table->timestamps();
         });

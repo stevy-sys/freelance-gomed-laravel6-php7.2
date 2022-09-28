@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class DetailPaimentUser extends Model
@@ -9,6 +10,7 @@ class DetailPaimentUser extends Model
     public $timestamps = true;
 
     protected $guarded = [] ;
+    protected $appends = ['humansUpdatedAt'];
 
     public function orderUser()
     {
@@ -24,8 +26,14 @@ class DetailPaimentUser extends Model
     {
         return $this->belongsTo(User::class,'user_owner');
     }
+    
     public function user()
     {
         return $this->belongsTo(User::class,'uid');
+    }
+
+    public function getHumansUpdatedAtAttribute() {
+        $date = Carbon::parse($this->created_at)->diffForHumans();
+        return $date ;
     }
 }

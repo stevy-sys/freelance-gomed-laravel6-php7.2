@@ -23,7 +23,7 @@ class OrdersService {
 
     private function createDetailPaiment($user)
     {
-        $detailPaiment = DetailPaimentUser::where(['uid',$user->id])->whereNull('paid_at')->first();
+        $detailPaiment = DetailPaimentUser::where('uid',$user->id)->whereNull('paid_at')->first();
         if (!isset($detailPaiment)) {
             return DetailPaimentUser::create([
                 'uid' => $user->id,
@@ -78,6 +78,7 @@ class OrdersService {
             $orderUser->save();
         }else{
             if ($orderUser->quantity == 1) {
+                // $orderUser->quantity = 0 ;
                 $orderUser->delete();
             }else{
                 $orderUser->quantity-- ;
@@ -109,11 +110,12 @@ class OrdersService {
         else {
             $this->updateOrder($orderUser,$request->action,$detailPaiment);
         }
-
+        $orderUser = OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first();
         return [
             'data' => [
-                'detailPaiment' => DetailPaimentUser::where('uid',$user->id)->first(),
-                'orderUser' => OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first(),
+                'detailPaiment' => $detailPaiment,
+                'orderUser' => isset($orderUser) ? $orderUser : 0,
+                'count' => $detailPaiment->orderUser->count()
             ],
             'status' => 200
         ];
@@ -154,17 +156,36 @@ class OrdersService {
         ];
     }
 
-    public function getAllOrderInMyStore()
+    public function getAllOrderInMyStore($user)
     {
-        return DetailPaimentUser::with('userOwner:id,first_name')->where(['type'=>'store','uid' => $user->id])->get();
+        $order['open'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',0)->where(['type'=>'store','uid' => $user->id])->get();
+        $order['valide'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',1)->where(['type'=>'store','uid' => $user->id])->get();
+        $order['all'] = DetailPaimentUser::with('userOwner:id,first_name')->where(['type'=>'store','uid' => $user->id])->get();
+        return [
+            'data' => $order,
+            'status' => 200
+        ];
+    }
+
+    public function viewDetailPaiment($request)
+    {
+        $order = DetailPaimentUser::with(['orderStore.product','userOwner'])->find($request->id);
+        return [
+            'data' => $order,
+            'status' => 200
+        ];
     }
 
     public function viewOneOrder($request)
     {
-        return DetailPaimentUser::with(['userOwner:id,first_name','orderStore.product'])->where('id',$request->id)->get();
+        $order = DetailPaimentUser::with(['userOwner:id,first_name','orderStore.product'])->where('id',$request->id)->first();
+        return [
+            'data' => $order,
+            'status' => 200
+        ]; 
     }
 
-    public function getMyDetailPaimentUser($request,$user)
+    public function getMyDetailPaimentUser($user)
     {
         $detailPaiment = DetailPaimentUser::where(['uid'=>$user->id,'type' => 'user'])->whereNull('paid_at')->first();
         if (!isset($detailPaiment)) {
@@ -175,7 +196,7 @@ class OrdersService {
         }
         return [
             'data' => [
-                'detail' => $detailPaiment,
+                'detail' => $detailPaiment->load('orderUser.product'),
                 'count' => $detailPaiment->orderUser->count(),
             ],
             'status' => 200
@@ -184,30 +205,30 @@ class OrdersService {
 
     public function searchOrderInMyStore($request,$user)
     {
-        // $store = Stores::where('uid',Auth::id())->first();
+        // $store = Stores::where('uid',$user->id)->first();
         $data = DetailPaimentUser::WhereHas('userOwner',function ($q) use($request){
             $q->where('first_name','LIKE','%'.$request->search.'%');
         })
         // ->orWhere('order_to','LIKE','%'.$request->search.'%') a etudier
         ->orWhere('type_receive','LIKE','%'.$request->search.'%')
-        // ->orWhereDay('date_time',$request->search)
-        // ->orWhereMonth('date_time',$request->search)
-        // ->orWhereYear('date_time',$request->search)
+        ->orWhereDay('created_at',$request->search)
+        ->orWhereMonth('created_at',$request->search)
+        ->orWhereYear('created_at',$request->search)
         ->orWhere('id',$request->search)
-        ->with('userOwner:id,first_name')->where('uid',$user->id)->get();
+        ->with('userOwner:id,first_name')->where(['type' => 'store'])->get();
 
-        // $data = $data->filter(function ($item) use ($store) {
-        //     return $item->store_id == $store->id ; 
-        // });
+        $data = $data->filter(function ($item) use ($user) {
+            return $item->uid == $user->id ; 
+        });
 
         if (isset($request->type) && $request->type == 'open') {
             $data = $data->filter(function ($item) {
-                return $item->display_at == null ;
+                return $item->status == 0 ;
             });
         }
         if (isset($request->type) && $request->type == 'valide') {
             $data = $data->filter(function ($item) {
-                return $item->display_at != null ;
+                return $item->status == 1 ;
             });
         }
         $dataTemp = [] ;

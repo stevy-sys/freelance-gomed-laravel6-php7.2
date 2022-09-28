@@ -9,6 +9,7 @@
 */
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class Products extends Model
@@ -25,7 +26,7 @@ class Products extends Model
     protected $hidden = [
         'updated_at', 'created_at',
     ];
-
+    protected $appends = ['myQuantity'];
     protected $casts = [
         'kind' => 'integer',
         'in_home' => 'integer',
@@ -56,6 +57,19 @@ class Products extends Model
     public function OrderUser()
     {
         return $this->hasOne(OrderUser::class,'product_id');
+    }
+
+    public function getMyQuantityAttribute()
+    {
+        $detail = DetailPaimentUser::where(['uid'=>Auth::id(),'type' => 'user','paid_at' => null])->first();
+        if (Auth::check() && Auth::user()->type == 'user') {
+            $product = $detail->orderUser()->where('product_id',$this->id)->first();
+            if (isset($product)) {
+                return  $product->quantity;
+            }
+            return null ;
+        }
+        return null ;
     }
    
 }

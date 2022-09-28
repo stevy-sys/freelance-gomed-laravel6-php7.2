@@ -25,6 +25,7 @@ use App\Jobs\RappelOrderStore;
 use App\Services\OrdersService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
+use App\Models\DetailPaimentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -36,7 +37,7 @@ class OrdersController extends Controller
 {
     public $service ;
     
-    public function __construct(Type $var = null) {
+    public function __construct() {
         $this->service = new OrdersService();
     }
 
@@ -49,9 +50,45 @@ class OrdersController extends Controller
         }
     }
 
+    public function getMyDetailPaimentUser(){
+        try {
+            $response = $this->service->getMyDetailPaimentUser(Auth::user());
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
     public function createOrderStore(Request $request){
         try {
             $response = $this->service->createOrderStore($request);
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()],500);
+        }
+    }
+
+    public function searchOrderInMyStore(Request $request){
+        try {
+            $response = $this->service->searchOrderInMyStore($request,Auth::user());
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    public function getAllORderInMMyStorev2() {
+        try {
+            $response = $this->service->getAllOrderInMyStore(Auth::user());
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    public function viewDetailPaiment(Request $request) {
+        try {
+            $response = $this->service->viewDetailPaiment($request);
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
             dd($th->getMessage());
@@ -174,6 +211,7 @@ class OrdersController extends Controller
         return response()->json($response, 200);
     }
 
+   
     public function getAllOrderInMyStore(Request $request){
         $all = Orders::whereHas('store',function ($q){
             $q->where('uid',Auth::id());
@@ -210,12 +248,12 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $order = Orders::find($request->id);
+        $order = DetailPaimentUser::find($request->id);
         if ($request->status == 'accepted') {
-            $order->update(['status' => 'accepted','display_at'=>Carbon::now()]);
+            $order->update(['status' => 1]);
         }
         else{
-            $order->update(['status' => 'rejected','display_at'=>Carbon::now()]);
+            $order->update(['status' => 'rejected']);
         }
 
         $jobs = DB::table('jobs')->whereId($order->queue_id);
@@ -229,44 +267,6 @@ class OrdersController extends Controller
             'status' => 200,
         ];
 
-        return response()->json($response, 200);
-    }
-
-    public function searchOrderInMyStore(Request $request){
-        $store = Stores::where('uid',Auth::id())->first();
-        $data = Orders::WhereHas('user',function ($q) use($request){
-            $q->where('first_name','LIKE','%'.$request->search.'%');
-        })->orWhere('order_to','LIKE','%'.$request->search.'%')
-        ->orWhere('type_receive','LIKE','%'.$request->search.'%')
-        ->orWhereDay('date_time',$request->search)
-        ->orWhereMonth('date_time',$request->search)
-        ->orWhereYear('date_time',$request->search)
-        ->orWhere('id',$request->search)
-        ->with('user:id,first_name')->get();
-
-        $data = $data->filter(function ($item) use ($store) {
-            return $item->store_id == $store->id ; 
-        });
-
-        if (isset($request->type) && $request->type == 'open') {
-            $data = $data->filter(function ($item) {
-                return $item->display_at == null ;
-            });
-        }
-        if (isset($request->type) && $request->type == 'valide') {
-            $data = $data->filter(function ($item) {
-                return $item->display_at != null ;
-            });
-        }
-        $dataTemp = [] ;
-        foreach ($data as $data) {
-            $dataTemp[] = $data ;
-        }
-        $response = [
-            'data'=> $dataTemp,
-            'success' => true,
-            'status' => 200,
-        ];
         return response()->json($response, 200);
     }
 

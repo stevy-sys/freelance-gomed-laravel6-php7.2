@@ -701,14 +701,13 @@ class ProductsController extends Controller
 
     public function searchWithCity(Request $request)
     {
-
         $today = Carbon::now();
         $cid = $request->id;
         if ($cid == null || !$cid || !isset($cid)) {
             $settings = Settings::first();
             $cid = $settings->default_city_id;
         }
-        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
+        $stores = Stores::where(['status' => 1])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
             $banners = Banners::where(['status' => 1, 'city_id' => $cid])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();

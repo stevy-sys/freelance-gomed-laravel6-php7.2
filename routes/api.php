@@ -46,6 +46,7 @@ use App\Http\Controllers\v1\StoreRequestController;
 
 use App\Http\Controllers\v1\Auth\RegisterController;
 use App\Http\Controllers\v1\DriverRequestController;
+use App\Http\Controllers\v1\HomeController;
 use App\Http\Controllers\v1\ReferralCodesController;
 use App\Http\Controllers\v1\Profile\ProfileController;
 use App\Models\Products;
@@ -145,6 +146,7 @@ Route::prefix('/v1')->group(function () {
 
         Route::post('orders/makeOrder', [OrdersController::class, 'makeOrder']);
         Route::post('orders/createOrderStore', [OrdersController::class, 'createOrderStore']);
+        Route::get('orders/getMyDetailPaimentUser', [OrdersController::class, 'getMyDetailPaimentUser']);
 
 
         Route::post('orders/create', [OrdersController::class, 'save']);
@@ -205,6 +207,8 @@ Route::prefix('/v1')->group(function () {
 
     Route::group(['middleware' => ['admin_auth', 'jwt.auth']], function () {
 
+        Route::get('countrie/getAllCountrie', [CitiesController::class, 'getAllCountrie']);
+        Route::get('countrie/searchCountrie', [CitiesController::class, 'searchCountrie']);
 
         //TVA Routes
         Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
@@ -433,6 +437,10 @@ Route::prefix('/v1')->group(function () {
         Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']); 
         Route::post('orders/actionOrder', [OrdersController::class, 'actionOrder']); 
         Route::get('orders/getAllOrderInMyStore', [OrdersController::class, 'getAllOrderInMyStore']);
+
+        Route::get('orders/getAllOrderInMyStoreV2', [OrdersController::class, 'getAllORderInMMyStorev2']);
+        Route::get('orders/viewDetailPaiment', [OrdersController::class, 'viewDetailPaiment']);
+        
         Route::get('orders/searchOrderInMyStore', [OrdersController::class, 'searchOrderInMyStore']);
         Route::post('orders/getByIdFromStore', [OrdersController::class, 'getByIdFromStore']);
         Route::post('orders/updateStatusStore', [OrdersController::class, 'updateStatusStore']);
@@ -516,6 +524,9 @@ Route::prefix('/v1')->group(function () {
     Route::post('home/testProduct', [ProductsController::class, 'getProductInStoreViaCountrie']);
     Route::post('home/searchWithZipCode', [ProductsController::class, 'searchWithZipCode']);
     Route::post('home/searchWithGeoLocation', [ProductsController::class, 'searchWithGeoLocation']);
+
+
+    Route::post('home/initData', [HomeController::class, 'initData']);
 
 
     Route::post('home/searchStoreWithCity', [ProductsController::class, 'searchStoreWithCity']);

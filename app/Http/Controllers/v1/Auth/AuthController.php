@@ -22,10 +22,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Hashing\BcryptHasher;
 use App\Http\Resources\User as UserResource;
+use App\Services\OrdersService;
 use Validator;
 use Config;
 class AuthController extends Controller
 {
+    public $orderService ;
+    public function __construct() {
+        $this->orderService = new OrdersService;
+    }
     public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)->first();
@@ -53,9 +58,15 @@ class AuthController extends Controller
         } catch (JWTException $e) {
 
             return response()->json(['error' => 'could_not_create_token'], 500);
-
+    
         }
-        return response()->json(['user' => $user,'token'=>$token,'status'=>200], 200);
+        $detailPaiment = $this->orderService->getMyDetailPaimentUser($user);
+        return response()->json([
+            'user' => $user,
+            'token'=>$token,
+            'detailPaiment' => $detailPaiment['data'],
+            'status'=>200
+        ],200);
     }
 
     public function loginDrivers(LoginRequest $request)

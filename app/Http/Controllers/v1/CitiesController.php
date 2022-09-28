@@ -12,10 +12,30 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Cities;
+use App\Models\Countrie;
+use App\Services\CountrieService;
 use Validator;
 use DB;
 class CitiesController extends Controller
 {
+
+    protected $countrieService ;
+
+    public function __construct() {
+        $this->countrieService = new CountrieService();
+    }
+    public function getAllCountrie()
+    {
+        return response()->json([
+            'data' => $this->countrieService->getAllCountrie()
+        ], 201);
+    }
+
+    public function searchCountrie(Request $request)
+    {
+        return Countrie::find($request->id);
+    }
+
     public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
