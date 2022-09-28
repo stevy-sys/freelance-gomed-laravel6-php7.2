@@ -46,11 +46,11 @@ class OrdersService {
         ]);
     }
 
-    private function updateDetailPaimentStore($detailPaiment){
+    private function updateDetailPaimentStore($detailPaiment,$delivery=null){
         $grandTotal = 0 ;
         
         foreach ($detailPaiment->orderStore as $orderStore) {
-            $grandTotal += $orderStore['total'] ;
+            $grandTotal = $grandTotal + $orderStore['total'] + $delivery ;
         }
         
         $detailPaiment->update([
@@ -110,6 +110,7 @@ class OrdersService {
         else {
             $this->updateOrder($orderUser,$request->action,$detailPaiment);
         }
+        $detailPaiment = DetailPaimentUser::with('orderUser.product')->find($detailPaiment->id);
         $orderUser = OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first();
         return [
             'data' => [
@@ -126,7 +127,10 @@ class OrdersService {
      */
     public function createOrderStore($request){
         $detailForUser = DetailPaimentUser::find($request->detail_id);
-        
+        $detailForUser->grand_total = $detailForUser->grand_total + $request->delivery['price'] ;
+        $detailForUser->delivery_option = $request->delivery['option'];
+        $detailForUser->type_receive = $request->delivery['type'];
+        $detailForUser->save();
         //copie detail paiment
         foreach ($request->allStore as $store_id) {
             $store = Stores::find($store_id);
@@ -134,14 +138,15 @@ class OrdersService {
             $detailForStore = DetailPaimentUser::create([
                 'uid' => $store->uid,
                 'type' => 'store',
-                'user_owner' => Auth::id()
-                // autreDetails
+                'user_owner' => Auth::id(),
+                'delivery_option' => $request->delivery['option'],
+                'type_receive' => $request->delivery['type'],
             ]);
             $orderUser = $detailForUser->orderUser()->where('store_id',$store_id)->get(['product_id','quantity','total','store_id'])->toArray();
             $detailForStore->orderStore()->createMany($orderUser);
             
             // update total detail paiment
-            $this->updateDetailPaimentStore($detailForStore);
+            $this->updateDetailPaimentStore($detailForStore,$request->delivery['price']);
 
             // send mail
             $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user());
