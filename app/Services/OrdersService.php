@@ -8,6 +8,7 @@ use App\Models\Stores;
 use App\Models\Products;
 use App\Models\OrderUser;
 use App\Mail\CommandeMail;
+use App\Models\OrderStore;
 use App\Jobs\RappelOrderStore;
 use App\Models\DetailPaimentUser;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,22 @@ class OrdersService {
         }
 
         return $detailPaiment;
+    }
+
+    public function getOrderDetailUser($request)
+    {
+        $detailPaiment = DetailPaimentUser::whereHas('orderStore',function ($query) use($request) {
+          
+        })->with('orderStore.product')->where(['type'=>'store','user_owner' => Auth::id()])->get();
+        // $orderStore = OrderStore::where('detail_id',$detailPaiment->id)->get();
+
+        return [
+            'data' => [
+                'detailPaiment' => $detailPaiment,
+                // 'orderUser' => $orderStore,
+            ],
+            'status' => 200
+        ];
     }
 
     private function updateDetailPaiment($detailPaiment){
@@ -190,6 +207,15 @@ class OrdersService {
         ]; 
     }
 
+    public function allOrderCompletedUser($user)
+    {
+        $order = DetailPaimentUser::with('orderUser.product')->where(['uid'=>$user->id,'type' => 'user'])->whereNotNull('paid_at')->get();
+        return [
+            'data' => $order,
+            'status' => 200
+        ]; 
+    }
+
     public function getMyDetailPaimentUser($user)
     {
         $detailPaiment = DetailPaimentUser::where(['uid'=>$user->id,'type' => 'user'])->whereNull('paid_at')->first();
@@ -201,7 +227,7 @@ class OrdersService {
         }
         return [
             'data' => [
-                'detail' => $detailPaiment->load('orderUser.product'),
+                'detail' => $detailPaiment->load('orderUser.product.store.countrie'),
                 'count' => $detailPaiment->orderUser->count(),
             ],
             'status' => 200

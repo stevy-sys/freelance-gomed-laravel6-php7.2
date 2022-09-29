@@ -50,6 +50,26 @@ class OrdersController extends Controller
         }
     }
 
+    public function getOrderDetailUser(Request $request)
+    {
+        try {
+            $response = $this->service->getOrderDetailUser($request);
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    public function allOrderCompletedUser()
+    {
+        try {
+            $response = $this->service->allOrderCompletedUser(Auth::user());
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
     public function getMyDetailPaimentUser(){
         try {
             $response = $this->service->getMyDetailPaimentUser(Auth::user());

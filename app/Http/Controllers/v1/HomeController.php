@@ -37,6 +37,7 @@ class HomeController extends Controller
         $products = $this->productService->getProductInStoreViaCountrie($countrie);
         $categorie = $this->categoryService->getCategorieWithSub();
         $countrie = $this->countrieService->getAllCountrie();
+        $myCurrency = $this->countrieService->getMyCurrency($request);
         $data = [
             'stores' => $store,
             'banners' => $banners,
@@ -46,6 +47,7 @@ class HomeController extends Controller
             'inOffers' => null,
             'storeIds' => null,
             'cityInfo' => $countrie,
+            'myCurrency' => $myCurrency->currency 
         ];
 
         return response()->json($data,200);
