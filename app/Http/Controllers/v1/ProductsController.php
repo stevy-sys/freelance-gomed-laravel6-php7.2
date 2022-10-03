@@ -38,65 +38,59 @@ class ProductsController extends Controller
     }
     public function save(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'store_id' => 'required',
-            'cover' => 'required',
-            'name' => 'required',
-            'images' => 'required',
-            'original_price' => 'required',
-            'sell_price' => 'required',
-            'discount' => 'required',
-            'kind' => 'required',
-            'cate_id' => 'required',
-            'sub_cate_id' => 'required',
-            'in_home' => 'required',
-            'is_single' => 'required',
-            'have_gram' => 'required',
-            'gram' => 'required',
-            'have_kg' => 'required',
-            'kg' => 'required',
-            'have_pcs' => 'required',
-            'pcs' => 'required',
-            'have_liter' => 'required',
-            'liter' => 'required',
-            'have_ml' => 'required',
-            'ml' => 'required',
-            'type_of' => 'required',
-            'in_offer' => 'required',
-            'in_stoke' => 'required',
-            'rating' => 'required',
-            'total_rating' => 'required',
-            'variations' => 'required',
-            'size' => 'required',
-        ]);
-        if ($validator->fails()) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'store_id' => 'required',
+                'cover' => 'required',
+                'name' => 'required',
+                'images' => 'required',
+                'original_price' => 'required',
+                'sell_price' => 'required',
+                'discount' => 'required',
+                'kind' => 'required',
+                'cate_id' => 'required',
+                'sub_cate_id' => 'required',
+                'in_home' => 'required',
+                'is_single' => 'required',
+                'have_gram' => 'required',
+                'gram' => 'required',
+                'have_kg' => 'required',
+                'kg' => 'required',
+                'have_pcs' => 'required',
+                'pcs' => 'required',
+                'have_liter' => 'required',
+                'liter' => 'required',
+                'have_ml' => 'required',
+                'ml' => 'required',
+                'type_of' => 'required',
+                'in_offer' => 'required',
+                'in_stoke' => 'required',
+                'rating' => 'required',
+                'total_rating' => 'required',
+                'variations' => 'required',
+                'size' => 'required',
+                'medical_prescription' => 'required'
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Validation Error.', $validator->errors(),
+                    'status' => 500
+                ];
+                return response()->json($response, 404);
+            }
+    
+            $response = $this->service->createProduct($request,Auth::user());
+            return response()->json($response, $response['status']);
+        } catch (\Throwable $th) {
             $response = [
                 'success' => false,
-                'message' => 'Validation Error.', $validator->errors(),
+                'message' => $th->getMessage(),
                 'status' => 500
             ];
-            return response()->json($response, 404);
+            return response()->json($response, 500);
         }
-
-        $data = $request->all();
-        $data['store_id'] = Auth::user()->store->id ;
-        $data['tva_id'] = $request->tva ;
-
-        $data = Products::create($data);
-        if (is_null($data)) {
-            $response = [
-                'data' => $data,
-                'message' => 'error',
-                'status' => 500,
-            ];
-            return response()->json($response, 200);
-        }
-        $response = [
-            'data' => $data,
-            'success' => true,
-            'status' => 200,
-        ];
-        return response()->json($response, 200);
+        
     }
 
     public function getById(Request $request)

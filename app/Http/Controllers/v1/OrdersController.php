@@ -56,7 +56,7 @@ class OrdersController extends Controller
             $response = $this->service->getOrderDetailUser($request);
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 
@@ -66,7 +66,7 @@ class OrdersController extends Controller
             $response = $this->service->allOrderCompletedUser(Auth::user());
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 
@@ -75,7 +75,7 @@ class OrdersController extends Controller
             $response = $this->service->getMyDetailPaimentUser(Auth::user());
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 
@@ -93,7 +93,7 @@ class OrdersController extends Controller
             $response = $this->service->searchOrderInMyStore($request,Auth::user());
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 
@@ -102,7 +102,7 @@ class OrdersController extends Controller
             $response = $this->service->getAllOrderInMyStore(Auth::user());
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 
@@ -111,7 +111,7 @@ class OrdersController extends Controller
             $response = $this->service->viewDetailPaiment($request);
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 
@@ -272,8 +272,9 @@ class OrdersController extends Controller
         if ($request->status == 'accepted') {
             $order->update(['status' => 1]);
         }
-        else{
-            $order->update(['status' => 'rejected']);
+
+        if ($request->status == 'rejected') {
+            $order->update(['refus' => 1]);
         }
 
         $jobs = DB::table('jobs')->whereId($order->queue_id);

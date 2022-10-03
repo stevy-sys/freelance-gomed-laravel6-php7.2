@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Stores;
+use App\Mail\Ordonnance;
 use App\Models\Products;
 use App\Models\OrderUser;
 use App\Mail\CommandeMail;
@@ -127,7 +128,7 @@ class OrdersService {
         else {
             $this->updateOrder($orderUser,$request->action,$detailPaiment);
         }
-        $detailPaiment = DetailPaimentUser::with('orderUser.product')->find($detailPaiment->id);
+        $detailPaiment = DetailPaimentUser::with('orderUser.product.store.countrie')->find($detailPaiment->id);
         $orderUser = OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first();
         return [
             'data' => [
@@ -139,6 +140,16 @@ class OrdersService {
         ];
     }
 
+    private function medicalPrescription($detailPaiment,$userStore)
+    {
+        $products = $detailPaiment->orderStore()->whereHas('product',function ($q) {
+            $q->where('medical_prescription',1);
+        })->with('product')->pluck('product')->all();
+        foreach ($products as $product) {
+            Mail::to($userStore->email)->send(new Ordonnance($product,$userStore)); 
+        }
+    }
+
     /**
      * request = [store_id1,store_id2]
      */
@@ -148,6 +159,7 @@ class OrdersService {
         $detailForUser->delivery_option = $request->delivery['option'];
         $detailForUser->type_receive = $request->delivery['type'];
         $detailForUser->save();
+
         //copie detail paiment
         foreach ($request->allStore as $store_id) {
             $store = Stores::find($store_id);
@@ -165,8 +177,11 @@ class OrdersService {
             // update total detail paiment
             $this->updateDetailPaimentStore($detailForStore,$request->delivery['price']);
 
-            // send mail
+            // send mail for order
             $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user());
+
+            //send medical prescription
+            $this->medicalPrescription($detailForStore,$userStore);
         }
 
         // user
@@ -180,8 +195,9 @@ class OrdersService {
 
     public function getAllOrderInMyStore($user)
     {
-        $order['open'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',0)->where(['type'=>'store','uid' => $user->id])->get();
-        $order['valide'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',1)->where(['type'=>'store','uid' => $user->id])->get();
+        $order['open'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',0)->where(['type'=>'store','uid' => $user->id,'refus' => false])->get();
+        $order['valide'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',1)->where(['type'=>'store','uid' => $user->id,'refus' => false])->get();
+        $order['refuse'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',1)->where(['type'=>'store','uid' => $user->id,'refus' => true])->get();
         $order['all'] = DetailPaimentUser::with('userOwner:id,first_name')->where(['type'=>'store','uid' => $user->id])->get();
         return [
             'data' => $order,

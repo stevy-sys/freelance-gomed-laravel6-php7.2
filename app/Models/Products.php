@@ -26,7 +26,7 @@ class Products extends Model
     protected $hidden = [
         'updated_at', 'created_at',
     ];
-    protected $appends = ['myQuantity'];
+    protected $appends = ['myQuantity','disponibility'];
     protected $casts = [
         'kind' => 'integer',
         'in_home' => 'integer',
@@ -59,6 +59,16 @@ class Products extends Model
         return $this->hasOne(OrderUser::class,'product_id');
     }
 
+    public function option()
+    {
+        return $this->hasOne(OptionProduct::class,'product_id');
+    }
+
+    public function quantity()
+    {
+        return $this->hasOne(QuantityProduct::class,'product_id');
+    }
+
     public function getMyQuantityAttribute()
     {
         $detail = DetailPaimentUser::where(['uid'=>Auth::id(),'type' => 'user','paid_at' => null])->first();
@@ -71,5 +81,15 @@ class Products extends Model
         }
         return null ;
     }
+
+    public function getDisponibilityAttribute()
+    {
+        if ($this->quantity) {
+            return $this->quantity->in_stock;
+        }
+        return null ;
+    }
+
+    
    
 }

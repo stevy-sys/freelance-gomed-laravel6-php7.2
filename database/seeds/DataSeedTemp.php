@@ -25,7 +25,8 @@ class DataSeedTemp extends Seeder
             $country = null;
             if ($isExiste != null) {
                 $country = $isExiste ;
-            }else{
+            }
+            else{
                 $country = Countrie::create([
                     'currency' => $faker->currencyCode,
                     'code_pays' => $country_code,
