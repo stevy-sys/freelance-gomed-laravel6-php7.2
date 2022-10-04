@@ -26,7 +26,7 @@ class Products extends Model
     protected $hidden = [
         'updated_at', 'created_at',
     ];
-    protected $appends = ['myQuantity','disponibility'];
+    protected $appends = ['myQuantity','disponibility','priceOffer'];
     protected $casts = [
         'kind' => 'integer',
         'in_home' => 'integer',
@@ -59,9 +59,20 @@ class Products extends Model
         return $this->hasOne(OrderUser::class,'product_id');
     }
 
-    public function option()
+    public function offer()
     {
         return $this->hasOne(OptionProduct::class,'product_id');
+    }
+
+    public function getPriceOfferAttribute ()
+    {
+        $priceOffer = OptionProduct::where('product_id',$this->id)->first();
+        if (isset($priceOffer)) {
+            $discount = ($this->original_price * $priceOffer->rates) / 100 ;
+            $sellPrice = $this->original_price - $discount ;
+            return $sellPrice ;
+        }
+        return null ;
     }
 
     public function quantity()
@@ -88,8 +99,6 @@ class Products extends Model
             return $this->quantity->in_stock;
         }
         return null ;
-    }
+    } 
 
-    
-   
 }

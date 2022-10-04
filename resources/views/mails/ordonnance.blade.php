@@ -9,5 +9,6 @@
 @section('content')
     <div class="container mt-4">
       ordonnance
+      {{$product}}
     </div>
 @endsection

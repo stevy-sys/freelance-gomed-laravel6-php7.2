@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Jobs\OfferProduct;
 use App\Models\Stores;
 use App\Models\Products;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ProductService 
@@ -12,7 +13,7 @@ class ProductService
     public function getProductInStoreViaCountrie($countrie)
     {
         $products = Stores::with(['products' => function ($query){
-            $query->where('status' , 1)->orderBy('rating', 'desc')->limit(15);
+            $query->with('offer')->where('status' , 1)->orderBy('rating', 'desc')->limit(15);
         },'countrie'])->where(['status' => 1 , 'countrie_id' => $countrie->id])->get()->pluck('products')->all()[0];
         
         return $products ;
@@ -28,11 +29,12 @@ class ProductService
         $data = Products::create($data);
 
         if ($request->offer) {
-            $offer = $data->option()->create([
-             'exp_offer' => $request->exp_offer,
-             'start_offer' => $request->start_offer
-           ]);
-           OfferProduct::dispatch($offer)->delay($offer->exp_offer);
+            $offer = $data->offer()->create([
+                'rates' => $request->offer,
+                'exp_offer' => $request->exp_offer,
+                'start_offer' => $request->start_offer
+            ]);
+           OfferProduct::dispatch($offer)->delay(Carbon::parse($offer->exp_offer));
         }
 
         if ($request->quantity != null) {
@@ -45,7 +47,7 @@ class ProductService
         $response = [
             'success' => false,
             'message' => $data,
-            'status' => 201
+            'status' => 200
         ];
         return $response ;
     }

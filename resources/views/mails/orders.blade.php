@@ -74,7 +74,7 @@
                         <td>{{ $detailPaiment->type_receive }}</td>
                         <td></td>
                         <td></td>
-                        <td>a regarder USD</td>
+                        <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45 }} USD</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>

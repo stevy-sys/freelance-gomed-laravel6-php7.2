@@ -270,11 +270,11 @@ class OrdersController extends Controller
 
         $order = DetailPaimentUser::find($request->id);
         if ($request->status == 'accepted') {
-            $order->update(['status' => 1]);
+            $order->update(['status' => 'valide']);
         }
 
-        if ($request->status == 'rejected') {
-            $order->update(['refus' => 1]);
+        if ($request->status == 'refuse') {
+            $order->update(['status' => 'refuse']);
         }
 
         $jobs = DB::table('jobs')->whereId($order->queue_id);

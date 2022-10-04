@@ -13,9 +13,10 @@ class CreateOptionProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('OfferProduct', function (Blueprint $table) {
+        Schema::create('option_products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('product_id');
+            $table->string('rates');
             $table->dateTime('exp_offer');
             $table->dateTime('start_offer');
             $table->timestamps();

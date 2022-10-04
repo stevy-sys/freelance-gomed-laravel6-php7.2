@@ -213,7 +213,7 @@ Route::prefix('/v1')->group(function () {
         Route::get('countrie/searchCountrie', [CitiesController::class, 'searchCountrie']);
 
         //TVA Routes
-        Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
+        Route::get('tva/getAllTvaWithCountrie2', [TvaController::class, 'getAllTvaWithCountrie']);
         Route::post('tva/importCsvTva', [TvaController::class, 'importCsvTva']);
         Route::put('tva/updateTva/{tva}', [TvaController::class, 'updateTva']);
         Route::delete('tva/deleteTva/{tva}', [TvaController::class, 'deleteTva']);

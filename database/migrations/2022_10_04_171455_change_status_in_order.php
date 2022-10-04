@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRefusInOrder extends Migration
+class ChangeStatusInOrder extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddRefusInOrder extends Migration
     public function up()
     {
         Schema::table('detail_paiment_users', function (Blueprint $table) {
-            $table->boolean('refus')->default(0);
+            $table->string('status')->default('open')->change();
         });
     }
 
@@ -26,7 +26,7 @@ class AddRefusInOrder extends Migration
     public function down()
     {
         Schema::table('detail_paiment_users', function (Blueprint $table) {
-            $table->dropColumn('refus');
+            $table->string('status')->change();
         });
     }
 }

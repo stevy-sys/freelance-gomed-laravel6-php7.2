@@ -68,11 +68,11 @@ class OrdersService {
         $grandTotal = 0 ;
         
         foreach ($detailPaiment->orderStore as $orderStore) {
-            $grandTotal = $grandTotal + $orderStore['total'] + $delivery ;
+            $grandTotal = $grandTotal + $orderStore['total']  ;
         }
         
         $detailPaiment->update([
-            'grand_total' => $grandTotal
+            'grand_total' => $grandTotal + $delivery
         ]);
     }
 
@@ -142,9 +142,9 @@ class OrdersService {
 
     private function medicalPrescription($detailPaiment,$userStore)
     {
-        $products = $detailPaiment->orderStore()->whereHas('product',function ($q) {
+        $products = $detailPaiment->orderStore()->whereHas('product',function ($q) { 
             $q->where('medical_prescription',1);
-        })->with('product')->pluck('product')->all();
+        })->with('product')->get()->pluck('product')->all();
         foreach ($products as $product) {
             Mail::to($userStore->email)->send(new Ordonnance($product,$userStore)); 
         }
@@ -158,6 +158,9 @@ class OrdersService {
         $detailForUser->grand_total = $detailForUser->grand_total + $request->delivery['price'] ;
         $detailForUser->delivery_option = $request->delivery['option'];
         $detailForUser->type_receive = $request->delivery['type'];
+        $detailForUser->payment_id = $request->payement_id;
+        $detailForUser->payment_type = $request->type;
+        $detailForUser->tva_value = $request->tva;
         $detailForUser->save();
 
         //copie detail paiment
@@ -168,8 +171,12 @@ class OrdersService {
                 'uid' => $store->uid,
                 'type' => 'store',
                 'user_owner' => Auth::id(),
+                'status' => 'open',
                 'delivery_option' => $request->delivery['option'],
                 'type_receive' => $request->delivery['type'],
+                'tva_value' => $request->tva,
+                'payment_type' => $request->type,
+                'payment_id' => $request->payement_id,
             ]);
             $orderUser = $detailForUser->orderUser()->where('store_id',$store_id)->get(['product_id','quantity','total','store_id'])->toArray();
             $detailForStore->orderStore()->createMany($orderUser);
@@ -195,9 +202,9 @@ class OrdersService {
 
     public function getAllOrderInMyStore($user)
     {
-        $order['open'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',0)->where(['type'=>'store','uid' => $user->id,'refus' => false])->get();
-        $order['valide'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',1)->where(['type'=>'store','uid' => $user->id,'refus' => false])->get();
-        $order['refuse'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status',1)->where(['type'=>'store','uid' => $user->id,'refus' => true])->get();
+        $order['open'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status','open')->where(['type'=>'store','uid' => $user->id])->get();
+        $order['valide'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status','valide')->where(['type'=>'store','uid' => $user->id])->get();
+        $order['refuse'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status','refuse')->where(['type'=>'store','uid' => $user->id])->get();
         $order['all'] = DetailPaimentUser::with('userOwner:id,first_name')->where(['type'=>'store','uid' => $user->id])->get();
         return [
             'data' => $order,
@@ -270,12 +277,17 @@ class OrdersService {
 
         if (isset($request->type) && $request->type == 'open') {
             $data = $data->filter(function ($item) {
-                return $item->status == 0 ;
+                return $item->status == 'open' ;
             });
         }
         if (isset($request->type) && $request->type == 'valide') {
             $data = $data->filter(function ($item) {
-                return $item->status == 1 ;
+                return $item->status == 'valide' ;
+            });
+        }
+        if (isset($request->type) && $request->type == 'refuse') {
+            $data = $data->filter(function ($item) {
+                return $item->status == 'refuse' ;
             });
         }
         $dataTemp = [] ;
