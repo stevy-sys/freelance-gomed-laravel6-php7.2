@@ -107,7 +107,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Products::find($request->id);
+        $data = Products::with(['quantity','offer'])->find($request->id);
 
 
         if (is_null($data)) {

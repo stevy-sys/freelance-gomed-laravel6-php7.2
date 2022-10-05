@@ -84,9 +84,9 @@ class Products extends Model
     {
         $detail = DetailPaimentUser::where(['uid'=>Auth::id(),'type' => 'user','paid_at' => null])->first();
         if (Auth::check() && Auth::user()->type == 'user') {
-            $product = $detail->orderUser()->where('product_id',$this->id)->first();
-            if (isset($product)) {
-                return  $product->quantity;
+            $orderUser = $detail->orderUser()->where('product_id',$this->id)->first();
+            if (isset($orderUser)) {
+                return  $orderUser->quantity;
             }
             return null ;
         }

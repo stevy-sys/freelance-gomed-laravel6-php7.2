@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Stores;
 use App\Mail\Ordonnance;
+use App\Models\Countrie;
 use App\Models\Products;
 use App\Models\OrderUser;
 use App\Mail\CommandeMail;
@@ -17,9 +18,14 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Bus\Dispatcher;
 
 class OrdersService {
-    
+    protected $productService ;
+
+    public function __construct() {
+        $this->productService = new ProductService;
+    }
     private function verifOrder($request,$user,$detailPaiment)
     {
+        
         return OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first();
     }
 
@@ -130,14 +136,47 @@ class OrdersService {
         }
         $detailPaiment = DetailPaimentUser::with('orderUser.product.store.countrie')->find($detailPaiment->id);
         $orderUser = OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first();
+
+
+        $countrie= Countrie::where('code_pays',$request->code_country)->first();
+        if (!isset($countrie)) {
+            $countrie = Countrie::first();
+        }
+        $products = $this->productService->getProductInStoreViaCountrie($countrie);
         return [
             'data' => [
                 'detailPaiment' => $detailPaiment,
                 'orderUser' => isset($orderUser) ? $orderUser : 0,
-                'count' => $detailPaiment->orderUser->count()
+                'count' => $detailPaiment->orderUser->count(),
+                'topProduct' => $products
             ],
             'status' => 200
         ];
+    }
+
+    public function verifIfOutOfStock($request,$user)
+    {
+        $detail = $this->createDetailPaiment($user);
+        $product = Products::find($request->product_id);
+        $stock = $product->quantity->stock ;
+
+        $orderUser = $detail->orderUser()->where('product_id',$request->product_id)->first();
+        $stockOrder = $orderUser->quantity ;
+        if ($stock <= $stockOrder) {
+            return [
+                'data' => [
+                    'message' => 'out'
+                ],
+                'status' => 200
+            ];
+        }else{
+            return [
+                'data' => [
+                    'message' => 'in'
+                ],
+                'status' => 200
+            ];
+        }
     }
 
     private function medicalPrescription($detailPaiment,$userStore)

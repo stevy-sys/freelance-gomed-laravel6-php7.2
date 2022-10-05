@@ -145,6 +145,7 @@ Route::prefix('/v1')->group(function () {
         // Orders Routes
 
         Route::post('orders/makeOrder', [OrdersController::class, 'makeOrder']);
+        Route::post('orders/verifStockOrder', [OrdersController::class, 'verifStockOrder']);
         Route::post('orders/createOrderStore', [OrdersController::class, 'createOrderStore']);
         Route::get('orders/getMyDetailPaimentUser', [OrdersController::class, 'getMyDetailPaimentUser']);
         Route::get('orders/allOrderCompletedUser', [OrdersController::class, 'allOrderCompletedUser']);

@@ -46,7 +46,16 @@ class OrdersController extends Controller
             $response = $this->service->makeOrder($request,Auth::user());
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return response()->json(['error' => $th->getMessage()],500);
+        }
+    }
+
+    public function verifStockOrder(Request $request){
+        try {
+            $response = $this->service->verifIfOutOfStock($request,Auth::user());
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()],500);
         }
     }
 

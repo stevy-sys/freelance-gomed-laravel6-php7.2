@@ -13,7 +13,7 @@ class ProductService
     public function getProductInStoreViaCountrie($countrie)
     {
         $products = Stores::with(['products' => function ($query){
-            $query->with('offer')->where('status' , 1)->orderBy('rating', 'desc')->limit(15);
+            $query->with(['offer','quantity'])->where('status' , 1)->orderBy('rating', 'desc')->limit(15);
         },'countrie'])->where(['status' => 1 , 'countrie_id' => $countrie->id])->get()->pluck('products')->all()[0];
         
         return $products ;
