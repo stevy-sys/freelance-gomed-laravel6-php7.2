@@ -9,6 +9,7 @@
 */
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class Products extends Model
@@ -25,7 +26,7 @@ class Products extends Model
     protected $hidden = [
         'updated_at', 'created_at',
     ];
-
+    protected $appends = ['myQuantity','disponibility','priceOffer'];
     protected $casts = [
         'kind' => 'integer',
         'in_home' => 'integer',
@@ -47,5 +48,57 @@ class Products extends Model
     {
         return $this->belongsTo(Tva::class,'tva_id');
     }
-   
+
+    public function store()
+    {
+        return $this->belongsTo(Stores::class,'store_id');
+    }
+
+    public function OrderUser()
+    {
+        return $this->hasOne(OrderUser::class,'product_id');
+    }
+
+    public function offer()
+    {
+        return $this->hasOne(OptionProduct::class,'product_id');
+    }
+
+    public function getPriceOfferAttribute ()
+    {
+        $priceOffer = OptionProduct::where('product_id',$this->id)->first();
+        if (isset($priceOffer)) {
+            $discount = ($this->original_price * $priceOffer->rates) / 100 ;
+            $sellPrice = $this->original_price - $discount ;
+            return $sellPrice ;
+        }
+        return null ;
+    }
+
+    public function quantity()
+    {
+        return $this->hasOne(QuantityProduct::class,'product_id');
+    }
+
+    public function getMyQuantityAttribute()
+    {
+        $detail = DetailPaimentUser::where(['uid'=>Auth::id(),'type' => 'user','paid_at' => null])->first();
+        if (Auth::check() && Auth::user()->type == 'user') {
+            $orderUser = $detail->orderUser()->where('product_id',$this->id)->first();
+            if (isset($orderUser)) {
+                return  $orderUser->quantity;
+            }
+            return null ;
+        }
+        return null ;
+    }
+
+    public function getDisponibilityAttribute()
+    {
+        if ($this->quantity) {
+            return $this->quantity->in_stock;
+        }
+        return null ;
+    } 
+
 }

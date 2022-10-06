@@ -11,14 +11,17 @@ class Ordonnance extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $product ;
+    public $user ;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($product,$user)
     {
-        //
+        $this->product = $product;
+        $this->user = $user;
     }
 
     /**

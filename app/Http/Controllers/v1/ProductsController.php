@@ -21,72 +21,76 @@ use App\Models\Products;
 use App\Models\Settings;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use App\Services\ProductService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller
 {
+    public $service ;
+    
+    public function __construct(Type $var = null) {
+        $this->service = new ProductService();
+    }
+
+    public function getProductInStoreViaCountrie(Request $request){
+       return $this->service->getProductInStoreViaCountrie($request);
+    }
     public function save(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'store_id' => 'required',
-            'cover' => 'required',
-            'name' => 'required',
-            'images' => 'required',
-            'original_price' => 'required',
-            'sell_price' => 'required',
-            'discount' => 'required',
-            'kind' => 'required',
-            'cate_id' => 'required',
-            'sub_cate_id' => 'required',
-            'in_home' => 'required',
-            'is_single' => 'required',
-            'have_gram' => 'required',
-            'gram' => 'required',
-            'have_kg' => 'required',
-            'kg' => 'required',
-            'have_pcs' => 'required',
-            'pcs' => 'required',
-            'have_liter' => 'required',
-            'liter' => 'required',
-            'have_ml' => 'required',
-            'ml' => 'required',
-            'type_of' => 'required',
-            'in_offer' => 'required',
-            'in_stoke' => 'required',
-            'rating' => 'required',
-            'total_rating' => 'required',
-            'variations' => 'required',
-            'size' => 'required',
-        ]);
-        if ($validator->fails()) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'store_id' => 'required',
+                'cover' => 'required',
+                'name' => 'required',
+                'images' => 'required',
+                'original_price' => 'required',
+                'sell_price' => 'required',
+                'discount' => 'required',
+                'kind' => 'required',
+                'cate_id' => 'required',
+                'sub_cate_id' => 'required',
+                'in_home' => 'required',
+                'is_single' => 'required',
+                'have_gram' => 'required',
+                'gram' => 'required',
+                'have_kg' => 'required',
+                'kg' => 'required',
+                'have_pcs' => 'required',
+                'pcs' => 'required',
+                'have_liter' => 'required',
+                'liter' => 'required',
+                'have_ml' => 'required',
+                'ml' => 'required',
+                'type_of' => 'required',
+                'in_offer' => 'required',
+                'in_stoke' => 'required',
+                'rating' => 'required',
+                'total_rating' => 'required',
+                'variations' => 'required',
+                'size' => 'required',
+                'medical_prescription' => 'required'
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Validation Error.', $validator->errors(),
+                    'status' => 500
+                ];
+                return response()->json($response, 404);
+            }
+    
+            $response = $this->service->createProduct($request,Auth::user());
+            return response()->json($response, $response['status']);
+        } catch (\Throwable $th) {
             $response = [
                 'success' => false,
-                'message' => 'Validation Error.', $validator->errors(),
+                'message' => $th->getMessage(),
                 'status' => 500
             ];
-            return response()->json($response, 404);
+            return response()->json($response, 500);
         }
-
-        $data = $request->all();
-        $data['store_id'] = Auth::user()->store->id ;
-        $data['tva_id'] = $request->tva ;
-
-        $data = Products::create($data);
-        if (is_null($data)) {
-            $response = [
-                'data' => $data,
-                'message' => 'error',
-                'status' => 500,
-            ];
-            return response()->json($response, 200);
-        }
-        $response = [
-            'data' => $data,
-            'success' => true,
-            'status' => 200,
-        ];
-        return response()->json($response, 200);
+        
     }
 
     public function getById(Request $request)
@@ -103,7 +107,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Products::find($request->id);
+        $data = Products::with(['quantity','offer'])->find($request->id);
 
 
         if (is_null($data)) {
@@ -676,7 +680,7 @@ class ProductsController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status' => 500
+                'status' => 500 
             ];
             return response()->json($response, 404);
         }
@@ -691,14 +695,13 @@ class ProductsController extends Controller
 
     public function searchWithCity(Request $request)
     {
-
         $today = Carbon::now();
         $cid = $request->id;
         if ($cid == null || !$cid || !isset($cid)) {
             $settings = Settings::first();
             $cid = $settings->default_city_id;
         }
-        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
+        $stores = Stores::where(['status' => 1])->get();
         if (count($stores)) {
             $storeIds = $stores->pluck('uid')->toArray();
             $banners = Banners::where(['status' => 1, 'city_id' => $cid])->whereDate('from', '<=', $today)->whereDate('to', '>=', $today)->get();

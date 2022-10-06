@@ -30,9 +30,10 @@ class StoresController extends Controller
             'commission' => 'required',
             'open_time' => 'required',
             'close_time' => 'required',
-            'cid' => 'required',
+            // 'cid' => 'required',
             'zipcode' => 'required',
-            'status'=>'required'
+            'status'=>'required',
+            'countrie_id' => 'required'
         ]);
         if ($validator->fails()) {
             $response = [

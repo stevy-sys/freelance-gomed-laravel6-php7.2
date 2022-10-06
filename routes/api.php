@@ -46,6 +46,7 @@ use App\Http\Controllers\v1\StoreRequestController;
 
 use App\Http\Controllers\v1\Auth\RegisterController;
 use App\Http\Controllers\v1\DriverRequestController;
+use App\Http\Controllers\v1\HomeController;
 use App\Http\Controllers\v1\ReferralCodesController;
 use App\Http\Controllers\v1\Profile\ProfileController;
 use App\Models\Products;
@@ -142,6 +143,15 @@ Route::prefix('/v1')->group(function () {
         Route::post('stores/getStoresData', [StoresController::class, 'getStoresData']);
 
         // Orders Routes
+
+        Route::post('orders/makeOrder', [OrdersController::class, 'makeOrder']);
+        Route::post('orders/verifStockOrder', [OrdersController::class, 'verifStockOrder']);
+        Route::post('orders/createOrderStore', [OrdersController::class, 'createOrderStore']);
+        Route::get('orders/getMyDetailPaimentUser', [OrdersController::class, 'getMyDetailPaimentUser']);
+        Route::get('orders/allOrderCompletedUser', [OrdersController::class, 'allOrderCompletedUser']);
+        Route::post('orders/getOrderDetailUser', [OrdersController::class, 'getOrderDetailUser']);
+
+
         Route::post('orders/create', [OrdersController::class, 'save']);
         Route::post('orders/getById', [OrdersController::class, 'getById']);
         Route::post('orders/sendMailForOrders', [OrdersController::class, 'sendMailForOrders']);
@@ -200,9 +210,11 @@ Route::prefix('/v1')->group(function () {
 
     Route::group(['middleware' => ['admin_auth', 'jwt.auth']], function () {
 
+        Route::get('countrie/getAllCountrie', [CitiesController::class, 'getAllCountrie']);
+        Route::get('countrie/searchCountrie', [CitiesController::class, 'searchCountrie']);
 
         //TVA Routes
-        Route::get('tva/getAllTvaWithCountrie', [TvaController::class, 'getAllTvaWithCountrie']);
+        Route::get('tva/getAllTvaWithCountrie2', [TvaController::class, 'getAllTvaWithCountrie']);
         Route::post('tva/importCsvTva', [TvaController::class, 'importCsvTva']);
         Route::put('tva/updateTva/{tva}', [TvaController::class, 'updateTva']);
         Route::delete('tva/deleteTva/{tva}', [TvaController::class, 'deleteTva']);
@@ -428,6 +440,10 @@ Route::prefix('/v1')->group(function () {
         Route::post('orders/getByStoreForApps', [OrdersController::class, 'getByStoreForApps']); 
         Route::post('orders/actionOrder', [OrdersController::class, 'actionOrder']); 
         Route::get('orders/getAllOrderInMyStore', [OrdersController::class, 'getAllOrderInMyStore']);
+
+        Route::get('orders/getAllOrderInMyStoreV2', [OrdersController::class, 'getAllORderInMMyStorev2']);
+        Route::get('orders/viewDetailPaiment', [OrdersController::class, 'viewDetailPaiment']);
+        
         Route::get('orders/searchOrderInMyStore', [OrdersController::class, 'searchOrderInMyStore']);
         Route::post('orders/getByIdFromStore', [OrdersController::class, 'getByIdFromStore']);
         Route::post('orders/updateStatusStore', [OrdersController::class, 'updateStatusStore']);
@@ -508,8 +524,12 @@ Route::prefix('/v1')->group(function () {
     Route::post('settings/getByLanguageIdWeb', [SettingsController::class, 'getByLanguageIdWeb']);
 
     Route::post('home/searchWithCity', [ProductsController::class, 'searchWithCity']);
+    Route::post('home/testProduct', [ProductsController::class, 'getProductInStoreViaCountrie']);
     Route::post('home/searchWithZipCode', [ProductsController::class, 'searchWithZipCode']);
     Route::post('home/searchWithGeoLocation', [ProductsController::class, 'searchWithGeoLocation']);
+
+
+    Route::post('home/initData', [HomeController::class, 'initData']);
 
 
     Route::post('home/searchStoreWithCity', [ProductsController::class, 'searchStoreWithCity']);

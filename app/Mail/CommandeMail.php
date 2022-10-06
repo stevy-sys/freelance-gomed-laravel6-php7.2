@@ -3,26 +3,27 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use App\Models\DetailPaimentUser;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CommandeMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $data ;
-    public $subject ;
+    public $detailPaiment ;
+
     public $user ;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data,$subject,$user)
+    public function __construct($user,$detailPaiment)
     {
-        $this->data = $data['data'];
-        $this->subject = $subject; 
         $this->user = $user;
+        $detail = DetailPaimentUser::find($detailPaiment);
+        $this->detailPaiment = $detail->load('orderUser.product');
     }
 
     /**
@@ -33,7 +34,7 @@ class CommandeMail extends Mailable
     public function build()
     {
         return $this->from(env('MAIL_USERNAME'))
-                    ->subject($this->subject)
+                    ->subject('Commande')
                     ->view('mails.orders');
     }
 }
