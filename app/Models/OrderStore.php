@@ -14,4 +14,9 @@ class OrderStore extends Model
     {
         return $this->belongsTo(Products::class,'product_id');
     }
+
+    public function detailPaiment()
+    {
+        return $this->belongsTo(DetailPaimentUser::class,'detail_id');
+    }
 }

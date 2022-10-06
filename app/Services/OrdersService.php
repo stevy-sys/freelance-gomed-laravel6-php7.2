@@ -125,6 +125,39 @@ class OrdersService {
         }
     }
 
+    private function sendMailReponseOrder($user,$action)
+    {
+        
+    }
+
+    public function actionOrder($request)
+    {
+        $order = DetailPaimentUser::find($request->id);
+        $user = User::find($order->user_owner);
+        if ($request->status == 'accepted') {
+            $order->update(['status' => 'valide']);
+            // $this->sendMailReponseOrder($user,'accepted');
+        }
+
+        if ($request->status == 'refuse') {
+            $order->update(['status' => 'refuse']);
+            // $this->sendMailReponseOrder($user,'refuse');
+        }
+
+        $jobs = DB::table('jobs')->whereId($order->queue_id);
+        if (isset($jobs)) {
+            $jobs->delete();
+        }
+
+        
+
+        return [
+            'data'=>$order,
+            'success' => true,
+            'status' => 200,
+        ];
+    }
+
     public function makeOrder($request,$user) {
         $detailPaiment = $this->createDetailPaiment($user);
         $orderUser = $this->verifOrder($request,$user,$detailPaiment);
@@ -276,6 +309,18 @@ class OrdersService {
             'data' => $order,
             'status' => 200
         ]; 
+    }
+
+    public function getDetailPaimentById($request)
+    {
+        $detailPaiment = DetailPaimentUser::find($request->id);
+        return [
+            'data' => [
+                'detail' => $detailPaiment->load('orderUser.product'),
+                // 'order' => OrderUser::with('product.store.countrie')->where('detail_id',$detailPaiment->id)->get()
+            ],
+            'status' => 200
+        ];
     }
 
     public function getMyDetailPaimentUser($user)
