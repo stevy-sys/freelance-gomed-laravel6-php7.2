@@ -56,7 +56,7 @@ class Products extends Model
 
     public function OrderUser()
     {
-        return $this->hasOne(OrderUser::class,'product_id');
+        return $this->belongsTo(OrderUser::class,'product_id');
     }
 
     public function offer()
@@ -82,11 +82,14 @@ class Products extends Model
 
     public function getMyQuantityAttribute()
     {
-        $detail = DetailPaimentUser::where(['uid'=>Auth::id(),'type' => 'user','paid_at' => null])->first();
         if (Auth::check() && Auth::user()->type == 'user') {
-            $orderUser = $detail->orderUser()->where('product_id',$this->id)->first();
-            if (isset($orderUser)) {
-                return  $orderUser->quantity;
+            $detail = DetailPaimentUser::where(['uid'=>Auth::id(),'type' => 'user','paid_at' => null])->first();
+            if (isset($detail)) {
+                $orderUser = $detail->orderUser()->where('product_id',$this->id)->first();
+                if (isset($orderUser)) {
+                    return  $orderUser->quantity;
+                }
+                return null ;
             }
             return null ;
         }

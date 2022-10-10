@@ -117,6 +117,8 @@ Route::prefix('/v1')->group(function () {
             Route::post('auth/logout', [LogoutController::class, 'logout']);
         });
 
+        Route::get('orders/getDetailPaimentById', [OrdersController::class, 'getDetailPaimentById']);
+
         // Payments Routes For Users
         Route::post('payments/createStripeToken', [PaymentsController::class, 'createStripeToken']);
         Route::post('payments/createCustomer', [PaymentsController::class, 'createCustomer']);
@@ -147,7 +149,10 @@ Route::prefix('/v1')->group(function () {
         Route::post('orders/makeOrder', [OrdersController::class, 'makeOrder']);
         Route::post('orders/verifStockOrder', [OrdersController::class, 'verifStockOrder']);
         Route::post('orders/createOrderStore', [OrdersController::class, 'createOrderStore']);
+        
         Route::get('orders/getMyDetailPaimentUser', [OrdersController::class, 'getMyDetailPaimentUser']);
+        
+
         Route::get('orders/allOrderCompletedUser', [OrdersController::class, 'allOrderCompletedUser']);
         Route::post('orders/getOrderDetailUser', [OrdersController::class, 'getOrderDetailUser']);
 
