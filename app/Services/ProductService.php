@@ -51,4 +51,50 @@ class ProductService
         ];
         return $response ;
     }
+
+    public function convertCurrency($to,$currency,$priceCountr)
+    {
+        $price = null ;
+        if ($to == 'MGA') {
+            if ($currency == '€') {
+                $price = $priceCountr/0.00024;
+            }
+            if ($currency == '$') {
+                $price = $priceCountr/0.00023;
+            }
+            if ($currency == 'MGA') {
+                $price = $priceCountr;
+            }
+        }
+
+        if ($to == '€') {
+            if ($currency == 'MGA') {
+                $price = $priceCountr/4160.57;
+            }
+            if ($currency == '$') {
+                $price = $priceCountr/0.97;
+            }
+            if ($currency == '€') {
+                $price = $priceCountr;
+            }
+        }
+
+        if ($to == '$') {
+            if ($currency == 'MGA') {
+                $price = $priceCountr/4276.09;
+            }
+            if ($currency == '€') {
+                $price = $priceCountr/1.03;
+            }
+            if ($currency == '$') {
+                $price = $priceCountr;
+            }
+        }
+        return $price ;
+        // return [
+        //     'data' => $price,
+        //     'status' => 200
+        // ];
+    }
+
 }

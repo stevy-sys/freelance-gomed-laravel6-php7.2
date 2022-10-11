@@ -52,4 +52,13 @@ class HomeController extends Controller
 
         return response()->json($data,200);
     }
+
+    public function getMyCurrency(Request $request)
+    {
+        $myCurrency = $this->countrieService->getMyCurrency($request);
+        $data = [
+            'myCurrency' => $myCurrency->currency 
+        ];
+        return response()->json($data,200);
+    }
 }

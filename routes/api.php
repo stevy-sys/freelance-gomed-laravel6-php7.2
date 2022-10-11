@@ -119,6 +119,7 @@ Route::prefix('/v1')->group(function () {
 
         Route::get('orders/getDetailPaimentById', [OrdersController::class, 'getDetailPaimentById']);
 
+
         // Payments Routes For Users
         Route::post('payments/createStripeToken', [PaymentsController::class, 'createStripeToken']);
         Route::post('payments/createCustomer', [PaymentsController::class, 'createCustomer']);
@@ -535,6 +536,7 @@ Route::prefix('/v1')->group(function () {
 
 
     Route::post('home/initData', [HomeController::class, 'initData']);
+    Route::post('home/getMyCurrency', [HomeController::class, 'getMyCurrency']);
 
 
     Route::post('home/searchStoreWithCity', [ProductsController::class, 'searchStoreWithCity']);

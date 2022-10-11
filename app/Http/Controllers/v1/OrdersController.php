@@ -89,9 +89,9 @@ class OrdersController extends Controller
         }
     }
 
-    public function getMyDetailPaimentUser(){
+    public function getMyDetailPaimentUser(Request $request){
         try {
-            $response = $this->service->getMyDetailPaimentUser(Auth::user());
+            $response = $this->service->getMyDetailPaimentUser(Auth::user(),$request);
             return response()->json($response,$response['status']);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()],500);
