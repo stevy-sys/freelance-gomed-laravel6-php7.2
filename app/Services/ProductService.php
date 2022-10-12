@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\OfferProduct;
+use App\Models\Countrie;
 use App\Models\Stores;
 use App\Models\Products;
 use Carbon\Carbon;
@@ -55,12 +56,14 @@ class ProductService
     public function convertCurrency($to,$currency,$priceCountr)
     {
         $price = null ;
+        $countrie = Countrie::with('otherCurrency')->where('currency',$to)->first();
+        $curr = $countrie->otherCurrency;
         if ($to == 'MGA') {
             if ($currency == '€') {
-                $price = $priceCountr/0.00024;
+                $price = $priceCountr/$curr->Euro;
             }
             if ($currency == '$') {
-                $price = $priceCountr/0.00023;
+                $price = $priceCountr/$curr->Dollard;
             }
             if ($currency == 'MGA') {
                 $price = $priceCountr;
@@ -69,10 +72,10 @@ class ProductService
 
         if ($to == '€') {
             if ($currency == 'MGA') {
-                $price = $priceCountr/4160.57;
+                $price = $priceCountr/$curr->Mga;
             }
             if ($currency == '$') {
-                $price = $priceCountr/0.97;
+                $price = $priceCountr/$curr->Dollard;
             }
             if ($currency == '€') {
                 $price = $priceCountr;
@@ -81,10 +84,10 @@ class ProductService
 
         if ($to == '$') {
             if ($currency == 'MGA') {
-                $price = $priceCountr/4276.09;
+                $price = $priceCountr/$curr->Mga;
             }
             if ($currency == '€') {
-                $price = $priceCountr/1.03;
+                $price = $priceCountr/$curr->Euro;
             }
             if ($currency == '$') {
                 $price = $priceCountr;
