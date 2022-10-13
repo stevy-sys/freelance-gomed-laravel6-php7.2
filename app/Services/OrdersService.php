@@ -329,10 +329,24 @@ class OrdersService {
 
     public function getDetailPaimentById($request)
     {
-        $detailPaiment = DetailPaimentUser::find($request->id);
+        $detailPaiment = DetailPaimentUser::with('orderUser.product.store.countrie')->find($request->id);
+        if (isset($request) && $request->myCurrency) {
+            $detailPaiment->orderUser = $detailPaiment->orderUser->map(function ($element) use($request){
+                $element->product->priceLocale = $this->productService->convertCurrency($request->myCurrency,$element->product->store->countrie->currency,$element->product->original_price);
+                return $element ;
+            });
+
+        }
+        $totalLocal = 0 ;
+        $ord = $detailPaiment['orderUser'] ;
+        foreach ($ord as $or) {
+            $totalLocal += ($or->product->priceLocale*$or->quantity) ;
+        }
+        $detailPaiment->totalLocal = $totalLocal ;
+
         return [
             'data' => [
-                'detail' => $detailPaiment->load('orderUser.product'),
+                'detail' => $detailPaiment,
                 // 'order' => OrderUser::with('product.store.countrie')->where('detail_id',$detailPaiment->id)->get()
             ],
             'status' => 200
