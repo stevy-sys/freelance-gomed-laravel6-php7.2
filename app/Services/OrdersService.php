@@ -379,6 +379,7 @@ class OrdersService {
         })
         // ->orWhere('order_to','LIKE','%'.$request->search.'%') a etudier
         ->orWhere('type_receive','LIKE','%'.$request->search.'%')
+        ->orWhere('delivery_option','LIKE','%'.$request->search.'%') 
         ->orWhereDay('created_at',$request->search)
         ->orWhereMonth('created_at',$request->search)
         ->orWhereYear('created_at',$request->search)
