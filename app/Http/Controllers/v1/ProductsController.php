@@ -905,32 +905,52 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $today = Carbon::now();
-        $cid = $request->id;
-        if ($cid == null || !$cid || !isset($cid)) {
-            $settings = Settings::first();
-            $cid = $settings->default_city_id;
-        }
-        $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
-        if (count($stores)) {
-            $storeIds = $stores->pluck('uid')->toArray();
 
-            $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
-            $data = [
-                'products' => $topProducts,
-            ];
-            $response = [
-                'data' => $data,
-                'success' => true,
-                'status' => 200,
-            ];
-            return response()->json($response, 200);
-        }
+        $products = Products::whereHas('store',function ($q)use($request) {
+            $q->whereHas('countrie',function ($query) use($request){
+                $query->where('code_pays',$request->countrie_code);
+            });
+        })->get();
+
+        $data = [
+            'products' => $products,
+        ];
+
         $response = [
-            'data' => null,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
+        return response()->json($response, 200);
+
+
+
+        // $today = Carbon::now();
+        // $cid = $request->id;
+        // if ($cid == null || !$cid || !isset($cid)) {
+        //     $settings = Settings::first();
+        //     $cid = $settings->default_city_id;
+        // }
+        // $stores = Stores::where(['status' => 1, 'cid' => $cid])->get();
+        // if (count($stores)) {
+        //     $storeIds = $stores->pluck('uid')->toArray();
+
+        //     $topProducts = Products::where('status', 1)->orWhere('in_home', 1)->WhereIn('store_id', $storeIds)->orderBy('rating', 'desc')->limit($request->limit)->get();
+        //     $data = [
+        //         'products' => $topProducts,
+        //     ];
+        //     $response = [
+        //         'data' => $data,
+        //         'success' => true,
+        //         'status' => 200,
+        //     ];
+        //     return response()->json($response, 200);
+        // }
+        // $response = [
+        //     'data' => null,
+        //     'success' => true,
+        //     'status' => 200,
+        // ];
         return response()->json($response, 200);
     }
 
