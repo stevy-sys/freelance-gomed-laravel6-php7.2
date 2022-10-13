@@ -45,6 +45,7 @@ use App\Http\Controllers\v1\ChatMessagesController;
 use App\Http\Controllers\v1\StoreRequestController;
 
 use App\Http\Controllers\v1\Auth\RegisterController;
+use App\Http\Controllers\v1\CountrieController;
 use App\Http\Controllers\v1\DriverRequestController;
 use App\Http\Controllers\v1\HomeController;
 use App\Http\Controllers\v1\ReferralCodesController;
@@ -119,6 +120,7 @@ Route::prefix('/v1')->group(function () {
 
         Route::get('orders/getDetailPaimentById', [OrdersController::class, 'getDetailPaimentById']);
 
+
         // Payments Routes For Users
         Route::post('payments/createStripeToken', [PaymentsController::class, 'createStripeToken']);
         Route::post('payments/createCustomer', [PaymentsController::class, 'createCustomer']);
@@ -156,6 +158,7 @@ Route::prefix('/v1')->group(function () {
         Route::get('orders/allOrderCompletedUser', [OrdersController::class, 'allOrderCompletedUser']);
         Route::post('orders/getOrderDetailUser', [OrdersController::class, 'getOrderDetailUser']);
 
+        
 
         Route::post('orders/create', [OrdersController::class, 'save']);
         Route::post('orders/getById', [OrdersController::class, 'getById']);
@@ -214,6 +217,9 @@ Route::prefix('/v1')->group(function () {
     });
 
     Route::group(['middleware' => ['admin_auth', 'jwt.auth']], function () {
+
+        Route::get('currency/updateCurrency', [CountrieController::class, 'updateCurrency']);
+        Route::get('currency/getAllCountrie', [CountrieController::class, 'getAllCountrie']);
 
         Route::get('countrie/getAllCountrie', [CitiesController::class, 'getAllCountrie']);
         Route::get('countrie/searchCountrie', [CitiesController::class, 'searchCountrie']);
@@ -535,6 +541,7 @@ Route::prefix('/v1')->group(function () {
 
 
     Route::post('home/initData', [HomeController::class, 'initData']);
+    Route::post('home/getMyCurrency', [HomeController::class, 'getMyCurrency']);
 
 
     Route::post('home/searchStoreWithCity', [ProductsController::class, 'searchStoreWithCity']);

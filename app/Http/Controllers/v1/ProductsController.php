@@ -46,7 +46,7 @@ class ProductsController extends Controller
                 'images' => 'required',
                 'original_price' => 'required',
                 'sell_price' => 'required',
-                'discount' => 'required',
+                'offer' => 'required',
                 'kind' => 'required',
                 'cate_id' => 'required',
                 'sub_cate_id' => 'required',

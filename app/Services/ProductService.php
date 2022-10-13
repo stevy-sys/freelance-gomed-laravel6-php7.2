@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\OfferProduct;
+use App\Models\Countrie;
 use App\Models\Stores;
 use App\Models\Products;
 use Carbon\Carbon;
@@ -51,4 +52,52 @@ class ProductService
         ];
         return $response ;
     }
+
+    public function convertCurrency($to,$currency,$priceCountr)
+    {
+        $price = null ;
+        $countrie = Countrie::with('otherCurrency')->where('currency',$to)->first();
+        $curr = $countrie->otherCurrency;
+        if ($to == 'MGA') {
+            if ($currency == '€') {
+                $price = $priceCountr/$curr->Euro;
+            }
+            if ($currency == '$') {
+                $price = $priceCountr/$curr->Dollard;
+            }
+            if ($currency == 'MGA') {
+                $price = $priceCountr;
+            }
+        }
+
+        if ($to == '€') {
+            if ($currency == 'MGA') {
+                $price = $priceCountr/$curr->Mga;
+            }
+            if ($currency == '$') {
+                $price = $priceCountr/$curr->Dollard;
+            }
+            if ($currency == '€') {
+                $price = $priceCountr;
+            }
+        }
+
+        if ($to == '$') {
+            if ($currency == 'MGA') {
+                $price = $priceCountr/$curr->Mga;
+            }
+            if ($currency == '€') {
+                $price = $priceCountr/$curr->Euro;
+            }
+            if ($currency == '$') {
+                $price = $priceCountr;
+            }
+        }
+        return $price ;
+        // return [
+        //     'data' => $price,
+        //     'status' => 200
+        // ];
+    }
+
 }

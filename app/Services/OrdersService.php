@@ -168,6 +168,22 @@ class OrdersService {
             $this->updateOrder($orderUser,$request->action,$detailPaiment);
         }
         $detailPaiment = DetailPaimentUser::with('orderUser.product.store.countrie')->find($detailPaiment->id);
+
+        if (isset($request) && $request->myCurrency) {
+            $detailPaiment->orderUser = $detailPaiment->orderUser->map(function ($element) use($request){
+                $element->product->priceLocale = $this->productService->convertCurrency($request->myCurrency,$element->product->store->countrie->currency,$element->product->original_price);
+                return $element ;
+            });
+
+            $totalLocal = 0 ;
+            $orders = $detailPaiment->orderUser;
+            foreach ($orders as $or) {
+                $totalLocal += ($or->product->priceLocale*$or->quantity) ;
+            }
+            $detailPaiment->totalLocal = $totalLocal ;
+        }
+        //
+
         $orderUser = OrderUser::where('detail_id',$detailPaiment->id)->where('product_id',$request->product_id)->first();
 
 
@@ -323,7 +339,7 @@ class OrdersService {
         ];
     }
 
-    public function getMyDetailPaimentUser($user)
+    public function getMyDetailPaimentUser($user,$request=null)
     {
         $detailPaiment = DetailPaimentUser::where(['uid'=>$user->id,'type' => 'user'])->whereNull('paid_at')->first();
         if (!isset($detailPaiment)) {
@@ -332,9 +348,23 @@ class OrdersService {
                 'type' => 'user'
             ]);
         }
+        $order = $detailPaiment->load('orderUser.product.store.countrie');
+        if (isset($request) && $request->myCurrency) {
+            $order->orderUser = $order->orderUser->map(function ($element) use($request){
+                $element->product->priceLocale = $this->productService->convertCurrency($request->myCurrency,$element->product->store->countrie->currency,$element->product->original_price);
+                return $element ;
+            });
+
+        }
+        $totalLocal = 0 ;
+        $ord = $order['orderUser'] ;
+        foreach ($ord as $or) {
+            $totalLocal += ($or->product->priceLocale*$or->quantity) ;
+        }
+        $detailPaiment->totalLocal = $totalLocal ;
         return [
             'data' => [
-                'detail' => $detailPaiment->load('orderUser.product.store.countrie'),
+                'detail' => $order,
                 'count' => $detailPaiment->orderUser->count(),
             ],
             'status' => 200
@@ -349,6 +379,7 @@ class OrdersService {
         })
         // ->orWhere('order_to','LIKE','%'.$request->search.'%') a etudier
         ->orWhere('type_receive','LIKE','%'.$request->search.'%')
+        ->orWhere('delivery_option','LIKE','%'.$request->search.'%') 
         ->orWhereDay('created_at',$request->search)
         ->orWhereMonth('created_at',$request->search)
         ->orWhereYear('created_at',$request->search)

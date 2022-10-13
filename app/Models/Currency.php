@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Countrie extends Model
+class Currency extends Model
 {
     public $timestamps = true;
 
     protected $guarded = [] ;
 
-    public function otherCurrency()
+    public function countrie()
     {
-        return $this->hasOne(Currency::class,'countrie_id');
+        return $this->belongsTo(Countrie::class,'countrie_id');
     }
 }
