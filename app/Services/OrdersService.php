@@ -113,10 +113,10 @@ class OrdersService {
         $this->updateDetailPaiment($detailPaiment);
     }
 
-    private function sendMailOrder($type,$detailPaiment,$user,$userInRappel = null){
+    private function sendMailOrder($type,$detailPaiment,$user,$userInRappel = null,$request=null){
         if ($type == 'user') {
             // user
-            Mail::to($user->email)->send(new CommandeMail($user,$detailPaiment->id)); 
+            Mail::to($user->email)->send(new CommandeMail($user,$detailPaiment->id,$request)); 
         }else{
             // store
             $jobs = (new RappelOrderStore($user,$detailPaiment->id,$userInRappel))->delay(now()->addMinutes(1));
@@ -273,14 +273,14 @@ class OrdersService {
             $this->updateDetailPaimentStore($detailForStore,$request->delivery['price']);
 
             // send mail for order
-            $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user());
+            $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user(),null,null);
 
             //send medical prescription
             $this->medicalPrescription($detailForStore,$userStore);
         }
 
         // user
-        $this->sendMailOrder('user',$detailForUser,Auth::user());
+        $this->sendMailOrder('user',$detailForUser,Auth::user(),null,$request);
         $detailForUser->update(['paid_at' => Carbon::now()]);
         return [
             'data' => $detailForUser,
