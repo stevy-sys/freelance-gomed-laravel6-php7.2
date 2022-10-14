@@ -14,4 +14,9 @@ class Countrie extends Model
     {
         return $this->hasOne(Currency::class,'countrie_id');
     }
+
+    public function stores()
+    {
+        return $this->hasMany(Stores::class,'countrie_id');
+    }
 }
