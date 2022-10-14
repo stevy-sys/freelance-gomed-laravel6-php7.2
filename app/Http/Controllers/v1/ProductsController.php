@@ -684,7 +684,10 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $stores = Stores::where(['status' => 1, 'cid' => $request->id])->get();
+        // $stores = Stores::where(['status' => 1, 'cid' => $request->id])->get();
+        $stores = Stores::whereHas('countrie',function ($q)use($request){
+            $q->where('code_pays',$request->countrie_code);
+        })->where(['status' => 1])->get();
         $response = [
             'data' => $stores,
             'success' => true,

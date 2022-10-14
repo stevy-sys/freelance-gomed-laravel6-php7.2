@@ -12,6 +12,8 @@ class CommandeMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $detailPaiment ;
+    public $detailPaimenttest ;
+    public $currency ;
 
     public $user ;
     /**
@@ -19,10 +21,13 @@ class CommandeMail extends Mailable
      *
      * @return void
      */
-    public function __construct($user,$detailPaiment)
+    public function __construct($user,$detailPaiment,$request)
     {
         $this->user = $user;
         $detail = DetailPaimentUser::find($detailPaiment);
+        $this->detailPaimenttest = convertCurrencyUser($detail,$request);
+        $this->currency = $request->myCurrency;
+        
         $this->detailPaiment = $detail->load('orderUser.product');
     }
 

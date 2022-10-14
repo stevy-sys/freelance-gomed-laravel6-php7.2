@@ -63,9 +63,9 @@
 						<tr>
 							<td></td>
 							<td>{{$orderUser->product->name}}</td>
-							<td>{{$orderUser->product->original_price}} USD</td>
+							<td>{{$orderUser->product->priceLocale}} {{ $currency }}</td>
 							<td>{{$orderUser->quantity}}</td>
-							<td>{{$orderUser->total}} USD</td>
+							<td>{{$orderUser->product->priceLocale}} {{ $currency }}</td>
 						</tr>
 					@endforeach
                     
@@ -74,14 +74,14 @@
                         <td>{{ $detailPaiment->type_receive }}</td>
                         <td></td>
                         <td></td>
-                        <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45 }} USD</td>
+                        <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45 }} {{ $currency }}</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $detailPaiment->grand_total}} USD</td>
+                        <td>{{ $detailPaiment->totalLocal}} {{ $currency }}</td>
                     </tr>
                 </tbody>
             </table>

@@ -59,9 +59,9 @@
                         <tr>
                             <td></td>
                             <td>{{ $orderStore->product->name }}</td>
-                            <td>{{ $orderStore->product->original_price }} USD</td>
+                            <td>{{ $orderStore->product->original_price }} {{$orderStore->product->store->countrie->currency}}</td>
                             <td>{{ $orderStore->quantity }}</td>
-                            <td>{{ $orderStore->total }} USD</td>
+                            <td>{{ $orderStore->total }} {{$orderStore->product->store->countrie->currency}}</td>
                         </tr>
                     @endforeach
                   
@@ -77,7 +77,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $detailPaiment->grand_total }} USD</td>
+                        <td>{{ $detailPaiment->grand_total }} {{$detailPaiment->orderStore[0]->product->store->countrie->currency}}</td>
                     </tr>
                 </tbody>
             </table>
