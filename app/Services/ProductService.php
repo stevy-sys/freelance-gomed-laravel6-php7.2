@@ -13,9 +13,11 @@ class ProductService
 {
     public function getProductInStoreViaCountrie($countrie)
     {
-        $products = Stores::with(['products' => function ($query){
-            $query->with(['offer','quantity'])->where('status' , 1)->orderBy('rating', 'desc')->limit(15);
-        },'countrie'])->where(['status' => 1 , 'countrie_id' => $countrie->id])->get()->pluck('products')->all()[0];
+        $products = Products::whereHas('store',function ($q) use($countrie){
+            $q->wherehas('countrie',function ($q) use($countrie) {
+                $q->where('id',$countrie->id);
+            });
+        })->with(['offer','quantity'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
         
         return $products ;
     }
