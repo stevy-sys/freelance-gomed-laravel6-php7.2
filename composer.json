@@ -12,6 +12,7 @@
     "require": {
         "php": "^7.2",
         "bavix/laravel-wallet": "^6.1",
+        "doctrine/dbal": "2.*",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^7.4",
@@ -48,6 +49,9 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files":[
+            "app/helpers/helpers.php"
         ]
     },
     "autoload-dev": {

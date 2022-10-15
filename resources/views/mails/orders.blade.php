@@ -15,6 +15,7 @@
             font-style: italic;
             width: 90%;
             margin: auto;
+            text-align: center;
         }
 
         .pl-4 {
@@ -29,22 +30,22 @@
             <h1 class="card-header text-center text-white p-3">
                 Nous vous remercions pour votre commande </h1>
             <div class="container pt-4">
-                <div>
-                    Bonjour {{$user->first_name}}
-                </div>
-
-                <div>
-                    Pour information - nous avons reçu votre commande n° : {{$data->id}} elle est maintenant en cours de traitement :
-                </div>
+                <p>
+                    Bonjour {{$user->first_name}},
+                </p>
 
                 <p>
-                    <strong>Numero de commande : </strong> {{$data->id}}
+                    Pour information, nous avons reçu votre commande n° : {{$detailPaiment->id}}. Elle est maintenant en cours de traitement :
+                </p>
+
+                <p>
+                    <strong>Numero de commande : </strong> {{$detailPaiment->id}}
                 </p>
                 <p>
-                    <strong>Date de facturation : </strong> {{$data->date_time}}
+                    <strong>Date de facturation : </strong> {{$detailPaiment->created_at}}
                 </p>
                 <p>
-                    <strong>Choix de livraison : </strong> {{$data->type_receive}}
+                    <strong>Choix de livraison : </strong> {{$detailPaiment->delivery_option}}
                 </p>
             </div>
             <table class="payment-details mb-4">
@@ -58,35 +59,29 @@
                     </tr>
                 </thead>
                 <tbody>
-					@foreach ($data->orders as $product)
+					@foreach ($detailPaiment->orderUser as $orderUser)
 						<tr>
 							<td></td>
-							<td>{{$product->name}}</td>
-							<td>{{$product->original_price}} USD</td>
-							<td>{{$product->quantity}}</td>
-							<td>{{$product->original_price*$product->quantity}} USD</td>
+							<td>{{$orderUser->product->name}}</td>
+							<td>{{$orderUser->product->priceLocale}} {{ $currency }}</td>
+							<td>{{$orderUser->quantity}}</td>
+							<td>{{$orderUser->product->priceLocale}} {{ $currency }}</td>
 						</tr>
 					@endforeach
-                    {{-- <tr>
-                        <td></td>
-                        <td>Nom</td>
-                        <td>2000 MGA</td>
-                        <td>1</td>
-                        <td>2000 MGA</td>
-                    </tr> --}}
+                    
                     <tr class="font-weight-bold">
                         <td>Type de livraison</td>
+                        <td>{{ $detailPaiment->type_receive }}</td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td>{{$data->delivery_charge}} USD</td>
+                        <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45 }} {{ $currency }}</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $data->grand_total}} USD</td>
+                        <td>{{ $detailPaiment->totalLocal}} {{ $currency }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -94,9 +89,7 @@
                 <strong>Address de livraison</strong>
                 <div class="d-flex flex-column pl-4">
                     <span>{{$user->first_name}}</span>
-                    {{-- <span>Lorem ipsum dolor, sit amet consectetur </span>
-                    <span>Lorem, ipsum.</span>
-                    <span>Lorem ipsum dolor sit.</span> --}}
+                    
                 </div>
 
             </div>

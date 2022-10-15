@@ -19,7 +19,7 @@ class Stores extends Model
 
     protected $fillable = ['uid','name','mobile','lat','lng','verified','address','descriptions','images',
     'cover','commission','open_time','close_time','isClosed','certificate_url','certificate_type',
-    'rating','total_rating','cid','zipcode','status','extra_field'];
+    'rating','total_rating','cid','zipcode','status','extra_field','countrie_id'];
 
     protected $hidden = [
         'updated_at', 'created_at','commission'
@@ -37,5 +37,14 @@ class Stores extends Model
 
     public function orders(){
         return $this->hasMany(Orders::class,'store_id');
+    }
+
+    public function products() {
+        return $this->hasMany(Products::class,'store_id');
+    }
+
+    public function countrie()
+    {
+        return $this->belongsTo(Countrie::class,'countrie_id');
     }
 }
