@@ -164,9 +164,11 @@ class ProductsController extends Controller
 
         //update quantity
         $product = Products::find($request->id);
-        $product->quantity()->update([
-            'stock' => $request->quantity
-        ]);
+        if ($request->quantity) {
+            $product->quantity()->update([
+                'stock' => $request->quantity
+            ]);
+        }
 
         if (is_null($data)) {
             $response = [
