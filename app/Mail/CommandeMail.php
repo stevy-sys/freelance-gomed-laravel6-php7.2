@@ -27,7 +27,7 @@ class CommandeMail extends Mailable
         $detail = DetailPaimentUser::find($detailPaiment);
         $this->detailPaiment = convertCurrencyUser($detail,$request);
         $this->currency = $request->myCurrency;
-         $this->detailPaiment = $detail->load('orderUser.product');
+        $this->detailPaiment = $detail->load('orderUser.product');
     }
 
     /**

@@ -88,7 +88,7 @@ class OrdersService {
             'product_id' => $product->id,
             'store_id' => $product->store_id,
             'quantity' => 1,
-            'total' => $product->original_price
+            'total' => $product->offer ? $product->original_price - (($product->offer->rates * $product->original_price)/100) : $product->original_price
         ]);
         $this->updateDetailPaiment($detailPaiment);
         return $orderuser ;
@@ -98,7 +98,9 @@ class OrdersService {
     private function updateOrder($orderUser,$action,$detailPaiment) {
         if ($action == 'add') {
             $orderUser->quantity++ ;
-            $orderUser->total = $orderUser->product->original_price * $orderUser->quantity ;
+            $orderUser->total = $orderUser->product->offer ? ($orderUser->product->original_price - (($orderUser->product->original_price * $orderUser->product->offer->rates)/100)) * $orderUser->quantity 
+                                : 
+                                $orderUser->product->original_price * $orderUser->quantity ;
             $orderUser->save();
         }else{
             if ($orderUser->quantity == 1) {
@@ -106,7 +108,9 @@ class OrdersService {
                 $orderUser->delete();
             }else{
                 $orderUser->quantity-- ;
-                $orderUser->total = $orderUser->product->original_price * $orderUser->quantity;
+                $orderUser->total = $orderUser->product->offer ? ($orderUser->product->original_price - (($orderUser->product->original_price * $orderUser->product->offer->rates)/100)) * $orderUser->quantity 
+                                    : 
+                                    $orderUser->product->original_price * $orderUser->quantity ;
                 $orderUser->save();
             }
         }
@@ -171,14 +175,19 @@ class OrdersService {
 
         if (isset($request) && $request->myCurrency) {
             $detailPaiment->orderUser = $detailPaiment->orderUser->map(function ($element) use($request){
-                $element->product->priceLocale = $this->productService->convertCurrency($request->myCurrency,$element->product->store->countrie->currency,$element->product->original_price);
+                $element->product->priceLocale = $this->productService->convertCurrency(
+                    $request->myCurrency,
+                    $element->product->store->countrie->currency,
+                    $element->product->offer ? ($element->product->original_price - ($element->product->original_price * $element->product->offer->rates)/100) : $element->product->original_price
+                );
                 return $element ;
             });
 
             $totalLocal = 0 ;
             $orders = $detailPaiment->orderUser;
             foreach ($orders as $or) {
-                $totalLocal += ($or->product->priceLocale*$or->quantity) ;
+                $totalLocal = $totalLocal + (
+                    $or->product->offer ? ($or->product->priceLocale - (($or->product->priceLocale * $or->product->offer->rates)/100)) * $or->quantity : $or->product->priceLocale * $or->quantity) ;
             }
             $detailPaiment->totalLocal = $totalLocal ;
         }
@@ -341,7 +350,11 @@ class OrdersService {
         $detailPaiment = DetailPaimentUser::with('orderUser.product.store.countrie')->find($request->id);
         if (isset($request) && $request->myCurrency) {
             $detailPaiment->orderUser = $detailPaiment->orderUser->map(function ($element) use($request){
-                $element->product->priceLocale = $this->productService->convertCurrency($request->myCurrency,$element->product->store->countrie->currency,$element->product->original_price);
+                $element->product->priceLocale = $this->productService->convertCurrency(
+                    $request->myCurrency,
+                    $element->product->store->countrie->currency,
+                    $element->product->offer ? ($element->product->original_price - ($element->product->original_price * $element->product->offer->rates)/100) : $element->product->original_price
+                );
                 return $element ;
             });
 
@@ -374,11 +387,15 @@ class OrdersService {
         $order = $detailPaiment->load('orderUser.product.store.countrie');
         if (isset($request) && $request->myCurrency) {
             $order->orderUser = $order->orderUser->map(function ($element) use($request){
-                $element->product->priceLocale = $this->productService->convertCurrency($request->myCurrency,$element->product->store->countrie->currency,$element->product->original_price);
+                $element->product->priceLocale = $this->productService->convertCurrency(
+                    $request->myCurrency,
+                    $element->product->store->countrie->currency,
+                    $element->product->offer ? ($element->product->original_price - ($element->product->original_price * $element->product->offer->rates)/100) : $element->product->original_price
+                );
                 return $element ;
             });
-
         }
+       
         $totalLocal = 0 ;
         $ord = $order['orderUser'] ;
         foreach ($ord as $or) {

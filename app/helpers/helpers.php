@@ -8,7 +8,7 @@ function convertCurrencyUser($detailPaiment,$request){
         $element->product->priceLocale = $producSerice->convertCurrency(
                 $request->myCurrency,
                 $element->product->store->countrie->currency,
-                $element->product->original_price
+                $element->product->offer ? ($element->product->original_price - ($element->product->original_price * $element->product->offer->rates)/100) : $element->product->original_price
         );
         $element->totalLocal = $producSerice->convertCurrency(
                 $request->myCurrency,
@@ -19,7 +19,7 @@ function convertCurrencyUser($detailPaiment,$request){
     });
 
     $totalLocal = 0 ;
-    $orders = $detailPaiment->orderUser;
+    $orders = $detailPaiment['orderUser'];
     foreach ($orders as $or) {
         $totalLocal += ($or->product->priceLocale*$or->quantity) ;
     }

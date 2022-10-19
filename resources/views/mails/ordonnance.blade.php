@@ -28,7 +28,7 @@
     <div class="container mt-4">
         <div class="card" style="width: 100%;">
             <h1 class="card-header text-center text-white p-3">
-                Nous vous remercions pour votre commande </h1>
+                Demande d'autorisation d'achat </h1>
             <div class="container pt-4">
                 <p>
                     Bonjour {{$user->first_name}},
