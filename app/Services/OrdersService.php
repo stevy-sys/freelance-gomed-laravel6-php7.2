@@ -230,11 +230,20 @@ class OrdersService {
 
     private function medicalPrescription($detailPaiment,$userStore)
     {
-        $products = $detailPaiment->orderStore()->whereHas('product',function ($q) { 
-            $q->where('medical_prescription',1);
-        })->with('product')->get()->pluck('product')->all();
-        foreach ($products as $product) {
-            Mail::to($userStore->email)->send(new Ordonnance($product,$userStore)); 
+        $detail = DetailPaimentUser::whereHas('orderStore',function ($q) {
+            $q->whereHas('product',function ($q) {
+                $q->where('medical_prescription',1);
+            });
+        })->with('orderStore.product')->where('id',$detailPaiment->id)->first();
+        
+        $total = 0 ;
+        if (isset($detail)) {
+            foreach ($detail->orderStore as $orderStore) {
+                if ($orderStore->product->medical_prescription == 1) {
+                    $total += $orderStore->product->original_price ;
+                }
+            }
+            Mail::to($userStore->email)->send(new Ordonnance($detail,$userStore,$total)); 
         }
     }
 
