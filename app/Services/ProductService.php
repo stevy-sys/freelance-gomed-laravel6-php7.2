@@ -30,7 +30,7 @@ class ProductService
         $data['medical_prescription'] = $request->medical_prescription ;
         $data = Products::create($data);
         if ($request->offer) {
-           OfferProduct::dispatch($data)->delay(Carbon::parse($request->start_offer));
+           OfferProduct::dispatch($data,$request)->delay(Carbon::parse($request->start_offer));
         }
 
         if ($request->quantity != null) {
@@ -40,6 +40,8 @@ class ProductService
             ]);
         }
 
+        // a rectifier cette sleep
+        sleep(3);
         $response = [
             'success' => false,
             'message' => $data,

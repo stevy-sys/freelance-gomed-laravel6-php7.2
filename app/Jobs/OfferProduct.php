@@ -13,7 +13,9 @@ class OfferProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     public $productOffer;
-    public $request;
+    public $start_offer;
+    public $exp_offer;
+    public $offer;
     /**
      * Create a new job instance.
      *
@@ -21,8 +23,12 @@ class OfferProduct implements ShouldQueue
      */
     public function __construct($productOffer,$request)
     {
-        $this->request = $request;
+        $request = $request->all();
+        $this->start_offer = $request['start_offer'];
+        $this->exp_offer = $request['exp_offer'];
+        $this->offer = $request['offer'];
         $this->productOffer = $productOffer;
+       
     }
 
     /**
@@ -33,10 +39,11 @@ class OfferProduct implements ShouldQueue
     public function handle()
     {
         $offer = $this->productOffer->offer()->create([
-            'rates' => $this->request->offer,
-            'exp_offer' => $this->request->exp_offer,
-            'start_offer' => $this->request->start_offer
+            'rates' => $this->offer,
+            'exp_offer' => $this->exp_offer,
+            'start_offer' => $this->start_offer
         ]);
-        DeleteOffer::dispatch($offer)->delay(Carbon::parse($this->request->exp_offer));
+        
+        DeleteOffer::dispatch($offer)->delay(Carbon::parse($this->exp_offer));
     }
 }
