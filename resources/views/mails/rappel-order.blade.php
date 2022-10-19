@@ -70,7 +70,7 @@
                         <td>{{ $detailPaiment->type_receive }}</td>
                         <td></td>
                         <td></td>
-                        <td>a test USD</td>
+                        <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45  }} {{$detailPaiment->orderStore[0]->product->store->countrie->currency}}</td>
                     </tr>
                     <tr class="font-weight-bold">
                         <td>Total</td>
