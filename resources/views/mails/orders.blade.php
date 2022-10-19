@@ -62,10 +62,10 @@
 					@foreach ($detailPaiment->orderUser as $orderUser)
 						<tr>
 							<td></td>
-							<td>{{$orderUser->product->name}}</td>
-							<td>{{$orderUser->product->priceLocale}} {{ $currency }}</td>
-							<td>{{$orderUser->quantity}}</td>
-							<td>{{$orderUser->product->priceLocale}} {{ $currency }}</td>
+							<td>{{ $orderUser->product->name}}</td>
+							<td>{{ round($orderUser->product->priceLocale,2) }} {{ $currency }}</td>
+							<td>{{ $orderUser->quantity}}</td>
+							<td>{{ round($orderUser->totalLocal,2)  }} {{ $currency }}</td>
 						</tr>
 					@endforeach
                     
@@ -81,7 +81,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $detailPaiment->totalLocal}} {{ $currency }}</td>
+                        <td>{{ round($detailPaiment->totalLocal,2)}} {{ $currency }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -89,9 +89,7 @@
                 <strong>Address de livraison</strong>
                 <div class="d-flex flex-column pl-4">
                     <span>{{$user->first_name}}</span>
-                    
                 </div>
-
             </div>
         </div>
 

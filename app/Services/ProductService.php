@@ -18,26 +18,19 @@ class ProductService
                 $q->where('id',$countrie->id);
             });
         })->with(['offer','quantity'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
-        
         return $products ;
     }
 
     public function createProduct($request,$user)
     {
-
+        
         $data = $request->all();
         $data['store_id'] = $user->store->id ;
         $data['tva_id'] = $request->tva ;
         $data['medical_prescription'] = $request->medical_prescription ;
         $data = Products::create($data);
-
         if ($request->offer) {
-            $offer = $data->offer()->create([
-                'rates' => $request->offer,
-                'exp_offer' => $request->exp_offer,
-                'start_offer' => $request->start_offer
-            ]);
-           OfferProduct::dispatch($offer)->delay(Carbon::parse($offer->exp_offer));
+           OfferProduct::dispatch($data)->delay(Carbon::parse($request->start_offer));
         }
 
         if ($request->quantity != null) {

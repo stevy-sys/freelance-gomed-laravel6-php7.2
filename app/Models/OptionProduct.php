@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OptionProduct extends Model
 {
+    protected $table = 'option_products';
     public $timestamps = true; //by default timestamp false
     protected $guarded = [] ;
 
