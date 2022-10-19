@@ -154,7 +154,7 @@ class ProductsController extends Controller
 
         //update offer
         $product = Products::find($request->id);
-        if (isset($product->offer)) {
+        if (isset($request->offer)) {
             $product->offer()->update([
                 'rates' => $request->offer,
                 'exp_offer' => $request->exp_offer,
