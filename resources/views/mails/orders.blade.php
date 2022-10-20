@@ -81,7 +81,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ round($detailPaiment->totalLocal,2)}} {{ $currency }}</td>
+                        <td>{{ (round($detailPaiment->totalLocal,2) + ($detailPaiment->type_receive == 'standard' ? 20 : 45)) }} {{ $currency }}</td>
                     </tr>
                 </tbody>
             </table>

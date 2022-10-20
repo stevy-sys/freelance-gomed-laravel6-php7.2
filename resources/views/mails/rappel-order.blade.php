@@ -59,7 +59,7 @@
                         <tr>
                             <td></td>
                             <td>{{ $orderStore->product->name }}</td>
-                            <td>{{ $orderStore->product->original_price }} {{$orderStore->product->store->countrie->currency}}</td>
+                            <td>{{ $orderStore->product->offer ? ($orderStore->product->offer->rates*$orderStore->product->original_price)/100 : $orderStore->product->original_price }} {{$orderStore->product->store->countrie->currency}}</td>
                             <td>{{ $orderStore->quantity }}</td>
                             <td>{{ $orderStore->total }} {{$orderStore->product->store->countrie->currency}}</td>
                         </tr>
