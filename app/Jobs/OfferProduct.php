@@ -44,6 +44,6 @@ class OfferProduct implements ShouldQueue
             'start_offer' => $this->start_offer
         ]);
         
-        DeleteOffer::dispatch($offer)->delay(Carbon::parse($this->exp_offer));
+        DeleteOffer::dispatch($offer)->delay(Carbon::parse($offer->exp_offer));
     }
 }
