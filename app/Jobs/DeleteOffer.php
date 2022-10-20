@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\OptionProduct;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,6 +30,6 @@ class DeleteOffer implements ShouldQueue
      */
     public function handle()
     {
-        $this->offer->delete();
+        OptionProduct::find($this->offer->id)->delete();
     }
 }

@@ -16,6 +16,7 @@ use App\Models\DetailPaimentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Support\Facades\DB;
 
 class OrdersService {
     protected $productService ;
