@@ -24,16 +24,19 @@ class DataSeedTemp extends Seeder
                 'currency' => 'MGA',
                 'code_pays' => 'MG',
                 'pays' => 'MADAGASCAR',
+                'curr_string' => 'MGA' 
             ],
             [
                 'currency' => '€',
                 'code_pays' => 'FR',
                 'pays' => 'FRANCE',
+                'curr_string' => 'EUR' 
             ],
             [
                 'currency' => '$',
                 'code_pays' => 'US',
                 'pays' => 'USA',
+                'curr_string' => 'USD' 
             ] 
         ];
         foreach ($countrys as $country) {
@@ -43,6 +46,7 @@ class DataSeedTemp extends Seeder
                     'currency' => $country['currency'],
                     'code_pays' => $country['code_pays'],
                     'pays' => $country['pays'],
+                    'curr_string' => $country['curr_string'],
                 ]);
             
                 
@@ -69,7 +73,7 @@ class DataSeedTemp extends Seeder
                         "extra_field" => null,
                         "status" => 1
                     ];
-                    $city = Cities::create($data) ;
+                    $city = Cities::create($data);
                 // }
     
                 
@@ -121,10 +125,8 @@ class DataSeedTemp extends Seeder
                                 'start_offer' => Carbon::now()->subMinutes(rand(1, 55))
                             ]);
                         }
-                        
                     }
                 }
-            
         }
     }
 }
