@@ -43,7 +43,7 @@ class ProductsController extends Controller
                 'store_id' => 'required',
                 'cover' => 'required',
                 'name' => 'required',
-                'images' => 'required',
+                // 'images' => 'required',
                 'original_price' => 'required',
                 'sell_price' => 'required',
                 'offer' => 'required',
@@ -67,7 +67,7 @@ class ProductsController extends Controller
                 'in_stoke' => 'required',
                 'rating' => 'required',
                 'total_rating' => 'required',
-                'variations' => 'required',
+                // 'variations' => 'required',
                 'size' => 'required',
                 'medical_prescription' => 'required'
             ]);
@@ -148,7 +148,27 @@ class ProductsController extends Controller
         if (isset($request->tva)) {
             $data['tva_id'] = $request->tva ;
         }
+
+        //update product
         $data = Products::find($request->id)->update($data);
+
+        //update offer
+        $product = Products::find($request->id);
+        if (isset($request->offer)) {
+            $product->offer()->update([
+                'rates' => $request->offer,
+                'exp_offer' => $request->exp_offer,
+                'start_offer' => $request->start_offer,
+            ]);
+        }
+
+        //update quantity
+        $product = Products::find($request->id);
+        if ($request->quantity) {
+            $product->quantity()->update([
+                'stock' => $request->quantity
+            ]);
+        }
 
         if (is_null($data)) {
             $response = [
@@ -553,7 +573,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Products::find($request->id);
+        $data = Products::with(['offer','tva'])->find($request->id); 
 
 
         if (is_null($data)) {

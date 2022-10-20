@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\DetailPaimentUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -11,17 +12,22 @@ class Ordonnance extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $product ;
+    public $detailPaiment ;
     public $user ;
+    public $currency ;
+    public $total ;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($product,$user)
+    public function __construct($detail,$user,$total)
     {
-        $this->product = $product;
+        $this->detailPaiment = $detail;
         $this->user = $user;
+        $this->currency = $user->store->countrie->currency;
+        $this->total = $total;
+       
     }
 
     /**
