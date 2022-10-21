@@ -17,7 +17,7 @@ class ProductService
             $q->wherehas('countrie',function ($q) use($countrie) {
                 $q->where('id',$countrie->id);
             });
-        })->with(['offer','quantity'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
+        })->with(['offer','quantity','store.countrie'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
         return $products ;
     }
 

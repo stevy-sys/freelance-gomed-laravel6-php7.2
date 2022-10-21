@@ -47,7 +47,8 @@ class HomeController extends Controller
             'inOffers' => null,
             'storeIds' => null,
             'cityInfo' => $countrie,
-            'myCurrency' => $myCurrency->currency 
+            'myCurrency' => $myCurrency->currency,
+
         ];
 
         return response()->json($data,200);
@@ -57,7 +58,8 @@ class HomeController extends Controller
     {
         $myCurrency = $this->countrieService->getMyCurrency($request);
         $data = [
-            'myCurrency' => $myCurrency->currency 
+            'myCurrency' => $myCurrency->currency ,
+            'convertCurrency' => $myCurrency->otherCurrency ,
         ];
         return response()->json($data,200);
     }
