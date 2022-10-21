@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPaymentIdAndType extends Migration
+class AddGrandTotalLocalInDetailPaiment extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,7 @@ class AddPaymentIdAndType extends Migration
     public function up()
     {
         Schema::table('detail_paiment_users', function (Blueprint $table) {
-            $table->string('payment_id')->nullable();
-            $table->string('payment_type')->nullable();
-            $table->string('tva_value')->nullable();
+            $table->string('grand_total_local')->nullable();
         });
     }
 
@@ -28,9 +26,7 @@ class AddPaymentIdAndType extends Migration
     public function down()
     {
         Schema::table('detail_paiment_users', function (Blueprint $table) {
-            $table->dropColumn('payment_id');
-            $table->dropColumn('payment_type');
-            $table->dropColumn('tva_value');
+            $table->dropColumn('grand_total_local');
         });
     }
 }

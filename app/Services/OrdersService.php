@@ -261,35 +261,45 @@ class OrdersService {
      * request = [store_id1,store_id2]
      */
     public function createOrderStore($request){
-        $detailForUser = DetailPaimentUser::find($request->detail_id);
-        $detailForUser->grand_total = $detailForUser->grand_total + $request->delivery['price'] ;
-        $detailForUser->delivery_option = $request->delivery['option'];
-        $detailForUser->type_receive = $request->delivery['type'];
-        $detailForUser->payment_id = $request->payement_id;
-        $detailForUser->payment_type = $request->type;
-        $detailForUser->tva_value = $request->tva;
+        $data = $request->all();
+        
+        $detailForUser = DetailPaimentUser::find($data['detail_paiment']['id']);
+        
+        $detailForUser->grand_total = $data['detail_paiment']['grand_total'] ;
+        $detailForUser->grand_total_local = $data['detail_paiment']['grand_total_local'] ;
+        $detailForUser->delivery_option = $data['detail_paiment']['delivery_option'];
+        $detailForUser->type_receive = $data['detail_paiment']['type_receive'];
+        $detailForUser->payment_id = $data['detail_paiment']['payement_id'];
+        $detailForUser->payment_type = $data['detail_paiment']['payment_type'];
+        $detailForUser->tva_value = $data['detail_paiment']['tva_value'];
         $detailForUser->save();
 
+
+        //creer order user
+        $detailForUser->orderUser()->createMany($data['allOrder']);
+
+        
         //copie detail paiment
-        foreach ($request->allStore as $store_id) {
+        foreach ($data['allStore'] as $store_id) {
             $store = Stores::find($store_id);
             $userStore = User::find($store->uid);
+            
             $detailForStore = DetailPaimentUser::create([
                 'uid' => $store->uid,
                 'type' => 'store',
                 'user_owner' => Auth::id(),
                 'status' => 'open',
-                'delivery_option' => $request->delivery['option'],
-                'type_receive' => $request->delivery['type'],
-                'tva_value' => $request->tva,
-                'payment_type' => $request->type,
-                'payment_id' => $request->payement_id,
+                'delivery_option' => $data['detail_paiment']['delivery_option'],
+                'type_receive' => $data['detail_paiment']['type_receive'],
+                'tva_value' => $data['detail_paiment']['tva_value'],
+                'payment_type' => $data['detail_paiment']['payment_type'],
+                'payment_id' => $data['detail_paiment']['payement_id'],
             ]);
+            
             $orderUser = $detailForUser->orderUser()->where('store_id',$store_id)->get(['product_id','quantity','total','store_id'])->toArray();
             $detailForStore->orderStore()->createMany($orderUser);
-            
             // update total detail paiment
-            $this->updateDetailPaimentStore($detailForStore,$request->delivery['price']);
+            $this->updateDetailPaimentStore($detailForStore,$data['detail_paiment']['type_receive'] == 'standard' ? 20 : 45);
 
             // send mail for order
             $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user(),null,null);
@@ -297,7 +307,7 @@ class OrdersService {
             //send medical prescription
             $this->medicalPrescription($detailForStore,$userStore);
         }
-
+        
         // user
         $this->sendMailOrder('user',$detailForUser,Auth::user(),null,$request);
         $detailForUser->update(['paid_at' => Carbon::now()]);
