@@ -125,7 +125,7 @@ class OrdersService {
         }else{
             // store
             $jobs = (new RappelOrderStore($user,$detailPaiment->id,$userInRappel))->delay(now()->addMinutes(1));
-            $id = app(Dispatcher::class)->dispatch($jobs);
+            $id = app(Dispatcher::class)->dispatch($jobs); 
             $detailPaiment->update(['queue_id' => $id]);
         }
     }
@@ -244,7 +244,7 @@ class OrdersService {
             $q->whereHas('product',function ($q) {
                 $q->where('medical_prescription',1);
             });
-        })->with('orderStore.product')->where('id',$detailPaiment->id)->first();
+        })->with('orderStore.product.offer')->where('id',$detailPaiment->id)->first();
         
         $total = 0 ;
         if (isset($detail)) {
