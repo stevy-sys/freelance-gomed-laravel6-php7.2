@@ -35,11 +35,11 @@
                 </p>
 
                 <p>
-                    Pour information, la commande n° : {{$detailPaiment->id}} a besoin d'une autorisation exceptionnel de votre part.
+                    Pour information, la commande n° : {{$detailPaiment->id}} a besoin d'une autorisation exceptionnelle  de votre part.
                 </p>
 
                 <p>
-                    Veuillez demander l'ordonnance médical au client avant de valider :
+                    Veuillez demander l'ordonnance médicale au client avant de valider :
                 </p>
 
                 <p>
