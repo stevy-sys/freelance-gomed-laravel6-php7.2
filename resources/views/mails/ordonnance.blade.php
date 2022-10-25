@@ -75,20 +75,20 @@
                         @endif
 					@endforeach
                     
-                    <tr class="font-weight-bold">
+                    {{-- <tr class="font-weight-bold">
                         <td>Type de livraison</td>
                         <td>{{ $detailPaiment->type_receive }}</td>
                         <td></td>
                         <td></td>
                         <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45 }} {{ $currency }}</td>
-                    </tr>
-                    <tr class="font-weight-bold">
-                        {{-- <td>Total</td> --}}
+                    </tr> --}}
+                    {{-- <tr class="font-weight-bold">
+                        <td>Total</td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        {{-- <td>{{ $total}} {{ $currency }}</td> --}}
-                    </tr>
+                        <td>{{ $total}} {{ $currency }}</td>
+                    </tr> --}}
                 </tbody>
             </table>
             <div class="container pb-4">
