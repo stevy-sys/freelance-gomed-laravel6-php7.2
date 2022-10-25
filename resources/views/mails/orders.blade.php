@@ -65,7 +65,7 @@
 							<td>{{ $orderUser->product->name}}</td>
 							<td>{{ round($orderUser->product->priceLocale,2) }} {{ $currency }}</td>
 							<td>{{ $orderUser->quantity}}</td>
-							<td>{{ round($orderUser->totalLocal,2)  }} {{ $currency }}</td>
+							<td>{{ round($orderUser->total_local,2)  }} {{ $currency }}</td>
 						</tr>
 					@endforeach
                     

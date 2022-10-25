@@ -83,11 +83,11 @@
                         <td>{{ $detailPaiment->type_receive == 'standard' ? 20 : 45 }} {{ $currency }}</td>
                     </tr>
                     <tr class="font-weight-bold">
-                        <td>Total</td>
+                        {{-- <td>Total</td> --}}
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ $total}} {{ $currency }}</td>
+                        {{-- <td>{{ $total}} {{ $currency }}</td> --}}
                     </tr>
                 </tbody>
             </table>
