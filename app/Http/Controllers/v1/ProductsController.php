@@ -23,13 +23,16 @@ use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
 use App\Http\Controllers\Controller;
+use App\Services\MediaService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
     public $service ;
-    
-    public function __construct(Type $var = null) {
+   
+
+    public function __construct() {
         $this->service = new ProductService();
     }
 
@@ -41,7 +44,7 @@ class ProductsController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'store_id' => 'required',
-                'cover' => 'required',
+                // 'cover' => 'required',
                 'name' => 'required',
                 // 'images' => 'required',
                 'original_price' => 'required',
@@ -177,6 +180,29 @@ class ProductsController extends Controller
                 'status' => 404
             ];
             return response()->json($response, 404);
+        }
+
+        if (isset($media)) {
+            if (isset($media["couverture"])) {
+                Storage::disk('product')->delete($product->couverture->file);
+                $product->couverture()->delete();
+                $response = $this->serviceMedia->decodebase64($media["couverture"]);
+                $product->couverture()->create([
+                        'file' => $response['path'],
+                        'status' => 1,
+                        'type' => 'couverture',
+                        'extention' => $response['type'],
+                ]);
+            }
+
+            if (isset($media['file'])) {
+                foreach ($media['file'] as $file) {
+                    $response = $this->serviceMedia->decodebase64($file);
+                    $product->mediable()->create([
+                        '' => ''
+                    ]);
+                }
+            }
         }
         $response = [
             'data' => $data,
