@@ -1,10 +1,17 @@
-# GitHub Action for Laravel with MySQL
-name: Test/Build/Deploy Laravel Gomed
+name: Deploy laravel
+
+# Trigger the workflow on push and
+# pull request events on the production branch
 on:
   push:
-    branches: [ "feat/cicd" ]
+    branches:
+      - feature/cicd
   pull_request:
-    branches: [ "feat/cicd" ]
+    branches:
+      - develop
+
+# Authenticate to the the server via ssh
+# and run our deployment script
 jobs:
   laravel:
     name: Test Laravel (PHP ${{ matrix.php-versions }})
@@ -30,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['7.4']
+        php-versions: [ '7.4' ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -75,36 +82,24 @@ jobs:
         run: php artisan migrate -v
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-  
-  build:
-    name: build image
-    needs: laravel
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Build image
-        uses: elgohr/Publish-Docker-Github-Action@v4
-        with:
-          name: saynacrowdsourcing/freelance-gomed-laravel6-php7.2
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ghcr.io
-          dockerfile: docker/php/Dockerfile
-  
   deploy:
-    name: Deploy laravel
-    needs: build
+    name : deploy laravel to server
     runs-on: ubuntu-latest
+    needs: laravel
     steps:
-      - name: Pull and run
+      - uses: actions/checkout@v2
+      - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            cd /var/www/html/
-            echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ secrets.DOCKERUSERNAME }} --password-stdin
-            docker-compose -f docker-compose.yml pull php7.4_laravel
-            docker-compose -f docker-compose.yml up -d 
+            cd  /var/www/freelance-gomed-laravel6-php7.2/
+            ls -ls
+            git fetch && git checkout -f -B develop remotes/origin/develop --
+            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+            php artisan config:clear
+            php artisan clear-compiled
+            php artisan optimize
+            php artisan migrate -v
