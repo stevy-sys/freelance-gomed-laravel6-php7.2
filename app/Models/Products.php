@@ -43,6 +43,20 @@ class Products extends Model
         'status' => 'integer',
     ];
 
+    public function bellyPoint()
+    {
+        return $this->belongsToMany(BellyPoint::class);
+    }
+    
+    public function mediable()
+    {
+        return $this->morphMany(Media::class,'mediable');
+    }
+
+    public function couverture()
+    {
+        return $this->morphOne(Media::class,'mediable')->where(['type' => 'couverture']);
+    }
 
     public function tva()
     {

@@ -33,12 +33,14 @@ class HomeController extends Controller
         }
         $products = [] ;
         $store = $this->storeService->TopStoreInCountrie($countrie);
+        $bellyPoint = $this->storeService->getAllbellyPoint($countrie);
         $banners = $this->bannersService->getBanners();
         $products = $this->productService->getProductInStoreViaCountrie($countrie);
         $categorie = $this->categoryService->getCategorieWithSub();
         $countrie = $this->countrieService->getAllCountrie();
         $myCurrency = $this->countrieService->getMyCurrency($request);
         $data = [
+            'bellyPoint' => $bellyPoint,
             'stores' => $store,
             'banners' => $banners,
             'category' => $categorie,

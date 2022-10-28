@@ -8,26 +8,34 @@ use App\Models\Stores;
 use App\Models\Products;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Arr;
 
 class ProductService 
 {
+    public $serviceMedia ;
+
+    public function __construct() {
+        $this->serviceMedia = new MediaService;
+    }
     public function getProductInStoreViaCountrie($countrie)
     {
         $products = Products::whereHas('store',function ($q) use($countrie){
             $q->wherehas('countrie',function ($q) use($countrie) {
                 $q->where('id',$countrie->id);
             });
-        })->with(['offer','quantity','store.countrie'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
+        })->with(['offer','quantity','store.countrie','couverture'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
         return $products ;
     }
 
     public function createProduct($request,$user)
     {
-        
         $data = $request->all();
+        $media = $data['media'];
+        $data = Arr::except($data, ['media']);
         $data['store_id'] = $user->store->id ;
         $data['tva_id'] = $request->tva ;
         $data['medical_prescription'] = $request->medical_prescription ;
+        
         $data = Products::create($data);
         if ($request->offer) {
             if (Carbon::parse($request->start_offer) <= Carbon::now()) {
@@ -38,13 +46,32 @@ class ProductService
             }
         }
 
-    
-
         if ($request->quantity != null) {
             $quantity = $data->quantity()->create([
                 'stock' => $request->quantity,
                 'in_stock' => true,
             ]);
+        }
+
+        if (isset($media)) {
+            if (isset($media["couverture"])) {
+                $response = $this->serviceMedia->decodebase64($media["couverture"]);
+                $data->mediable()->create([
+                        'file' => $response['path'],
+                        'status' => 1,
+                        'type' => 'couverture',
+                        'extention' => $response['type'],
+                ]);
+            }
+
+            if (isset($media['file'])) {
+                foreach ($media['file'] as $file) {
+                    $response = $this->serviceMedia->decodebase64($file);
+                    $data->mediable()->create([
+                        '' => ''
+                    ]);
+                }
+            }
         }
 
         // a rectifier cette sleep
