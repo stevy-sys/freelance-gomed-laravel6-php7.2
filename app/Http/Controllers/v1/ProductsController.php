@@ -30,10 +30,12 @@ use Illuminate\Support\Facades\Storage;
 class ProductsController extends Controller
 {
     public $service ;
+    public $serviceMedia;
    
 
     public function __construct() {
         $this->service = new ProductService();
+        $this->serviceMedia = new MediaService();
     }
 
     public function getProductInStoreViaCountrie(Request $request){
@@ -147,6 +149,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $data = $request->all() ;
+        $media = $data['media'];
         $data['store_id'] = Auth::user()->store->id ;
         if (isset($request->tva)) {
             $data['tva_id'] = $request->tva ;
@@ -184,8 +187,10 @@ class ProductsController extends Controller
 
         if (isset($media)) {
             if (isset($media["couverture"])) {
-                Storage::disk('product')->delete($product->couverture->file);
-                $product->couverture()->delete();
+                if (Storage::disk('product')->exists($product->couverture->file) && isset($product->couverture)) {
+                    Storage::disk('product')->delete($product->couverture->file);
+                    $product->couverture()->delete();
+                }
                 $response = $this->serviceMedia->decodebase64($media["couverture"]);
                 $product->couverture()->create([
                         'file' => $response['path'],
@@ -195,14 +200,14 @@ class ProductsController extends Controller
                 ]);
             }
 
-            if (isset($media['file'])) {
-                foreach ($media['file'] as $file) {
-                    $response = $this->serviceMedia->decodebase64($file);
-                    $product->mediable()->create([
-                        '' => ''
-                    ]);
-                }
-            }
+            // if (isset($media['file'])) {
+            //     foreach ($media['file'] as $file) {
+            //         $response = $this->serviceMedia->decodebase64($file);
+            //         $product->mediable()->create([
+            //             '' => ''
+            //         ]);
+            //     }
+            // }
         }
         $response = [
             'data' => $data,
@@ -575,7 +580,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
         $storeInfo = Stores::select('id', 'uid', 'name', 'status', 'zipcode', 'cid')->where('uid', $request->id)->first();
-        $data = Products::where(['store_id' => $storeInfo->id])->orderBy('name', 'asc')->limit($request->limit)->get();
+        $data = Products::with('couverture')->where(['store_id' => $storeInfo->id])->orderBy('name', 'asc')->limit($request->limit)->get();
         $response = [
             'data' => $data,
             'storeInfo' => $storeInfo,
@@ -599,7 +604,7 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Products::with(['offer','tva'])->find($request->id); 
+        $data = Products::with(['offer','tva','couverture'])->find($request->id); 
 
 
         if (is_null($data)) {

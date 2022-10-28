@@ -31,6 +31,11 @@ class Stores extends Model
         'isClosed' => 'integer',
     ];
 
+    public function bellyPoint()
+    {
+        return $this->hasMany(BellyPoint::class,'store_id');
+    }
+
     public function user(){
         return $this->belongsTo(User::class,'uid');
     }

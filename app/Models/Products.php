@@ -43,6 +43,11 @@ class Products extends Model
         'status' => 'integer',
     ];
 
+    public function bellyPoint()
+    {
+        return $this->belongsToMany(BellyPoint::class);
+    }
+    
     public function mediable()
     {
         return $this->morphMany(Media::class,'mediable');
