@@ -33,6 +33,7 @@ class AuthController extends Controller
     }
     public function login(LoginRequest $request)
     {
+        
         $user = User::where('email', $request->email)->first();
 
         if(!$user) return response()->json(['error' => 'User not found.'], 500);
@@ -61,9 +62,14 @@ class AuthController extends Controller
     
         }
         $detailPaiment = $this->orderService->getMyDetailPaimentUser($user);
+        $currency = null ;
+        if ($user->type == 'store') {
+            $currency = $user->store->countrie->curr_string ;
+        }
         return response()->json([
             'user' => $user,
             'token'=>$token,
+            'currency' => $currency,
             'detailPaiment' => $detailPaiment['data'],
             'status'=>200
         ],200);

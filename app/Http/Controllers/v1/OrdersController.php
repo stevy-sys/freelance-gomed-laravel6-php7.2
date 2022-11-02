@@ -9,7 +9,6 @@
 */
 namespace App\Http\Controllers\v1;
 
-use DB;
 use Validator;
 use Carbon\Carbon;
 use App\Models\User;
@@ -25,10 +24,12 @@ use App\Jobs\RappelOrderStore;
 use App\Services\OrdersService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
+use App\Mail\ActionOrder;
 use App\Models\DetailPaimentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -293,6 +294,7 @@ class OrdersController extends Controller
         }
 
         if ($request->status == 'refuse') {
+            Mail::to($order->userOwner->email)->send(new ActionOrder()); 
             $order->update(['status' => 'refuse']);
         }
 
