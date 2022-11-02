@@ -36,6 +36,11 @@ class Stores extends Model
         return $this->hasMany(BellyPoint::class,'store_id');
     }
 
+    public function media()
+    {
+        return $this->morphOne(Media::class,'mediable');
+    }
+
     public function user(){
         return $this->belongsTo(User::class,'uid');
     }
