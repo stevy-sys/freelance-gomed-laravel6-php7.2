@@ -13,11 +13,18 @@ class StoreService
         return Stores::where(['status' => 1,'countrie_id'=>$countrie->id])->get();
     }
 
-    public function getAllbellyPoint($countrie)
+    public function getAllbellyPoint($countrie,$request)
     {
-        return BellyPoint::whereHas('store',function ($q) use($countrie){
-           $q->where(['status' => 1,'countrie_id'=>$countrie->id]);
-        })->get();
+        $store =  Stores::with('media')->where(['status' => 1,'countrie_id'=>$countrie->id])->get();
+        $store = $store->filter(function ($s) use ($request){
+                if (getDistanceBetweenPoints($request->lng,$request->lat,$s->lat,$s->lng) <= 5000) {
+                    $dist = getDistanceBetweenPoints($request->lng,$request->lat,$s->lat,$s->lng) ;
+                    
+                    $s->distance = $dist ;
+                    return $s ;
+                }
+        })->values();
+        return  $store;
     }
 
     public function getbellyPoint($request)
