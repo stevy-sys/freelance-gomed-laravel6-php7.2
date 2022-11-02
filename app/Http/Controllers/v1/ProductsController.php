@@ -524,14 +524,14 @@ class ProductsController extends Controller
 
     public function searchQuery(Request $request)
     {
-        $str = "";
-        if ($request->has('param') && $request->has('stores')) {
-            $str = $request->param;
-            $stores = $request->stores;
-        }
-        $ids = explode(',', $stores);
+        // $str = "";
+        // if ($request->has('param') && $request->has('stores')) {
+        //     $str = $request->param;
+        //     $stores = $request->stores;
+        // }
+        // $ids = explode(',', $stores);
 
-        $products = Products::select('id', 'name', 'store_id', 'cover')->where('status', 1)->where('name', 'like', '%' . $str . '%')->WhereIn('store_id', $ids)->orderBy('name', 'asc')->limit(5)->get();
+        $products = Products::select('id', 'name', 'store_id', 'cover')->where('status', 1)->where('name', 'like', '%' . $request->param . '%')->orderBy('name', 'asc')->limit(5)->get();
         $response = [
             'data' => $products,
             'success' => true,
@@ -725,7 +725,7 @@ class ProductsController extends Controller
     public function searchStoreWithCity(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
+            //'id' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
@@ -949,7 +949,7 @@ class ProductsController extends Controller
     public function getTopRateProductsWithCity(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'limit' => 'required',
+            //'limit' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
