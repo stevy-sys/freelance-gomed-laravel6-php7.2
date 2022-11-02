@@ -7,6 +7,8 @@ on:
     branches:
       - feature/cicd
   pull_request:
+    types:
+      - closed
     branches:
       - develop
 
@@ -14,6 +16,7 @@ on:
 # and run our deployment script
 jobs:
   laravel:
+    if: github.event.pull_request.merged == true
     name: Test Laravel (PHP ${{ matrix.php-versions }})
     runs-on: ubuntu-latest
     env:
@@ -83,6 +86,7 @@ jobs:
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
   deploy:
+    if: github.event.pull_request.merged == true
     name : deploy laravel to server
     runs-on: ubuntu-latest
     needs: laravel
@@ -103,3 +107,4 @@ jobs:
             php artisan clear-compiled
             php artisan optimize
             php artisan migrate -v
+            systemctl reload nginx
