@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\Countrie;
 use App\Models\Currency;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
@@ -11,8 +12,10 @@ class CurrencyService
     public function gelAllCurrency(){
         // $currency = Currency::with('countrie')->get();
         $country = Countrie::with('otherCurrency')->get();
+        $updated_at = $country[0]['otherCurrency']->updated_at ;
         return [
             'data' => $country,
+            'all_updated_at'=>Carbon::parse($updated_at)->toDateTimeString(),
             'status' => 200
         ];
     }
@@ -53,8 +56,10 @@ class CurrencyService
           
         }
         
-
+        $currency = Currency::first();
+        $updated = Carbon::parse($currency->updated_at);
         return [
+            'updated_at' => $updated->diffForHumans(),
             'data' => Countrie::with('otherCurrency')->get(),
             'status' => 201
         ];
