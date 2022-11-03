@@ -13,10 +13,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Stores;
 use App\Models\User;
+use App\Services\MediaService;
+use Illuminate\Support\Arr;
 use Validator;
 use DB;
 class StoresController extends Controller
 {
+    public $MediaService ;
+    public function __construct() {
+        $this->mediaService = new MediaService;
+    }
     public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'uid' => 'required',
@@ -26,7 +32,7 @@ class StoresController extends Controller
             'lng' => 'required',
             'address' => 'required',
             'descriptions' => 'required',
-            'cover' => 'required',
+            // 'cover' => 'required',
             'commission' => 'required',
             'open_time' => 'required',
             'close_time' => 'required',
@@ -44,7 +50,20 @@ class StoresController extends Controller
             return response()->json($response, 404);
         }
 
-        $data = Stores::create($request->all());
+        $data = $request->all() ;
+        $data['cover'] = null ;
+        $data = Arr::except($data, ['media']);
+        $data = Stores::create($data);
+        if (isset($request->media['couverture'])) {
+            $media = $this->mediaService->decodebase64($request->media['couverture'],'store');
+            $data->media()->create([
+                'file' => $media['path'],
+                'status' => 1,
+                'type' => 'couverture',
+                'extention' => $media['type'],
+            ]);
+        }
+
         if (is_null($data)) {
             $response = [
             'data'=>$data,
@@ -234,8 +253,12 @@ class StoresController extends Controller
                 ->join('cities','store.cid','cities.id')
                 ->join('users','store.uid','users.id')
                 ->get();
+
+        $newData = Stores::with(['user','countrie','media'])->get();
+        
         $response = [
             'data'=>$data,
+            'newData' => $newData,
             'success' => true,
             'status' => 200,
         ];

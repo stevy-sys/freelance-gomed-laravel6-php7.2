@@ -279,11 +279,11 @@ class OrdersService {
         $detailForUser->orderUser()->createMany($data['allOrder']);
 
         
-        //copie detail paiment
+        
         foreach ($data['allStore'] as $store_id) {
             $store = Stores::find($store_id);
             $userStore = User::find($store->uid);
-            
+            //copie detail paiment
             $detailForStore = DetailPaimentUser::create([
                 'uid' => $store->uid,
                 'type' => 'store',

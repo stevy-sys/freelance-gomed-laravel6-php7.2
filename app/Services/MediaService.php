@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 class MediaService
 {
-    public function decodebase64($request)
+    public function decodebase64($request,$typeMedia)
     {
         $image_64 = $request; //your base64 encoded data
         $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
@@ -17,7 +17,7 @@ class MediaService
         $imageName = uniqid() . '.' . $extension;
         $type = $this->detectType($extension);
 
-        Storage::disk('product')->put($imageName, base64_decode($image));
+        Storage::disk($typeMedia)->put($imageName, base64_decode($image));
         return [
             'path' => $imageName ,
             'type' => $type

@@ -22,7 +22,7 @@ class Stores extends Model
     'rating','total_rating','cid','zipcode','status','extra_field','countrie_id'];
 
     protected $hidden = [
-        'updated_at', 'created_at','commission'
+        'updated_at', 'created_at'
     ];
 
     protected $casts = [

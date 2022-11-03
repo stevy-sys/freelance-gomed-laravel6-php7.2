@@ -11,7 +11,13 @@ class CountrieService
 
     public function getMyCurrency($request)
     {
-        return Countrie::where('code_pays',$request->code_country)->first();
+        // return Countrie::where('code_pays',$request->code_country)->first();
+        $currency = Countrie::where('code_pays',$request->code_country)->first();
+        if (isset($currency)) {
+            return $currency;
+        }else{
+            return Countrie::first();
+        }
     }
 
     public function createCountrie($request)

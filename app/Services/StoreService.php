@@ -31,4 +31,9 @@ class StoreService
     {
         return BellyPoint::with(['store','products'])->find($request->id);
     }
+
+    public function searchStore($request)
+    {
+        return Stores::where('name','like','%'.$request->search.'%');
+    }
 }
