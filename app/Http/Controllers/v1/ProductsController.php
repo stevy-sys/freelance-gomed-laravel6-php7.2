@@ -961,9 +961,7 @@ class ProductsController extends Controller
         }
 
         $products = Products::whereHas('store',function ($q)use($request) {
-            $q->whereHas('countrie',function ($query) use($request){
-                $query->where('code_pays',$request->countrie_code);
-            });
+            $q->where('id',$request->id);
         })->get();
 
         $data = [
