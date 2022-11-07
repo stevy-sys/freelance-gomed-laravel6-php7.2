@@ -27,6 +27,7 @@ class Ordonnance extends Mailable
         $this->user = $user;
         $this->currency = $user->store->countrie->currency;
         $this->total = $total;
+
        
     }
 
@@ -37,6 +38,12 @@ class Ordonnance extends Mailable
      */
     public function build()
     {
-        return $this->view('mails.ordonnance');
+        $email = $this->view('mails.ordonnance');
+        foreach ($this->detailPaiment['orderStore'] as $value) {
+            if ($value->mediable) {
+                $email->attach(public_path().'\storage\ordonnance\/'.$value->mediable->file);
+            }
+        }
+        return $email;
     }
 }

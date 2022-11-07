@@ -290,6 +290,28 @@ class OrdersController extends Controller
 
         $order = DetailPaimentUser::find($request->id);
         if ($request->status == 'accepted') {
+            $orderStore = $order->load(['orderStore.product.quantity']);
+            foreach ($orderStore->orderStore as $order) {
+                if (($order->product->quantity->stock - $order->quantity) < 0) {
+                    $order = DetailPaimentUser::find($request->id);
+                    Mail::to($order->userOwner->email)->send(new ActionOrder()); 
+                    $order->update(['status' => 'refuse']);
+                    $response = [
+                        'data'=>$order,
+                        'success' => true,
+                        'status' => 200,
+                    ];
+                    return response()->json($response, 200);
+                }
+            }
+
+            foreach ($orderStore->orderStore as $order) {
+                $newQuantity = $order->product->quantity->stock - $order->quantity ;
+                $order->product->quantity()->update([
+                    'stock' => $newQuantity
+                ]);
+            }
+            $order = DetailPaimentUser::find($request->id);
             $order->update(['status' => 'valide']);
         }
 

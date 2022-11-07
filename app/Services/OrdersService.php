@@ -13,16 +13,20 @@ use App\Mail\CommandeMail;
 use App\Models\OrderStore;
 use App\Jobs\RappelOrderStore;
 use App\Models\DetailPaimentUser;
+use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 
 class OrdersService {
     protected $productService ;
+    protected $mediaService ;
 
     public function __construct() {
         $this->productService = new ProductService;
+        $this->mediaService = new MediaService;
     }
     private function verifOrder($request,$user,$detailPaiment)
     {
@@ -241,11 +245,9 @@ class OrdersService {
     private function medicalPrescription($detailPaiment,$userStore)
     {
         $detail = DetailPaimentUser::whereHas('orderStore',function ($q) {
-            $q->whereHas('product',function ($q) {
-                $q->where('medical_prescription',1);
-            });
-        })->with('orderStore.product.offer')->where('id',$detailPaiment->id)->first();
-        
+            $q->whereHas('mediable');
+        })->with(['orderStore.product.offer','orderStore.mediable'])->where('id',$detailPaiment->id)->first();
+    
         $total = 0 ;
         if (isset($detail)) {
             foreach ($detail->orderStore as $orderStore) {
@@ -262,7 +264,6 @@ class OrdersService {
      */
     public function createOrderStore($request){
         $data = $request->all();
-        
         $detailForUser = DetailPaimentUser::find($data['detail_paiment']['id']);
         
         $detailForUser->grand_total = $data['detail_paiment']['grand_total'] ;
@@ -276,10 +277,22 @@ class OrdersService {
 
 
         //creer order user
-        $detailForUser->orderUser()->createMany($data['allOrder']);
+        foreach ($data['allOrder'] as $order) {
+            $temp = Arr::except($order, ['media']);
+            $orderuser = $detailForUser->orderUser()->create($temp);
+            if (isset($order['media'])) {
+                $media = $this->mediaService->decodebase64($order['media'],'ordonnance');
+                $orderuser->mediable()->create([
+                    'file' => $media['path'],
+                    'status' => 1,
+                    'type' => 'ordonnace',
+                    'extention' => $media['type'],
+                ]);
+                $orderuser->update(['is_ordonnace'=> true]);
+            }
+        }
+        // $detailForUser->orderUser()->createMany($data['allOrder']);
 
-        
-        
         foreach ($data['allStore'] as $store_id) {
             $store = Stores::find($store_id);
             $userStore = User::find($store->uid);
@@ -296,12 +309,34 @@ class OrdersService {
                 'payment_id' => $data['detail_paiment']['payement_id'],
             ]);
             
-            $orderUser = $detailForUser->orderUser()->where('store_id',$store_id)->get(['product_id','quantity','total','store_id'])->toArray();
-            $detailForStore->orderStore()->createMany($orderUser);
+            $orderUser = $detailForUser->orderUser()->with('mediable')->where('store_id',$store_id)->get();
+           
+            foreach ($orderUser as $order) {
+                $temp = Arr::except($order, ['mediable']);
+                $orderstore = $detailForStore->orderStore()->create([
+                    'product_id'=>$order->product_id,
+                    'quantity'=>$order->quantity,
+                    'total'=>$order->total,
+                    'store_id'=>$order->store_id
+                ]);
+                
+                if ($order['is_ordonnace']) {
+                    Media::create([
+                        'mediable_id'=> $orderstore->id,
+                        'mediable_type' => 'App\Models\OrderStore',
+                        'file' => $order->mediable->file,
+                        'status' => 1,
+                        'type' => 'ordonnace',
+                        'extention' => $order->mediable->type
+                    ]);
+                    $orderstore->update(['is_ordonnace' => true]);
+                }
+            }
+            
             // update total detail paiment
             $this->updateDetailPaimentStore($detailForStore,$data['detail_paiment']['type_receive'] == 'standard' ? 20 : 45);
-
             // send mail for order
+            
             $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user(),null,null);
 
             //send medical prescription
