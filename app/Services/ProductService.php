@@ -55,18 +55,18 @@ class ProductService
 
         if (isset($media)) {
             if (isset($media["couverture"])) {
-                $response = $this->serviceMedia->decodebase64($media["couverture"]);
+                $response = $this->serviceMedia->decodebase64($media["couverture"],'product');
                 $data->mediable()->create([
-                        'file' => $response['path'],
-                        'status' => 1,
-                        'type' => 'couverture',
-                        'extention' => $response['type'],
+                    'file' => $response['path'],
+                    'status' => 1,
+                    'type' => 'couverture',
+                    'extention' => $response['type'],
                 ]);
             }
 
             if (isset($media['file'])) {
                 foreach ($media['file'] as $file) {
-                    $response = $this->serviceMedia->decodebase64($file);
+                    $response = $this->serviceMedia->decodebase64($file,'product');
                     $data->mediable()->create([
                         '' => ''
                     ]);

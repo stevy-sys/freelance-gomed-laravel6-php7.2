@@ -10,6 +10,11 @@ class OrderStore extends Model
 
     protected $guarded = [] ;
 
+    public function mediable()
+    {
+        return $this->morphOne(Media::class,'mediable');
+    }
+    
     public function product()
     {
         return $this->belongsTo(Products::class,'product_id');
