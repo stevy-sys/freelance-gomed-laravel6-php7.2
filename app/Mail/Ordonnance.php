@@ -41,7 +41,7 @@ class Ordonnance extends Mailable
         $email = $this->view('mails.ordonnance');
         foreach ($this->detailPaiment['orderStore'] as $value) {
             if ($value->mediable) {
-                $email->attach(public_path().'\storage\ordonnance\/'.$value->mediable->file);
+                $email->attach(explode("public",public_path())[0].'/storage/ordonnance/'.$value->mediable->file);
             }
         }
         return $email;
