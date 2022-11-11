@@ -28,13 +28,14 @@ class HomeController extends Controller
 
     public function initData(Request $request) {
         $countrie= Countrie::where('code_pays',$request->code_country)->first();
+        $country_banner= Countrie::where('code_pays',$request->country_banner)->first();
         if (!isset($countrie)) {
             $countrie = Countrie::first();
         }
         $products = [] ;
         $store = $this->storeService->TopStoreInCountrie($countrie);
-        $bellyPoint = $this->storeService->getAllbellyPoint($countrie,$request);
-        $banners = $this->bannersService->getBanners();
+        $bellyPoint = $this->storeService->getAllbellyPoint($country_banner,$request);
+        // $banners = $this->bannersService->getBanners();
         $products = $this->productService->getProductInStoreViaCountrie($countrie);
         $categorie = $this->categoryService->getCategorieWithSub();
         $countrie = $this->countrieService->getAllCountrie();
