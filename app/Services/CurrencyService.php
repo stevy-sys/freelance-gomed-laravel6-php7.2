@@ -59,7 +59,7 @@ class CurrencyService
         $currency = Currency::first();
         $updated = Carbon::parse($currency->updated_at);
         return [
-            'updated_at' => $updated->diffForHumans(),
+            'updated_at' => $updated->toDateTimeString(),
             'data' => Countrie::with('otherCurrency')->get(),
             'status' => 201
         ];
