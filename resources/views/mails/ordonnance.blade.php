@@ -39,7 +39,7 @@
                 </p>
 
                 <p>
-                    Veuillez demander l'ordonnance médicale au client avant de valider :
+                    Veuillez vous référer à l'ordonnance médicale en pièce-jointe :
                 </p>
 
                 <p>
@@ -68,9 +68,9 @@
                             <tr>
                                 <td></td>
                                 <td>{{$orderStore->product->name}}</td>
-                                <td>{{ $orderStore->product->offer ? $orderStore->product->priceOffer : $orderStore->product->original_price }} {{$currency}}</td>
+                                <td>{{  $orderStore->total / $orderStore->quantity }} {{$currency}}</td>
                                 <td>{{ $orderStore->quantity }}</td>
-                                <td>{{ ($orderStore->product->offer ? $orderStore->product->priceOffer : $orderStore->product->original_price)*$orderStore->quantity }} {{$currency}}</td>
+                                <td>{{ $orderStore->total }} {{$currency}}</td>
                             </tr>
                         @endif
 					@endforeach

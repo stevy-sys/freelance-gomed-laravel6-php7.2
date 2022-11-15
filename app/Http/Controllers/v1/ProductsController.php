@@ -738,7 +738,7 @@ class ProductsController extends Controller
         // $stores = Stores::where(['status' => 1, 'cid' => $request->id])->get();
         $stores = Stores::whereHas('countrie',function ($q)use($request){
             $q->where('code_pays',$request->countrie_code);
-        })->where(['status' => 1])->get();
+        })->with('media')->where(['status' => 1])->get();
         $response = [
             'data' => $stores,
             'success' => true,
