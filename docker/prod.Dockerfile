@@ -1,12 +1,10 @@
-FROM chialab/php:7.3-apache
+FROM chialab/php:7.2-apache
 
 WORKDIR /var/www/html
 
 COPY --chown=www-data:www-data . .
 
-RUN install-php-extensions ssh2 gmp && \
-    a2enmod rewrite && \
-    apt clean
+RUN a2enmod rewrite
 
 COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
