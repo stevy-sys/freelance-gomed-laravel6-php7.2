@@ -1,17 +1,8 @@
-FROM node:16 as js
-
-WORKDIR /app
-COPY . .
-
-RUN npm i && \
-    npm run prod
-
 FROM chialab/php:7.3-apache
 
 WORKDIR /var/www/html
 
 COPY --chown=www-data:www-data . .
-COPY --from=js --chown=www-data:www-data /app/public/assets public/assets
 
 RUN install-php-extensions ssh2 gmp && \
     a2enmod rewrite && \
