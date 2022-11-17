@@ -6,7 +6,7 @@ COPY --chown=www-data:www-data . .
 
 RUN a2enmod rewrite
 
-COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
+COPY docker/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
 USER www-data
 
