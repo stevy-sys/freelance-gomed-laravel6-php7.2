@@ -32,6 +32,9 @@ class HomeController extends Controller
         if (!isset($countrie)) {
             $countrie = Countrie::first();
         }
+        if (!isset($country_banner)) {
+            $country_banner = Countrie::first();
+        }
         $products = [] ;
         $store = $this->storeService->TopStoreInCountrie($countrie);
         $bellyPoint = $this->storeService->getAllbellyPoint($country_banner,$request);
