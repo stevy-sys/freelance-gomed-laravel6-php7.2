@@ -1,4 +1,4 @@
-FROM chialab/php:7.2-apache
+FROM chialab/php:7.4-apache
 
 WORKDIR /var/www/html
 
