@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-image:
+    name: Build image & deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build docker image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: sayna-main/freelance-gomed-laravel6-php7.2
+          username: nologin
+          password: ${{ secrets.SCW_SECRET }}
+          registry: rg.fr-par.scw.cloud
+          dockerfile: docker/prod.Dockerfile
