@@ -310,6 +310,10 @@ class OrdersController extends Controller
                 $order->product->quantity()->update([
                     'stock' => $newQuantity
                 ]);
+                $stars = $order->product->stars + 1;
+                $order->product()->update([
+                    'stars' => $stars
+                ]);
             }
             $order = DetailPaimentUser::find($request->id);
             $order->update(['status' => 'valide']);
@@ -578,6 +582,15 @@ class OrdersController extends Controller
             ];
             return response()->json($response, 404);
         }
+        
+        $user = User::find($request->id);
+        try {
+            $response = $this->service->getAllOrderInMyStore($user);
+            return response()->json($response,$response['status']);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()],500);
+        }
+
 
         $data = Orders::whereRaw('FIND_IN_SET("'.$request->id.'",store_id)')->limit($request->limit)->orderBy('id','desc')->get();
 
@@ -1171,6 +1184,13 @@ class OrdersController extends Controller
             'month' => $monthResponse,
             'complaints'=>$complaints
         ];
+
+        $user = User::find($request->id);
+        $data = [
+            'accepte' => $this->service->getStatistiqueAccepteStoreByAdmin($user),
+            'refuse' =>  $this->service->getStatistiqueRefuseStoreByAdmin($user)
+        ];
+
 
         $response = [
             'data'=>$data,

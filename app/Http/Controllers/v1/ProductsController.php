@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use App\Services\ProductService;
 use App\Http\Controllers\Controller;
 use App\Services\MediaService;
+use App\Services\StoreService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,6 +37,7 @@ class ProductsController extends Controller
     public function __construct() {
         $this->service = new ProductService();
         $this->serviceMedia = new MediaService();
+        $this->storeService = new StoreService();
     }
 
     public function getProductInStoreViaCountrie(Request $request){
@@ -96,6 +98,12 @@ class ProductsController extends Controller
             return response()->json($response, 500);
         }
         
+    }
+
+    public function getProductInStore(Request $request)
+    {
+        $response = $this->storeService->getProductInStore($request);
+        return response()->json($response,$response['status']);
     }
 
     public function getById(Request $request)
@@ -184,20 +192,24 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-
+       
         if (isset($media)) {
-            if (isset($media["couverture"])) {
-                if (Storage::disk('product')->exists($product->couverture->file) && isset($product->couverture)) {
-                    Storage::disk('product')->delete($product->couverture->file);
-                    $product->couverture()->delete();
-                }
-                $response = $this->serviceMedia->decodebase64($media["couverture"]);
-                $product->couverture()->create([
+            if ($request->update_media == true) {
+                if (isset($media["couverture"])) {
+                    if ($product->couverture) {
+                        if ((Storage::disk('product')->exists($product->couverture->file) == true) && (isset($product->couverture))) {
+                            Storage::disk('product')->delete($product->couverture->file);
+                            $product->couverture()->delete();
+                        }
+                    }
+                    $response = $this->serviceMedia->decodebase64($media["couverture"],'product');
+                    $product->couverture()->create([
                         'file' => $response['path'],
                         'status' => 1,
                         'type' => 'couverture',
                         'extention' => $response['type'],
-                ]);
+                    ]);
+                }
             }
 
             // if (isset($media['file'])) {
@@ -960,9 +972,11 @@ class ProductsController extends Controller
             return response()->json($response, 404);
         }
 
-        $products = Products::whereHas('store',function ($q)use($request) {
-            $q->where('id',$request->id);
-        })->get();
+        $products = Products::whereHas('store',function ($q)use($request) { 
+            $q->where('id',$request->id)->orWhereHas('countrie',function ($q) use ($request){
+                $q->where('code_pays',$request->countrie_code);
+            });
+        })->with(['couverture','store.countrie'])->get();
 
         $data = [
             'products' => $products,

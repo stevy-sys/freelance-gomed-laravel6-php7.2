@@ -295,6 +295,7 @@ class OrdersService {
 
         foreach ($data['allStore'] as $store_id) {
             $store = Stores::find($store_id);
+           
             $userStore = User::find($store->uid);
             //copie detail paiment
             $detailForStore = DetailPaimentUser::create([
@@ -332,6 +333,12 @@ class OrdersService {
                     $orderstore->update(['is_ordonnace' => true]);
                 }
             }
+
+            //update stars store
+            $stars = $store->stars + 1 ;
+            $store->update([
+                'stars' => $stars
+            ]);
             
             // update total detail paiment
             $this->updateDetailPaimentStore($detailForStore,$data['detail_paiment']['type_receive'] == 'standard' ? 20 : 45);
@@ -345,6 +352,7 @@ class OrdersService {
         
         // user
         $this->sendMailOrder('user',$detailForUser,Auth::user(),null,$request);
+        
         $detailForUser->update(['paid_at' => Carbon::now()]);
         return [
             'data' => $detailForUser,
@@ -361,6 +369,128 @@ class OrdersService {
         return [
             'data' => $order,
             'status' => 200
+        ];
+    }
+
+    public function getStatistiqueAccepteStoreByAdmin($user)
+    {
+        $commandePayerAujourdhui = DetailPaimentUser::with('orderStore')->where('status','valide')->where('uid',$user->id)->where('type','store')->whereDay('created_at',Carbon::now())->get();
+        $totalPayerAujourdhui = 0 ;
+        $totalObjetVenduAujourdhu = [] ;
+        foreach ($commandePayerAujourdhui as $order) {
+           $totalPayerAujourdhui += $order->grand_total ;
+        }
+        foreach ($commandePayerAujourdhui as $detail) {
+            foreach ($detail->orderStore as $order) {
+                if ( !in_array($order->product_id,$totalObjetVenduAujourdhu) ) {
+                    $totalObjetVenduAujourdhu[] = $order->product_id ;
+                }
+            }
+        }
+
+
+        $commandePayerSemaine = DetailPaimentUser::with('orderStore')->where('uid',$user->id)->where('status','valide')->where('type','store')->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->get();
+        $totalPayerSemaine = 0 ;
+        $totalObjetVenduSemaine = [] ;
+        foreach ($commandePayerSemaine as $order) {
+           $totalPayerSemaine += $order->grand_total ;
+        }
+        foreach ($commandePayerSemaine as $detail) {
+            foreach ($detail->orderStore as $order) {
+                if ( !in_array($order->product_id,$totalObjetVenduSemaine) ) {
+                    $totalObjetVenduSemaine[] = $order->product_id ;
+                }
+            }
+        }
+
+        $commandePayerMois = DetailPaimentUser::with('orderStore')->where('uid',$user->id)->where('status','valide')->where('type','store')->whereMonth('created_at',Carbon::now())->get();
+        $totalPayerMois = 0 ;
+        $totalObjetVenduMois = [] ;
+        foreach ($commandePayerMois as $order) {
+           $totalPayerMois += $order->grand_total ;
+        }
+        foreach ($commandePayerMois as $detail) {
+            foreach ($detail->orderStore as $order) {
+                if (!in_array($order->product_id,$totalObjetVenduMois) ) {
+                    $totalObjetVenduMois[] = $order->product_id ;
+                }
+            }
+        }
+
+        return [
+            'now' => [
+                'totalObjetSell' => count($totalObjetVenduAujourdhu),
+                'totalPayerAujourdhui' => $totalPayerAujourdhui
+            ],
+            'week' => [
+                'totalObjetSell' => count($totalObjetVenduSemaine),
+                'totalPayerSemaine' => $totalPayerSemaine
+            ],
+            'month' => [
+                'totalObjetSell' => count($totalObjetVenduMois),
+                'totalPayerMois' => $totalPayerMois
+            ],
+        ];
+    }
+
+    public function getStatistiqueRefuseStoreByAdmin($user)
+    {
+        $commandePayerAujourdhui = DetailPaimentUser::with('orderStore')->where('status','refuse')->where('uid',$user->id)->where('type','store')->whereDay('created_at',Carbon::now())->get();
+        $totalPayerAujourdhui = 0 ;
+        $totalObjetVenduAujourdhu = [] ;
+        foreach ($commandePayerAujourdhui as $order) {
+           $totalPayerAujourdhui += $order->grand_total ;
+        }
+        foreach ($commandePayerAujourdhui as $detail) {
+            foreach ($detail->orderStore as $order) {
+                if ( !in_array($order->product_id,$totalObjetVenduAujourdhu) ) {
+                    $totalObjetVenduAujourdhu[] = $order->product_id ;
+                }
+            }
+        }
+
+
+        $commandePayerSemaine = DetailPaimentUser::with('orderStore')->where('uid',$user->id)->where('status','refuse')->where('type','store')->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->get();
+        $totalPayerSemaine = 0 ;
+        $totalObjetVenduSemaine = [] ;
+        foreach ($commandePayerSemaine as $order) {
+           $totalPayerSemaine += $order->grand_total ;
+        }
+        foreach ($commandePayerSemaine as $detail) {
+            foreach ($detail->orderStore as $order) {
+                if ( !in_array($order->product_id,$totalObjetVenduSemaine) ) {
+                    $totalObjetVenduSemaine[] = $order->product_id ;
+                }
+            }
+        }
+
+        $commandePayerMois = DetailPaimentUser::with('orderStore')->where('uid',$user->id)->where('status','refuse')->where('type','store')->whereMonth('created_at',Carbon::now())->get();
+        $totalPayerMois = 0 ;
+        $totalObjetVenduMois = [] ;
+        foreach ($commandePayerMois as $order) {
+           $totalPayerMois += $order->grand_total ;
+        }
+        foreach ($commandePayerMois as $detail) {
+            foreach ($detail->orderStore as $order) {
+                if (!in_array($order->product_id,$totalObjetVenduMois) ) {
+                    $totalObjetVenduMois[] = $order->product_id ;
+                }
+            }
+        }
+
+        return [
+            'now' => [
+                'totalObjetSell' => count($totalObjetVenduAujourdhu),
+                'totalPayerAujourdhui' => $totalPayerAujourdhui
+            ],
+            'week' => [
+                'totalObjetSell' => count($totalObjetVenduSemaine),
+                'totalPayerSemaine' => $totalPayerSemaine
+            ],
+            'month' => [
+                'totalObjetSell' => count($totalObjetVenduMois),
+                'totalPayerMois' => $totalPayerMois
+            ],
         ];
     }
 

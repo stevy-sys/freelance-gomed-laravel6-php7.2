@@ -23,7 +23,7 @@ class ProductService
             $q->wherehas('countrie',function ($q) use($countrie) {
                 $q->where('id',$countrie->id);
             });
-        })->with(['offer','quantity','store.countrie','couverture'])->where('status',1)->orderBy('rating', 'desc')->take(15)->get();
+        })->with(['offer','quantity','store.countrie','couverture'])->where('status',1)->orderBy('stars', 'desc')->take(10)->get();
         return $products ;
     }
 

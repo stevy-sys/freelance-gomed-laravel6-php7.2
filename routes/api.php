@@ -553,6 +553,7 @@ Route::prefix('/v1')->group(function () {
     Route::post('home/getProductsWithLocation', [ProductsController::class, 'getProductsWithLocation']);
 
     Route::post('home/getTopRateProductsWithCity', [ProductsController::class, 'getTopRateProductsWithCity']);
+    Route::post('home/getProductInStore', [ProductsController::class, 'getProductInStore']);
     Route::post('home/getTopRateProductsWithZipcodes', [ProductsController::class, 'getTopRateProductsWithZipcodes']);
     Route::post('home/getTopRateProductsWithLocation', [ProductsController::class, 'getTopRateProductsWithLocation']);
 
@@ -568,6 +569,10 @@ Route::prefix('/v1')->group(function () {
     Route::post('products/getByStoreId', [ProductsController::class, 'getByStoreId']);
 
     Route::get('category/getHome', [CategoryController::class, 'getHome']);
+    Route::get('category/getAllProduct', [CategoryController::class, 'getProductViaCategorie']);
+    Route::get('subcategory/getProduct', [CategoryController::class, 'getProductViaSubCategorie']);
+
+
     Route::post('banners/userBanners', [BannersController::class, 'userBanners']);
     Route::post('subCategories/getFromCateId', [SubCategoryController::class, 'getFromCateId']);
 
