@@ -18,9 +18,20 @@ class StoreService
         //return Stores::where(['status' => 1,'countrie_id'=>$countrie->id])->get();
     }
 
+    public function getProductInStore($request)
+    {
+        return [
+            'data' => [
+                'products' => Products::with(['couverture','store.countrie'])->where('store_id',$request->store_id)->get()
+            ],
+            'status' => 200
+        ];
+        
+    }
+
     public function getAllbellyPoint($countrie,$request)
     {
-        $store =  Stores::with('media')->where(['status' => 1,'countrie_id'=>$countrie->id])->get();
+        $store =  Stores::with('media')->where(['status' => 1,'countrie_id'=>$countrie->id])->take(5)->get();
         $store = $store->filter(function ($s) use ($request){
                 if (getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) <= 10000) {
                     $dist = getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) ;

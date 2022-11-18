@@ -12,14 +12,20 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SubCategory;
+use App\Services\MediaService;
 use Validator;
 use DB;
 class SubCategoryController extends Controller
 {
+    protected $serviceMedia;
+    public function __construct() {
+        $this->serviceMedia = new MediaService;
+    }
+
     public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'cover' => 'required',
+            // 'cover' => 'required',
             'cate_id' => 'required',
         ]);
         if ($validator->fails()) {
@@ -32,6 +38,16 @@ class SubCategoryController extends Controller
         }
 
         $data = SubCategory::create($request->all());
+        if (isset($request->media)) {
+            $response = $this->serviceMedia->decodebase64($request->media,'subcategorie');
+            $data->media()->create([
+                'file' => $response['path'],
+                'status' => 1,
+                'type' => 'subcategtorie',
+                'extention' => $response['type'],
+            ]);
+        }
+
         if (is_null($data)) {
             $response = [
             'data'=>$data,
@@ -183,13 +199,10 @@ class SubCategoryController extends Controller
         ];
         return response()->json($response, 200);
     }
+
     public function getAll(){
         // $data = SubCategory::all();
-        $data = DB::table('sub_category')
-                ->select('sub_category.*','category.name as cate_name')
-                ->join('category','sub_category.cate_id','category.id')
-                ->orderBy('sub_category.id','desc')
-                ->get();
+        $data = SubCategory::with('media')->get();
         if (is_null($data)) {
             $response = [
                 'success' => false,

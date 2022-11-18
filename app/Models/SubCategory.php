@@ -26,4 +26,9 @@ class SubCategory extends Model
     protected $casts = [
         'status' => 'integer',
     ];
+
+    public function media()
+    {
+        return $this->morphOne(Media::class,'mediable');
+    }
 }

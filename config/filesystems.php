@@ -81,6 +81,18 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
+        'categorie' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/categorie'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'subcategorie' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/subcategorie'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
 
         's3' => [
             'driver' => 's3',

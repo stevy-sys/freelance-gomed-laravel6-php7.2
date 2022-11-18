@@ -30,4 +30,9 @@ class Category extends Model
     public function subCategory() {
         return $this->hasMany(SubCategory::class,'cate_id');
     }
+
+    public function media()
+    {
+        return $this->morphOne(Media::class,'mediable');
+    }
 }

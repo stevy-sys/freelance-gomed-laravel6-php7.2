@@ -12,15 +12,32 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Products;
 use App\Models\SubCategory;
+use App\Services\MediaService;
 use Validator;
 use DB;
 class CategoryController extends Controller
 {
+    protected $serviceMedia;
+    public function __construct() {
+        $this->serviceMedia = new MediaService;
+    }
+    public function getProductViaCategorie(Request $request)
+    {
+        return Products::with(['store.countrie','couverture'])->where('cate_id',$request->cate_id)->get();
+    }
+
+    public function getProductViaSubCategorie(Request $request)
+    {
+        return Products::with(['store.countrie','couverture'])->where('sub_cate_id',$request->sub_cate_id)->get();
+    }
+
+
     public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'cover' => 'required',
+            // 'cover' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
@@ -32,6 +49,15 @@ class CategoryController extends Controller
         }
 
         $data = Category::create($request->all());
+        if (isset($request->media)) {
+            $response = $this->serviceMedia->decodebase64($request->media,'categorie');
+                $data->media()->create([
+                    'file' => $response['path'],
+                    'status' => 1,
+                    'type' => 'categtorie',
+                    'extention' => $response['type'],
+                ]);
+        }
         if (is_null($data)) {
             $response = [
             'data'=>$data,
@@ -141,7 +167,7 @@ class CategoryController extends Controller
     }
 
     public function getAll(){
-        $data = Category::all();
+        $data = Category::with('media')->get();
         if (is_null($data)) {
             $response = [
                 'success' => false,
@@ -210,11 +236,7 @@ class CategoryController extends Controller
     }
 
     public function getHome(Request $request){
-        $category = Category::where('status',1)->get();
-        foreach($category as $loop){
-            $loop->subCates = SubCategory::where(['status'=>1,'cate_id'=>$loop->id])->get();
-        }
-
+        $category = Category::with('subCategory')->where('status',1)->get();
         $response = [
             'data'=>$category,
             'success' => true,
