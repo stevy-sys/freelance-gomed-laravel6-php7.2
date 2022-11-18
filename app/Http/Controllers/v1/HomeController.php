@@ -44,6 +44,7 @@ class HomeController extends Controller
         $countrie = $this->countrieService->getAllCountrie();
         $myCurrency = $this->countrieService->getMyCurrency($request);
         $data = [
+            'status' => 200,
             'stores' => $store,
             'banners' => $bellyPoint,
             'category' => $categorie,
