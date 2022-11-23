@@ -347,7 +347,7 @@ class OrdersService {
             //$this->sendMailOrder('store',$detailForStore,$userStore,Auth::user(),null,null);
 
             //send medical prescription
-            $this->medicalPrescription($detailForStore,$userStore);
+            //$this->medicalPrescription($detailForStore,$userStore);
         }
         
         // user
