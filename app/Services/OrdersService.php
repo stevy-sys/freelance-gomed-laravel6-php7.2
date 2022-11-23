@@ -295,8 +295,8 @@ class OrdersService {
 
         foreach ($data['allStore'] as $store_id) {
             $store = Stores::find($store_id);
-           
-            $userStore = User::find($store->uid);
+            
+            //$userStore = $store->user;
             //copie detail paiment
             $detailForStore = DetailPaimentUser::create([
                 'uid' => $store->uid,
@@ -344,10 +344,10 @@ class OrdersService {
             $this->updateDetailPaimentStore($detailForStore,$data['detail_paiment']['type_receive'] == 'standard' ? 20 : 45);
             // send mail for order
             
-            $this->sendMailOrder('store',$detailForStore,$userStore,Auth::user(),null,null);
+            $this->sendMailOrder('store',$detailForStore,$store->user,Auth::user(),null,null);
 
             //send medical prescription
-            //$this->medicalPrescription($detailForStore,$userStore);
+            $this->medicalPrescription($detailForStore,$store->user);
         }
         
         // user
