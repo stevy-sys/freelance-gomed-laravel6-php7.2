@@ -192,9 +192,9 @@ class ProductsController extends Controller
             ];
             return response()->json($response, 404);
         }
-       
+    
         if (isset($media)) {
-            if ($request->update_media == true) {
+            if ($request->update_media !== "false") {
                 if (isset($media["couverture"])) {
                     if ($product->couverture) {
                         if ((Storage::disk('product')->exists($product->couverture->file) == true) && (isset($product->couverture))) {
