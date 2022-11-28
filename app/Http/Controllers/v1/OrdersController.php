@@ -288,49 +288,58 @@ class OrdersController extends Controller
             return response()->json($response, 404);
         }
 
-        $order = DetailPaimentUser::find($request->id);
         if ($request->status == 'accepted') {
-            $orderStore = $order->load(['orderStore.product.quantity']);
+            $detail = DetailPaimentUser::find($request->id);
+            $orderStore = $detail->load(['orderStore.product.quantity']);
+
+            //verification
             foreach ($orderStore->orderStore as $order) {
-                if (($order->product->quantity->stock - $order->quantity) < 0) {
-                    $order = DetailPaimentUser::find($request->id);
-                    Mail::to($order->userOwner->email)->send(new ActionOrder()); 
-                    $order->update(['status' => 'refuse']);
-                    $response = [
-                        'data'=>$order,
-                        'success' => true,
-                        'status' => 200,
-                    ];
-                    return response()->json($response, 200);
+                if ($order->product->quantity) {
+                    if (($order->product->quantity->stock - $order->quantity) < 0) {
+                        //$order = DetailPaimentUser::find($request->id); 
+                        Mail::to($detail->userOwner->email)->send(new ActionOrder()); 
+                        $detail->update(['status' => 'refuse']);
+                        $response = [
+                            'data'=>$detail,
+                            'success' => true,
+                            'status' => 200,
+                        ];
+                        return response()->json($response, 200);
+                    }
                 }
             }
 
+            //acceptation
             foreach ($orderStore->orderStore as $order) {
-                $newQuantity = $order->product->quantity->stock - $order->quantity ;
-                $order->product->quantity()->update([
-                    'stock' => $newQuantity
-                ]);
-                $stars = $order->product->stars + 1;
-                $order->product()->update([
-                    'stars' => $stars
-                ]);
+                if ($order->product->quantity) {
+                    $newQuantity = $order->product->quantity->stock - $order->quantity ;
+                    $order->product->quantity()->update([
+                        'stock' => $newQuantity
+                    ]);
+                    $stars = $order->product->stars + 1;
+                    $order->product()->update([
+                        'stars' => $stars
+                    ]);
+                }
             }
-            $order = DetailPaimentUser::find($request->id);
-            $order->update(['status' => 'valide']);
+
+            $detail->update(['status' => 'valide']);
         }
 
         if ($request->status == 'refuse') {
-            Mail::to($order->userOwner->email)->send(new ActionOrder()); 
-            $order->update(['status' => 'refuse']);
+            $detail = DetailPaimentUser::find($request->id);
+            $detail->update(['status' => 'refuse']);
+            $motif = $request->motif == 0 ? "sold insuffisant" : "autre" ;
+            Mail::to($detail->userOwner->email)->send(new ActionOrder());   
         }
-
-        $jobs = DB::table('jobs')->whereId($order->queue_id);
+        $detail = DetailPaimentUser::find($request->id);
+        $jobs = DB::table('jobs')->whereId($detail->queue_id);
         if (isset($jobs)) {
             $jobs->delete();
         }
         
         $response = [
-            'data'=>$order,
+            'data'=>$detail,
             'success' => true,
             'status' => 200,
         ];

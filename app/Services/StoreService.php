@@ -31,13 +31,14 @@ class StoreService
 
     public function getAllbellyPoint($countrie,$request)
     {
-        $store =  Stores::with('media')->where(['status' => 1,'countrie_id'=>$countrie->id])->take(5)->get();
+        $store =  Stores::with('media')->where(['status' => 1,'countrie_id'=>$countrie->id])->get();
         $store = $store->filter(function ($s) use ($request){
-                if (getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) <= 100000) {
-                    $dist = getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) ;
-                    $s->distance = $dist ;
-                    return $s ;
-                }
+            if (getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) <= 10000) {
+                // dump(getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng));
+                $dist = getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) ;
+                $s->distance = $dist ;
+                return $s ;
+            }
         })->values();
         return  $store;
     }
