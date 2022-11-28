@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class CategorieService 
 {
     public function getCategorieWithSub(){
-       return Category::with('subCategory')->get() ;
+       return Category::with(['subCategory','media'])->get() ;
     }
 
     public function getAllSubCategorie(){

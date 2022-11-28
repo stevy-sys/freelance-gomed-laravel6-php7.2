@@ -33,7 +33,7 @@ class StoreService
     {
         $store =  Stores::with('media')->where(['status' => 1,'countrie_id'=>$countrie->id])->take(5)->get();
         $store = $store->filter(function ($s) use ($request){
-                if (getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) <= 10000) {
+                if (getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) <= 100000) {
                     $dist = getDistanceBetweenPoints($request->lat,$request->lng,$s->lat,$s->lng) ;
                     $s->distance = $dist ;
                     return $s ;
