@@ -74,7 +74,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('/v1')->group(function () { 
-
+    Route::get('orders/getAll', [OrdersController::class, 'getAll']);
     Route::group(['namespace' => 'Auth'], function () {
 
         Route::post('auth/login', [AuthController::class, 'login']); 
