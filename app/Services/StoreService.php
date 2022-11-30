@@ -13,7 +13,7 @@ class StoreService
     public function TopStoreInCountrie($countrie){
         $store = Stores::whereHas('products',function ($query){
             $query->whereHas('offer');
-        })->with('media')->where('countrie_id',$countrie->id)->get()->sortByDesc('product.offer.rates')->all();
+        })->with('media')->where('countrie_id',$countrie->id)->where('status',1)->get()->sortByDesc('product.offer.rates')->all();
         return $store ;
         //return Stores::where(['status' => 1,'countrie_id'=>$countrie->id])->get();
     }
