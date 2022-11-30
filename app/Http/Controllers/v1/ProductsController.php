@@ -976,7 +976,7 @@ class ProductsController extends Controller
             $q->where('id',$request->id)->orWhereHas('countrie',function ($q) use ($request){
                 $q->where('code_pays',$request->countrie_code);
             });
-        })->with(['couverture','store.countrie'])->get();
+        })->with(['couverture','store.countrie','quantity','offer'])->get();
 
         $data = [
             'products' => $products,
