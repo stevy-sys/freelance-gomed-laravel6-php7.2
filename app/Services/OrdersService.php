@@ -343,7 +343,7 @@ class OrdersService {
             // update total detail paiment
             $this->updateDetailPaimentStore($detailForStore,$data['detail_paiment']['type_receive'] == 'standard' ? 20 : 45);
             // send mail for order
-            
+            $store = Stores::find($store_id);
             $this->sendMailOrder('store',$detailForStore,$store->user,Auth::user(),null,null);
 
             //send medical prescription
