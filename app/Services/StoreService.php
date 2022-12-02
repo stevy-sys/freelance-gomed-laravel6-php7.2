@@ -22,7 +22,7 @@ class StoreService
     {
         return [
             'data' => [
-                'products' => Products::with(['couverture','store.countrie'])->where('store_id',$request->store_id)->get()
+                'products' => Products::with(['couverture','store.countrie','offer'])->where('store_id',$request->store_id)->get()
             ],
             'status' => 200
         ];

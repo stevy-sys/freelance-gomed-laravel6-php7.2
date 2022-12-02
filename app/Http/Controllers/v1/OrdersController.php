@@ -1195,9 +1195,11 @@ class OrdersController extends Controller
         ];
 
         $user = User::find($request->id);
+        $store = Stores::where('uid',$user->id)->first();
         $data = [
             'accepte' => $this->service->getStatistiqueAccepteStoreByAdmin($user),
-            'refuse' =>  $this->service->getStatistiqueRefuseStoreByAdmin($user)
+            'refuse' =>  $this->service->getStatistiqueRefuseStoreByAdmin($user),
+            'currency' => $store->countrie
         ];
 
 

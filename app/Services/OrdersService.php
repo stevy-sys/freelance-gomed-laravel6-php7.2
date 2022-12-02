@@ -362,12 +362,14 @@ class OrdersService {
 
     public function getAllOrderInMyStore($user)
     {
+        $store = Stores::where('uid',$user->id)->first();
         $order['open'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status','open')->where(['type'=>'store','uid' => $user->id])->get();
         $order['valide'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status','valide')->where(['type'=>'store','uid' => $user->id])->get();
         $order['refuse'] = DetailPaimentUser::with('userOwner:id,first_name')->where('status','refuse')->where(['type'=>'store','uid' => $user->id])->get();
         $order['all'] = DetailPaimentUser::with('userOwner:id,first_name')->where(['type'=>'store','uid' => $user->id])->get();
         return [
             'data' => $order,
+            'currency' => $store->countrie,
             'status' => 200
         ];
     }
